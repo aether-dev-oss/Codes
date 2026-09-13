@@ -1,0 +1,618 @@
+{
+ "facts": {
+  "aether_loadlibrary_site": "AetherApp.onCreate -> EngineLoader.load (line 55)",
+  "aether_root": "AetherEngine",
+  "bounce_paths": [
+   [
+    "app/lib/screens/home_screen.dart",
+    "_launchGameInProcess",
+    "finish()=0 return_false=0 return=2",
+    162
+   ],
+   [
+    "app/android/app/src/main/kotlin/com/aether/EngineBridge.kt",
+    "launchInSandbox",
+    "finish()=0 return_false=7 return=30",
+    24
+   ],
+   [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherOrchestrator.kt",
+    "fun launchInSandbox",
+    "finish()=0 return_false=1 return=1",
+    463
+   ],
+   [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/ProxyActivity.kt",
+    "override fun onCreate",
+    "finish()=3 return_false=0 return=2",
+    29
+   ]
+  ],
+  "channel.dart_calls": [
+   "chainCheck",
+   "compressPayload",
+   "getEngineStats",
+   "getVirtualAppStatus",
+   "handshakeStatus",
+   "isTargetInstalled",
+   "launchApp",
+   "launchInSandbox",
+   "nativeCompute",
+   "readDiag",
+   "readMemory",
+   "scanAOB",
+   "testVirtualFS"
+  ],
+  "channel.dart_only": [],
+  "channel.kotlin_branches": [
+   "chainCheck",
+   "compressPayload",
+   "getEngineStats",
+   "getEngineStatus",
+   "getVirtualAppStatus",
+   "handshakeStatus",
+   "isTargetInstalled",
+   "launchApp",
+   "launchGame",
+   "launchInSandbox",
+   "nativeCompute",
+   "readDiag",
+   "readMemory",
+   "scanAOB",
+   "testVirtualFS"
+  ],
+  "channel.kotlin_only": [
+   "getEngineStatus",
+   "launchGame"
+  ],
+  "contradictions": [
+   "C13-pkgconf-comment",
+   "C13-hydrate-log",
+   "C13-binder-restore-only",
+   "C13-v1-drops-sandbox",
+   "C13-vfs-clobber",
+   "C13-vfs-selftest"
+  ],
+  "diag.ProxyActivity_init_line": 49,
+  "diag.first_DiagLog_call_line": 39,
+  "diag.readDiag_claims_crash_report": true,
+  "diag.readDiag_reads_crash_dir": false,
+  "evidence.F2_class_level_callers": 15,
+  "evidence.F2_has_b8": true,
+  "evidence.F2_has_jv0": true,
+  "evidence.F2_has_yu0": true,
+  "evidence.F2_per_native_caller_attribution": false,
+  "evidence.cut_or_unmapped": [],
+  "evidence.line_number_claims": [
+   "a7:171",
+   "a7:317",
+   "a7:601",
+   "bt0:11",
+   "j8:35",
+   "j8:52",
+   "j8:6",
+   "j8:61",
+   "jv0:283",
+   "lv0:72",
+   "ob:15",
+   "p3:6",
+   "tz:451"
+  ],
+  "evidence.mapping": {
+   "ac": "nativeProcessPair",
+   "i": "nativeSetSeed",
+   "ic": "nativeInitContext",
+   "pjowqpxe": "nativeProcessTriple",
+   "update": "nativeReflectUpdate"
+  },
+  "evidence.snake_loadlibrary_site": true,
+  "evidence.snake_native_callers": 20,
+  "evidence.snake_natives": [],
+  "evidence_root": "Codes/SnakeLogic",
+  "gates.absolute_paths": [
+   [
+    "scripts/native_chain_parity.py",
+    13,
+    "/var/minis/workspace/codes/Codes/SnakeLogic/fragments/F2_dex_natives.txt"
+   ]
+  ],
+  "gates.cited_but_absent": [
+   "DATA_DUMP.md",
+   "NATIVE_CALLSITE_MAP.md",
+   "NATIVE_LOGIC.md",
+   "REPORT.md"
+  ],
+  "gates.cited_docs": [
+   "ARCHITECTURE.md",
+   "CONFIG.md",
+   "DATA_DUMP.md",
+   "NATIVE_CALLSITE_MAP.md",
+   "NATIVE_LOGIC.md",
+   "README.md",
+   "REPORT.md",
+   "SCAFFOLD4_ACTIVITY_VIRTUALIZATION.md",
+   "TESTING.md",
+   "TROUBLESHOOTING.md"
+  ],
+  "hidden_api.distinct_targets": 20,
+  "hidden_api.exemption_calls": [],
+  "hidden_api.targets_used": {
+   "Activity.mActivityInfo": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:276"
+   ],
+   "Activity.mResources": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:193"
+   ],
+   "Activity.mTheme": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:262"
+   ],
+   "ActivityThread.currentActivityThread": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:63",
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/VirtualAppLoader.kt:328",
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:404"
+   ],
+   "ActivityThread.mAllApplications": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/VirtualAppLoader.kt:208",
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:207"
+   ],
+   "ActivityThread.mInitialApplication": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/VirtualAppLoader.kt:202",
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:106"
+   ],
+   "ActivityThread.mInstrumentation": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:64",
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/VirtualAppLoader.kt:162",
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:161"
+   ],
+   "AppBindData.processName": [
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:254"
+   ],
+   "AppCompatActivity.mDelegate": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:249"
+   ],
+   "AssetManager.addAssetPath": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:337"
+   ],
+   "ContextImpl.mApplicationInfo": [
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:617"
+   ],
+   "ContextImpl.mPackageInfo": [
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:571"
+   ],
+   "ContextWrapper.mBase": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:208",
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/VirtualAppLoader.kt:230",
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:116"
+   ],
+   "IActivityManagerSingleton": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/ServiceBinderProxy.kt:417",
+    "app/android/app/src/main/kotlin/com/aether/EngineBridge.kt:362"
+   ],
+   "LoadedApk.mApplication": [
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:645"
+   ],
+   "LoadedApk.mCredentialProtectedDataDirFile": [
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:595"
+   ],
+   "LoadedApk.mDataDirFile": [
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:596"
+   ],
+   "LoadedApk.mDeviceProtectedDataDirFile": [
+    "aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:597"
+   ],
+   "ServiceManager.sCache": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/ServiceBinderProxy.kt:322"
+   ],
+   "Singleton.mInstance": [
+    "aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/ServiceBinderProxy.kt:423",
+    "app/android/app/src/main/kotlin/com/aether/EngineBridge.kt:369"
+   ]
+  },
+  "hookA.is_override": false,
+  "hookA.line": 382,
+  "jni.cpp_definitions": 39,
+  "jni.dead": [
+   "decryptString",
+   "hideXposed",
+   "installNetworkHttpProbe",
+   "loadEmptyDex",
+   "nativeDecryptPayloadByHash",
+   "nativeDeriveKey",
+   "nativeEntropy",
+   "nativeExchangeKeys",
+   "nativeProcessTriple",
+   "nativeReflectUpdate",
+   "nativeValidate",
+   "nativeWriteLog",
+   "setAccessible",
+   "setBinderCallingPidOverride",
+   "setBinderCallingUidOverride"
+  ],
+  "jni.dead_callers_detail": {
+   "decryptString": [],
+   "hideXposed": [],
+   "installNetworkHttpProbe": [],
+   "loadEmptyDex": [],
+   "nativeDecryptPayloadByHash": [],
+   "nativeDeriveKey": [],
+   "nativeEntropy": [],
+   "nativeExchangeKeys": [],
+   "nativeProcessTriple": [],
+   "nativeReflectUpdate": [],
+   "nativeValidate": [],
+   "nativeWriteLog": [],
+   "setAccessible": [],
+   "setBinderCallingPidOverride": [],
+   "setBinderCallingUidOverride": []
+  },
+  "jni.engine_kt_decls": 38,
+  "jni.live": [
+   "addClassRule",
+   "addIORule",
+   "classRuleCount",
+   "clearClassRules",
+   "enableIO",
+   "nativeAttach",
+   "nativeCompressPayload",
+   "nativeCompute",
+   "nativeDecompressPayload",
+   "nativeDecryptPayload",
+   "nativeEncryptPayload",
+   "nativeFindModuleBase",
+   "nativeHydratePayloads",
+   "nativeInitContext",
+   "nativeOffset",
+   "nativeOffset2",
+   "nativeProcessPair",
+   "nativeRead",
+   "nativeScanAOB",
+   "nativeSetSeed",
+   "nativeWatchdogCheck",
+   "restoreBinderCallingPidOverride",
+   "restoreBinderCallingUidOverride"
+  ],
+  "jni.missing_from_table": [],
+  "jni.quadrant": {
+   "dead_hollow": [
+    "hideXposed",
+    "installNetworkHttpProbe",
+    "nativeExchangeKeys",
+    "nativeProcessTriple",
+    "nativeReflectUpdate",
+    "nativeWriteLog",
+    "setAccessible"
+   ],
+   "dead_real": [
+    "decryptString",
+    "loadEmptyDex",
+    "nativeDecryptPayloadByHash",
+    "nativeDeriveKey",
+    "nativeEntropy",
+    "nativeValidate",
+    "setBinderCallingPidOverride",
+    "setBinderCallingUidOverride"
+   ],
+   "live_hollow": [
+    "addIORule",
+    "enableIO",
+    "nativeInitContext",
+    "nativeProcessPair"
+   ],
+   "live_real": [
+    "addClassRule",
+    "classRuleCount",
+    "clearClassRules",
+    "nativeAttach",
+    "nativeCompressPayload",
+    "nativeCompute",
+    "nativeDecompressPayload",
+    "nativeDecryptPayload",
+    "nativeEncryptPayload",
+    "nativeFindModuleBase",
+    "nativeHydratePayloads",
+    "nativeOffset",
+    "nativeOffset2",
+    "nativeRead",
+    "nativeScanAOB",
+    "nativeSetSeed",
+    "nativeWatchdogCheck",
+    "restoreBinderCallingPidOverride",
+    "restoreBinderCallingUidOverride"
+   ]
+  },
+  "jni.register_natives_entries": 39,
+  "jni.table_symbol_without_definition": [],
+  "lifecycle.ProxyActivity_has_onDestroy": false,
+  "lifecycle.close_callers": [],
+  "lifecycle.resume_callers": [],
+  "lifecycle.suspend_callers": [],
+  "manifest.MAX_SLOTS": 4,
+  "manifest.declared_components": 32,
+  "manifest.missing_source": [],
+  "manifest.our_families": [
+   "AetherDaemonInnerService",
+   "AetherDaemonService",
+   "AetherFileProvider",
+   "AetherHostActivity",
+   "AetherStubReceiver",
+   "AetherSystemCallProvider",
+   "AetherVpnService",
+   "InternalWebBrowser",
+   "ProxyActivity$Pn",
+   "ProxyContentProvider$Pn",
+   "ProxyJobService$Pn",
+   "ProxyPendingActivity$Pn",
+   "ProxyService$Pn",
+   "TransparentProxyActivity$Pn"
+  ],
+  "manifest.parity_gap_vs_snake": [
+   "ProxyActivity",
+   "ProxyActivity$Pn_L"
+  ],
+  "manifest.rename_map": {
+   "DaemonService": "AetherDaemonService",
+   "DaemonService$DaemonInnerService": "AetherDaemonInnerService",
+   "FileProvider": "AetherFileProvider",
+   "ProxyBroadcastReceiver": "AetherStubReceiver",
+   "ProxyVpnService": "AetherVpnService",
+   "SystemCallProvider": "AetherSystemCallProvider"
+  },
+  "manifest.snake_families": [
+   "AetherDaemonInnerService",
+   "AetherDaemonService",
+   "AetherFileProvider",
+   "AetherStubReceiver",
+   "AetherSystemCallProvider",
+   "AetherVpnService",
+   "InternalWebBrowser",
+   "ProxyActivity",
+   "ProxyActivity$Pn",
+   "ProxyActivity$Pn_L",
+   "ProxyContentProvider$Pn",
+   "ProxyJobService$Pn",
+   "ProxyPendingActivity$Pn",
+   "ProxyService$Pn",
+   "TransparentProxyActivity$Pn"
+  ],
+  "manifest.stub_families": {
+   "com.aether.engine.proxy.ProxyActivity": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "com.aether.engine.proxy.ProxyContentProvider": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "com.aether.engine.proxy.ProxyJobService": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "com.aether.engine.proxy.ProxyPendingActivity": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "com.aether.engine.proxy.ProxyService": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "com.aether.engine.proxy.TransparentProxyActivity": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  "native.chain_required": [
+   [
+    "nativeInitContext",
+    "SNAKE Native.ic (hop17, yu0.f after loadLibrary)",
+    "LOG-ONLY",
+    185
+   ],
+   [
+    "nativeSetSeed",
+    "SNAKE Native.i (hop21, jv0.O2:245 bind path)",
+    "REAL",
+    187
+   ],
+   [
+    "nativeProcessPair",
+    "SNAKE Native.ac (hop23, b8.callActivityOnResume)",
+    "LOG-ONLY",
+    182
+   ],
+   [
+    "nativeProcessTriple",
+    "SNAKE Native.pjowqpxe (hidden dex)",
+    "LOG-ONLY",
+    183
+   ],
+   [
+    "nativeReflectUpdate",
+    "SNAKE Native.update (hidden dex, MethodUtils)",
+    "LOG-ONLY",
+    184
+   ]
+  ],
+  "native.included_but_uncalled": [
+   [
+    "aether-native/src/main/cpp/core/env_check.cpp",
+    73
+   ]
+  ],
+  "native.orphan_translation_units": [
+   [
+    "aether-native/src/main/cpp/layer/bindmount/virtual_fs.cpp",
+    234
+   ],
+   [
+    "aether-native/src/main/cpp/layer/packageconf/manifest_snapshot.cpp",
+    155
+   ],
+   [
+    "aether-native/src/main/cpp/layer/rootspoof/hide_module.cpp",
+    33
+   ]
+  ],
+  "native.real_implementations": [
+   "Java_com_aether_Engine_addClassRule",
+   "Java_com_aether_Engine_classRuleCount",
+   "Java_com_aether_Engine_clearClassRules",
+   "Java_com_aether_Engine_decryptString",
+   "Java_com_aether_Engine_loadEmptyDex",
+   "Java_com_aether_Engine_nativeAttach",
+   "Java_com_aether_Engine_nativeCompressPayload",
+   "Java_com_aether_Engine_nativeCompute",
+   "Java_com_aether_Engine_nativeDecompressPayload",
+   "Java_com_aether_Engine_nativeDecryptPayload",
+   "Java_com_aether_Engine_nativeDecryptPayloadByHash",
+   "Java_com_aether_Engine_nativeDeriveKey",
+   "Java_com_aether_Engine_nativeEncryptPayload",
+   "Java_com_aether_Engine_nativeEntropy",
+   "Java_com_aether_Engine_nativeFindModuleBase",
+   "Java_com_aether_Engine_nativeHydratePayloads",
+   "Java_com_aether_Engine_nativeOffset",
+   "Java_com_aether_Engine_nativeOffset2",
+   "Java_com_aether_Engine_nativeRead",
+   "Java_com_aether_Engine_nativeScanAOB",
+   "Java_com_aether_Engine_nativeSetSeed",
+   "Java_com_aether_Engine_nativeValidate",
+   "Java_com_aether_Engine_nativeWatchdogCheck",
+   "Java_com_aether_Engine_restoreBinderCallingPidOverride",
+   "Java_com_aether_Engine_restoreBinderCallingUidOverride",
+   "Java_com_aether_Engine_setBinderCallingPidOverride",
+   "Java_com_aether_Engine_setBinderCallingUidOverride"
+  ],
+  "native.stub_implementations": [
+   [
+    "Java_com_aether_Engine_addIORule",
+    "LOG-ONLY",
+    231
+   ],
+   [
+    "Java_com_aether_Engine_enableIO",
+    "LOG-ONLY",
+    230
+   ],
+   [
+    "Java_com_aether_Engine_hideXposed",
+    "LOG-ONLY",
+    242
+   ],
+   [
+    "Java_com_aether_Engine_installNetworkHttpProbe",
+    "LOG-ONLY",
+    243
+   ],
+   [
+    "Java_com_aether_Engine_nativeExchangeKeys",
+    "LOG-ONLY",
+    177
+   ],
+   [
+    "Java_com_aether_Engine_nativeInitContext",
+    "LOG-ONLY",
+    185
+   ],
+   [
+    "Java_com_aether_Engine_nativeProcessPair",
+    "LOG-ONLY",
+    182
+   ],
+   [
+    "Java_com_aether_Engine_nativeProcessTriple",
+    "LOG-ONLY",
+    183
+   ],
+   [
+    "Java_com_aether_Engine_nativeReflectUpdate",
+    "LOG-ONLY",
+    184
+   ],
+   [
+    "Java_com_aether_Engine_nativeWriteLog",
+    "LOG-ONLY",
+    178
+   ],
+   [
+    "Java_com_aether_Engine_setAccessible__Ljava_lang_reflect_Field_2",
+    "LOG-ONLY",
+    192
+   ],
+   [
+    "Java_com_aether_Engine_setAccessible__Ljava_lang_reflect_Method_2",
+    "LOG-ONLY",
+    193
+   ]
+  ],
+  "pinned.fake_package": "com.aether.test.chaincheck",
+  "pinned.handshake_slot": 0,
+  "pinned.holder_has_reset": false,
+  "pinned.no_slot_fallback_line": 529,
+  "pinned.proxy_p3_first_line": 37,
+  "schema": "aether-audit/1",
+  "tests.aosp_stub_ActivityThread_returns_null": true,
+  "tests.chain_coverage": [
+   [
+    "aether-android/aether-app/src/test/kotlin/com/aether/engine/proxy/AetherInstrumentationTest.kt",
+    "newActivity"
+   ],
+   [
+    "aether-core/src/test/kotlin/com/aether/GuestRuntimeTest.kt",
+    "bindToActivityThread"
+   ],
+   [
+    "aether-core/src/test/kotlin/com/aether/GuestRuntimeTest.kt",
+    "installProviders"
+   ]
+  ],
+  "tests.count": 34,
+  "tests.files": [
+   "aether-android/aether-app/src/test/kotlin/com/aether/engine/proxy/AetherInstrumentationTest.kt",
+   "aether-core/src/test/kotlin/com/aether/GuestRuntimeTest.kt",
+   "aether-core/src/test/kotlin/com/aether/MethodUtilsTest.kt",
+   "aether-core/src/test/kotlin/com/aether/PackageConfParserTest.kt",
+   "aether-core/src/test/kotlin/com/aether/StrDecryptSmokeTest.kt"
+  ]
+ },
+ "finding_ids": [
+  "C14-pinned-identity",
+  "C2-bounce-guard",
+  "C4-false-telemetry",
+  "C4-hollow-chain",
+  "C6-no-exemption",
+  "C9-hookA-dead",
+  "C10-abspath-native_chain_parity.py",
+  "C10-missing-evidence",
+  "C11-degraded-only",
+  "C13-binder-restore-only",
+  "C13-vfs-clobber",
+  "C15-diag-nocrash",
+  "C15-diag-order",
+  "C16-unverifiable-placement",
+  "C3-dead-natives",
+  "C4-stubs",
+  "C5-orphans",
+  "C7-parity-gap",
+  "C8-never-closed",
+  "C8-stale-hook",
+  "C13-pkgconf-comment",
+  "C13-v1-drops-sandbox",
+  "C13-vfs-selftest",
+  "C15-firewall-swallows",
+  "C5-uncalled",
+  "C1-dead-branches",
+  "C13-hydrate-log"
+ ],
+ "schema": "aether-audit/1"
+}

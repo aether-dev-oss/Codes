@@ -1,0 +1,138 @@
+AetherEngine full-system audit (aether-audit/1)
+findings: 27  (P0=6 P1=14 P2=5 P3=2)
+
+[P0] C14      C14-pinned-identity
+    EN: the chain-check diagnostic binds :p0 to a fake package ('com.aether.test.chaincheck', hard-coded slot 0) and GuestProcessHolder.config is NEVER cleared, while ProxyActivity applies a p3-first rule that lets that stale config OVERRIDE the intent's target_package. Two live triggers reach the poisoned slot: (a) AetherOrchestrator still dispatches 'else 0' -> P0 when allocate() finds no free slot, and (b) allocate() only skips a slot when getRunningAppProcesses() happens to report it (null/empty -> slot 0). Either way :p0 loads a package that is not installed and finishes
+    TH: ปุ่ม chain-check ผูก :p0 ไว้กับ package ปลอม ('com.aether.test.chaincheck', slot 0 แบบ hardcode) และ GuestProcessHolder.config ไม่เคยถูกล้าง ขณะที่ ProxyActivity ใช้กฎ p3-first ให้ config เก่าตัวนั้นชนะ target_package ใน intent - มี 2 ทางที่พาไปเจอ slot ที่ปนเปื้อน: (ก) AetherOrchestrator ยัง dispatch 'else 0' -> P0 เมื่อ allocate() หา slot ว่างไม่เจอ (ข) allocate() ข้าม slot ก็ต่อเมื่อ getRunningAppProcesses() รายงานมัน (null/ว่าง -> ได้ slot 0) ทั้งสองทางทำให้ :p0 พยายามโหลด package ที่ไม่ได้ติดตั้งแล้ว finish ตัวเอง
+    at: EngineBridge.kt:410 (providerAuthority(0)) + :413 (fake pkg); GuestProcessRegistry.kt:192 (config set) / :186 (reject path, no reset); ProxyActivity.kt:37 (p3-first override); AetherOrchestrator.kt:529 ('else 0' fallback)
+
+[P0] C2       C2-bounce-guard
+    EN: ProxyActivity.onCreate has 3 distinct silent-exit paths (swap-miss guard, load-failure finish, non-virtual finish) - all of them return the user to the home screen with no on-screen reason
+    TH: ProxyActivity.onCreate มีทางจบแบบเงียบ 3 ทาง (guard ตอน swap ไม่เกิด, finish ตอน load fail, finish โหมด non-virtual) - ทั้ง 3 ทางพาผู้ใช้กลับหน้าเดิมโดยไม่บอกเหตุผลบนจอ
+    at: ProxyActivity.kt:102 (guard), :194 (launch-failed finish)
+
+[P0] C4       C4-false-telemetry
+    EN: AetherOrchestrator logs 'VirtualFS: IO enabled, N redirect rules registered' but Engine.enableIO() and Engine.addIORule() are empty C++ stubs - no path is ever redirected natively
+    TH: AetherOrchestrator log ว่า 'VirtualFS: IO enabled, N redirect rules registered' แต่ enableIO()/addIORule() เป็น stub ว่างใน C++ - ไม่มี path redirect เกิดจริง
+    at: AetherOrchestrator.kt:137 vs aether_core.cpp enableIO/addIORule
+
+[P0] C4       C4-hollow-chain
+    EN: 4 of the 5 chain-required JNI hops are registered and called from the 'correct' Kotlin file, but their C++ bodies do nothing: nativeInitContext (SNAKE Native.ic (hop17, yu0.f after loadLibrary), aether_core.cpp:185 = LOG-ONLY); nativeProcessPair (SNAKE Native.ac (hop23, b8.callActivityOnResume), aether_core.cpp:182 = LOG-ONLY); nativeProcessTriple (SNAKE Native.pjowqpxe (hidden dex), aether_core.cpp:183 = LOG-ONLY); nativeReflectUpdate (SNAKE Native.update (hidden dex, MethodUtils), aether_core.cpp:184 = LOG-ONLY)
+    TH: hop ระดับ native 4 จาก 5 ตัวที่ gate รับรองว่า 'วางถูกตำแหน่ง' มี body ว่างเปล่า: nativeInitContext (SNAKE Native.ic (hop17, yu0.f after loadLibrary), aether_core.cpp:185 = LOG-ONLY); nativeProcessPair (SNAKE Native.ac (hop23, b8.callActivityOnResume), aether_core.cpp:182 = LOG-ONLY); nativeProcessTriple (SNAKE Native.pjowqpxe (hidden dex), aether_core.cpp:183 = LOG-ONLY); nativeReflectUpdate (SNAKE Native.update (hidden dex, MethodUtils), aether_core.cpp:184 = LOG-ONLY)
+    at: aether-native/src/main/cpp/aether_core.cpp
+
+[P0] C6       C6-no-exemption
+    EN: the boot chain reflects into 20 restricted framework members (Activity.mActivityInfo, Activity.mResources, Activity.mTheme, ActivityThread.currentActivityThread, ActivityThread.mAllApplications, ActivityThread.mInitialApplication, ActivityThread.mInstrumentation, AppBindData.processName, AppCompatActivity.mDelegate, AssetManager.addAssetPath, ContextImpl.mApplicationInfo, ContextImpl.mPackageInfo, ContextWrapper.mBase, IActivityManagerSingleton, LoadedApk.mApplication, LoadedApk.mCredentialProtectedDataDirFile, LoadedApk.mDataDirFile, LoadedApk.mDeviceProtectedDataDirFile, ServiceManager.sCache, Singleton.mInstance) and the repo contains no hidden-API exemption/bypass anywhere (0 hits for setHiddenApiExemptions / VMRuntime / hiddenapi in 85 source files)
+    TH: chain การ boot ยิง reflection เข้า framework member ที่ถูกจำกัด 20 จุด (Activity.mActivityInfo, Activity.mResources, Activity.mTheme, ActivityThread.currentActivityThread, ActivityThread.mAllApplications, ActivityThread.mInitialApplication, ActivityThread.mInstrumentation, AppBindData.processName, AppCompatActivity.mDelegate, AssetManager.addAssetPath, ContextImpl.mApplicationInfo, ContextImpl.mPackageInfo, ContextWrapper.mBase, IActivityManagerSingleton, LoadedApk.mApplication, LoadedApk.mCredentialProtectedDataDirFile, LoadedApk.mDataDirFile, LoadedApk.mDeviceProtectedDataDirFile, ServiceManager.sCache, Singleton.mInstance) แต่ทั้ง repo ไม่มีการขอ hidden-API exemption เลย (0 hit ใน 85 ไฟล์)
+    at: Activity.mActivityInfo -> aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:276; Activity.mResources -> aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:193; Activity.mTheme -> aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:262; ActivityThread.currentActivityThread -> aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:63; ActivityThread.mAllApplications -> aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/VirtualAppLoader.kt:208; ActivityThread.mInitialApplication -> aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/VirtualAppLoader.kt:202; ActivityThread.mInstrumentation -> aether-android/aether-app/src/main/kotlin/com/aether/engine/proxy/AetherInstrumentation.kt:64; AppBindData.processName -> aether-core/src/main/kotlin/com/aether/GuestRuntime.kt:254
+
+[P0] C9       C9-hookA-dead
+    EN: AetherInstrumentation.execStartActivity is declared WITHOUT 'override' - it is a new method on the subclass, so ActivityThread (which calls the framework Instrumentation.execStartActivity overloads) never dispatches to it; rewriteToStub() therefore never runs
+    TH: AetherInstrumentation.execStartActivity ประกาศโดยไม่มี 'override' - เป็น method ใหม่ของ subclass จึงไม่มีทางที่ ActivityThread จะเรียก; rewriteToStub() ไม่เคยทำงาน
+    at: AetherInstrumentation.kt:382 (declaration), :392 (rewriteToStub call)
+
+[P1] C10      C10-abspath-native_chain_parity.py
+    EN: scripts/native_chain_parity.py:13 hard-codes the absolute path /var/minis/workspace/codes/Codes/SnakeLogic/fragments/F2_dex_natives.txt (exists on this machine: False)
+    TH: scripts/native_chain_parity.py:13 ฝัง path แบบ absolute /var/minis/workspace/codes/Codes/SnakeLogic/fragments/F2_dex_natives.txt (มีอยู่จริงบนเครื่องนี้: False)
+    at: scripts/native_chain_parity.py:13
+
+[P1] C10      C10-missing-evidence
+    EN: source/comments cite 4 document(s) that are not committed anywhere in the repo: DATA_DUMP.md, NATIVE_CALLSITE_MAP.md, NATIVE_LOGIC.md, REPORT.md
+    TH: โค้ด/คอมเมนต์อ้างถึงเอกสาร 4 ชิ้นที่ไม่ได้ commit ไว้ใน repo: DATA_DUMP.md, NATIVE_CALLSITE_MAP.md, NATIVE_LOGIC.md, REPORT.md
+    at: grep of *.kt/*.py/*.md/*.sh vs docs/ inventory
+
+[P1] C11      C11-degraded-only
+    EN: 3 tests touch chain entry points (bindToActivityThread, installProviders, newActivity) but the AOSP test stub makes ActivityThread.currentActivityThread() return null, so every one of them asserts the DEGRADED path (install() == false, bind refused) - the success path of the boot chain has no automated coverage at all
+    TH: test 3 เคสแตะ entry point ของ chain (bindToActivityThread, installProviders, newActivity) แต่ stub AOSP ทำให้ currentActivityThread() คืน null ทุกเคสจึงยืนยันเฉพาะ path ที่ degraded (install() == false, bind ถูกปฏิเสธ) - path ที่สำเร็จของ chain การ boot ไม่มี test เลย
+    at: aether-android/test-stubs/android/app/ActivityThread.kt + aether-android/aether-app/src/test/kotlin/com/aether/engine/proxy/AetherInstrumentationTest.kt; aether-core/src/test/kotlin/com/aether/GuestRuntimeTest.kt; aether-core/src/test/kotlin/com/aether/GuestRuntimeTest.kt
+
+[P1] C13      C13-binder-restore-only
+    EN: AetherOrchestrator.shutdown() restores the binder PID/UID overrides, but setBinderCallingPidOverride/setBinderCallingUidOverride are never called anywhere - the guest's binder calls always carry the HOST uid
+    TH: shutdown() คืนค่า binder PID/UID override ทั้งที่ setBinderCallingPidOverride/setBinderCallingUidOverride ไม่เคยถูกเรียก - binder call ของ guest จึงถือ uid ของ host เสมอ
+    at: AetherOrchestrator.kt:568
+
+[P1] C13      C13-vfs-clobber
+    EN: ProxyActivity step 1 sets the guest identity (VirtualAppContainer.init(targetPkg)), then step 2 self-attaches with a HARD-CODED 'com.aether' package, which runs virtualFS.setupForApp(dataDir=/data/user/0/com.aether) and re-points the VirtualFS map at the host
+    TH: ProxyActivity ขั้น 1 ตั้ง identity ของ guest (VirtualAppContainer.init(targetPkg)) แล้วขั้น 2 self-attach ด้วย package ที่ hardcode ว่า 'com.aether' ซึ่งไปเรียก virtualFS.setupForApp(dataDir=/data/user/0/com.aether) ทับ map ของ guest
+    at: ProxyActivity.kt:68 (guest init) then :79 (hard-coded self-attach)
+
+[P1] C15      C15-diag-nocrash
+    EN: EngineBridge.readDiag's own KDoc promises 'DiagLog trace.log + latest logcat dump + latest crash report', but the implementation reads only diag/trace.log and diag/logcat_* - CrashHandler writes to filesDir/crash_logs/crash_<ts>.log, which the UI never surfaces
+    TH: KDoc ของ readDiag สัญญาว่าจะคืน 'trace.log + logcat + crash report ล่าสุด' แต่โค้ดอ่านแค่ diag/trace.log กับ diag/logcat_* - ทั้งที่ CrashHandler เขียนไว้ที่ filesDir/crash_logs/crash_<ts>.log ซึ่ง UI ไม่เคยแสดง
+    at: EngineBridge.kt:311 (doc) vs CrashHandler.kt:52 (CRASH_DIR_NAME="crash_logs")
+
+[P1] C15      C15-diag-order
+    EN: ProxyActivity emits DiagLog lines BEFORE DiagLog.init() runs (first call at line 39, init at line 49); DiagLog.d() with dir==null only writes to logcat, so those lines never reach trace.log
+    TH: ProxyActivity เรียก DiagLog ก่อน DiagLog.init() (เรียกครั้งแรกบรรทัด 39, init บรรทัด 49) - DiagLog.d() ตอน dir==null จะออกแค่ logcat จึงไม่ลง trace.log
+    at: ProxyActivity.kt:39 vs :49 (the dropped line is the p3/intent identity mismatch at :39)
+
+[P1] C16      C16-unverifiable-placement
+    EN: the code cites 13 decompiler line numbers (a7:171, a7:317, a7:601, bt0:11, j8:35, j8:52, j8:6, j8:61) as the authority for WHERE each hop belongs, but the committed evidence (Codes/SnakeLogic/fragments/F2) attributes callers only at CLASS level (15 distinct caller methods of com.snake.helper.Native) and never maps a caller to a specific native; the per-hop transcript (NATIVE_CALLSITE_MAP.md) is not committed in either repo
+    TH: โค้ดอ้างหมายเลขบรรทัดจาก decompiler 13 จุด (a7:171, a7:317, a7:601, bt0:11, j8:35, j8:52, j8:6, j8:61) เป็นหลักฐานว่า hop ไหนต้องวางที่ไหน แต่หลักฐานที่ commit ไว้ (F2) ระบุ caller แค่ระดับ CLASS (15 method) และไม่ map ว่า caller ไหนเรียก native ตัวไหน; transcript (NATIVE_CALLSITE_MAP.md) ไม่ได้ commit ไว้ใน repo ใดเลย
+    at: Codes/SnakeLogic/fragments/F2_dex_natives.txt (classes jv0/b8/yu0 ARE present, line numbers are NOT)
+
+[P1] C3       C3-dead-natives
+    EN: 15 of 38 registered JNI methods have no Kotlin call site: decryptString, hideXposed, installNetworkHttpProbe, loadEmptyDex, nativeDecryptPayloadByHash, nativeDeriveKey, nativeEntropy, nativeExchangeKeys, nativeProcessTriple, nativeReflectUpdate, nativeValidate, nativeWriteLog, setAccessible, setBinderCallingPidOverride, setBinderCallingUidOverride
+    TH: JNI 15 จาก 38 ตัวที่ลงทะเบียนไว้ ไม่มีจุดเรียกใน Kotlin: decryptString, hideXposed, installNetworkHttpProbe, loadEmptyDex, nativeDecryptPayloadByHash, nativeDeriveKey, nativeEntropy, nativeExchangeKeys, nativeProcessTriple, nativeReflectUpdate, nativeValidate, nativeWriteLog, setAccessible, setBinderCallingPidOverride, setBinderCallingUidOverride
+    at: Engine.kt external funs vs call-site scan of 41 .kt files
+
+[P1] C4       C4-stubs
+    EN: 12 of 39 JNI implementations are empty/log-only/constant-return: addIORule, enableIO, hideXposed, installNetworkHttpProbe, nativeExchangeKeys, nativeInitContext, nativeProcessPair, nativeProcessTriple, nativeReflectUpdate, nativeWriteLog, setAccessible__Ljava_lang_reflect_Field_2, setAccessible__Ljava_lang_reflect_Method_2
+    TH: JNI 12 จาก 39 ตัวเป็น body ว่าง/แค่ log/คืนค่าคงที่: addIORule, enableIO, hideXposed, installNetworkHttpProbe, nativeExchangeKeys, nativeInitContext, nativeProcessPair, nativeProcessTriple, nativeReflectUpdate, nativeWriteLog, setAccessible__Ljava_lang_reflect_Field_2, setAccessible__Ljava_lang_reflect_Method_2
+    at: aether_core.cpp (AETHER_DEBUG=0 -> LOGD compiles to ((void)0), so LOG-ONLY == EMPTY)
+
+[P1] C5       C5-orphans
+    EN: 3 native translation unit(s) are compiled into libaether.so but their header is not in the #include closure of the only JNI entry point (aether_core.cpp), so no code path can reach them and -Wl,--gc-sections drops them from the binary: aether-native/src/main/cpp/layer/bindmount/virtual_fs.cpp (234 lines), aether-native/src/main/cpp/layer/packageconf/manifest_snapshot.cpp (155 lines), aether-native/src/main/cpp/layer/rootspoof/hide_module.cpp (33 lines)
+    TH: ไฟล์ C++ 3 ไฟล์ถูกคอมไพล์เข้า libaether.so แต่ header ไม่ได้อยู่ใน #include closure ของ JNI entry เดียว (aether_core.cpp) จึงไม่มีทางเรียกถึง และ --gc-sections ทิ้งออกจาก binary: aether-native/src/main/cpp/layer/bindmount/virtual_fs.cpp (234 บรรทัด), aether-native/src/main/cpp/layer/packageconf/manifest_snapshot.cpp (155 บรรทัด), aether-native/src/main/cpp/layer/rootspoof/hide_module.cpp (33 บรรทัด)
+    at: aether-native/src/main/cpp/CMakeLists.txt (L1_SOURCES) vs aether_core.cpp includes
+
+[P1] C7       C7-parity-gap
+    EN: component families present in the SNAKE reference manifest (F3, 51 components) but absent from AetherEngine after applying the documented rename map: ProxyActivity, ProxyActivity$Pn_L
+    TH: ตระกูล component ที่มีใน manifest ต้นแบบ SNAKE (F3, 51 ตัว) แต่หายไปใน AetherEngine หลังเทียบผ่าน rename map: ProxyActivity, ProxyActivity$Pn_L
+    at: Codes/SnakeLogic/fragments/F3_manifest.txt
+
+[P1] C8       C8-never-closed
+    EN: GuestRuntimeBridge.close() has 0 callers and ProxyActivity does not override onDestroy, although the bridge's own KDoc says close() must be called from ProxyActivity.onDestroy()
+    TH: GuestRuntimeBridge.close() ไม่มีคนเรียก และ ProxyActivity ไม่ override onDestroy ทั้งที่ KDoc ของ bridge ระบุให้เรียกจาก ProxyActivity.onDestroy()
+    at: GuestRuntimeBridge.kt:209 (doc claim) vs ProxyActivity.kt (only onCreate is overridden)
+
+[P1] C8       C8-stale-hook
+    EN: AetherInstrumentation.install() captures stubComponent/guestClassLoader/guestApp once and then returns early on 'installed' - a second guest (or a re-launch after the guest died) keeps the FIRST guest's class loader
+    TH: AetherInstrumentation.install() จับ stubComponent/guestClassLoader/guestApp ไว้ครั้งเดียว แล้ว return ทันทีถ้า installed -> guest ตัวที่สอง (หรือ relaunch หลัง guest ตาย) ยังใช้ classloader ของตัวแรก
+    at: AetherInstrumentation.kt:60
+
+[P2] C13      C13-pkgconf-comment
+    EN: SandboxManager.bootstrapGameData says in a comment that package.conf is no longer fabricated ('generatePackageConf ถูก deprecate') and then calls generatePackageConf() 9 lines later to write it
+    TH: คอมเมนต์ใน bootstrapGameData บอกว่าไม่ fabricate package.conf แล้ว (generatePackageConf ถูก deprecate) แต่โค้ดถัดไปอีก 9 บรรทัดเรียก generatePackageConf() เพื่อเขียนไฟล์
+    at: SandboxManager.kt:392 (comment) vs :401 (call)
+
+[P2] C13      C13-v1-drops-sandbox
+    EN: GuestRuntimeBridge.loadV1 (the AUTO fallback) does not forward sandboxDir - VirtualAppLoader.load has no such parameter
+    TH: GuestRuntimeBridge.loadV1 (fallback ของโหมด AUTO) ไม่ส่ง sandboxDir ต่อ - VirtualAppLoader.load ไม่มีพารามิเตอร์นี้
+    at: GuestRuntimeBridge.kt:332 vs VirtualAppLoader.kt:64
+
+[P2] C13      C13-vfs-selftest
+    EN: VirtualAppContainer.testVirtualFSResolve() (exposed to the UI as 'testVirtualFS') resolves paths against the Kotlin-side VirtualFSWrapper map only - it cannot detect that the native redirect layer is an empty stub
+    TH: testVirtualFSResolve() (ที่ UI เรียกผ่าน 'testVirtualFS') resolve path กับ map ฝั่ง Kotlin เท่านั้น - ตรวจไม่พบว่า native redirect เป็น stub ว่าง
+    at: VirtualAppContainer.kt:240
+
+[P2] C15      C15-firewall-swallows
+    EN: ProxyActivity installs a process-wide uncaught-exception handler that deliberately does NOT chain to the previous handler while a guest is active, so guest crashes on ANY thread (including main) are swallowed after being logged to trace.log
+    TH: ProxyActivity ตั้ง uncaught-exception handler ทั้ง process ที่จงใจไม่ส่งต่อให้ handler เดิมขณะ guest ยัง active - crash ของ guest ทุก thread (รวม main) จึงถูกกลืนหลังบันทึก log
+    at: ProxyActivity.kt:106 (installGuestThreadFirewall)
+
+[P2] C5       C5-uncalled
+    EN: 1 TU(s) are included by aether_core.cpp but every call into them is commented out: aether-native/src/main/cpp/core/env_check.cpp (73 lines)
+    TH: 1 ไฟล์ถูก include ใน aether_core.cpp แต่ทุกจุดเรียกถูกคอมเมนต์ทิ้ง: aether-native/src/main/cpp/core/env_check.cpp (73 บรรทัด)
+    at: aether_core.cpp JNI_OnLoad ('[CUT 2026-09-11]' lines)
+
+[P3] C1       C1-dead-branches
+    EN: Kotlin handler branches never called from Dart: getEngineStatus, launchGame
+    TH: branch ฝั่ง Kotlin ที่ Dart ไม่เคยเรียก: getEngineStatus, launchGame
+    at: app/android/app/src/main/kotlin/com/aether/EngineBridge.kt:70,68
+
+[P3] C13      C13-hydrate-log
+    EN: AetherApp passes payloadDir (dataDir/root/files) to nativeHydratePayloads but logs filesDir - the diagnostic line points at a directory that was never scanned
+    TH: AetherApp ส่ง payloadDir (dataDir/root/files) เข้า nativeHydratePayloads แต่ log ว่า filesDir - บรรทัดวินิจฉัยชี้ไปที่ dir ที่ไม่ได้ถูก scan
+    at: AetherApp.kt:107
+
