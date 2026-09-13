@@ -63,6 +63,7 @@ MOD_FLUTTER = "libflutter.so"
 MOD_RUNTIME = "android-runtime"      # ART / linker: the caller of last resort
 MOD_KERNEL = "kernel"                # svc #0 targets
 MOD_POOL = "libapp.so!pp"            # blutter object pool (a coordinate system of its own)
+MOD_DARTVM = "dart-vm"               # dispatch tables / closure objects: resolved only at run time
 
 # Layers, ordered.  layer_id, short name, human description.
 LAYERS: List[Tuple[str, str, str]] = [
@@ -76,7 +77,7 @@ LAYERS: List[Tuple[str, str, str]] = [
 LAYER_ORDER = {lid: i for i, (lid, _, _) in enumerate(LAYERS)}
 LAYER_OF = {
     MOD_DEX: "L1", MOD_RUNTIME: "L2", MOD_ENGINE: "L3", MOD_APP: "L5",
-    MOD_FLUTTER: "L6", MOD_POOL: "L5", MOD_KERNEL: "L3",
+    MOD_FLUTTER: "L6", MOD_POOL: "L5", MOD_KERNEL: "L3", MOD_DARTVM: "L5",
 }
 
 # JNIEnv function table (jni.h order): byte offset -> (slot index, name).
@@ -130,6 +131,14 @@ KINDS = {
     "dart_call":            "bl inside the Dart AOT snapshot",
     "dart_tail_call":       "b (tail branch) to a Dart runtime stub",
     "dart_instantiates_closure": "ldr xN,[PP,#slot] of an AnonymousClosure - allocates a handler",
+    "loads_pool_slot":      "ldr/add of an object-pool slot - the constant this instruction loads",
+    "calls_unlinked_slot":  "blr through an UnlinkedCall pool slot - the miss handler it dispatches to",
+    "dart_gdt_dispatch":    "blr through GDT[cid+delta] - a virtual/interface call resolved at run time",
+    "dart_closure_call":    "blr through *closure+0x1f - calling a closure object",
+    "dart_indirect_call":   "blr through a register this listing filled earlier",
+    "uses_pool_string":     "a routine attributed to a pool String by slot adjacency (no committed instruction)",
+    "branch_on_check":      "the conditional branch that decides pass/fail of a check",
+    "stores_response_field": "StoreField of a decoded response value into a lazily-initialised field",
     "binds_engine_symbol":  "a snapshot name that libflutter.so must export/hold",
     "registers_native_via_engine": "FlutterJNI natives bound by the engine's JNI_OnLoad",
 }
@@ -856,6 +865,20 @@ DART_ADDR_RE = re.compile(r"//\s+\*\*\s+addr:\s+(0x[0-9a-f]+),\s+size:\s+(-?0x[0
 DART_BR_RE = re.compile(r"//\s+(0x[0-9a-f]+):\s+(bl|b)\s+#(0x[0-9a-f]+)\s*(?:;\s*(.*))?$")
 DART_CALL_RE = re.compile(r"//\s+(0x[0-9a-f]+):\s+r\d+\s+=\s+call\s+(0x[0-9a-f]+)")
 DART_PP_RE = re.compile(r"\[pp\+(0x[0-9a-f]+)\]\s+(.*)$")
+DART_BLR_RE = re.compile(r"//\s+(0x[0-9a-f]+):\s+blr\s+(\S+)\s*$")
+DART_GDT_IR_RE = re.compile(r"//\s+0x[0-9a-f]+:\s+r\d+\s+=\s+GDT\[cid_(x\d+)\s+\+\s+"
+                            r"(-?0x[0-9a-f]+)\]")
+DART_FIELD_LOAD_RE = re.compile(r"LoadField:\s+r(\d+)\s+=\s+r\d+->field_([0-9a-f]+)")
+DART_GDT_LOAD_RE = re.compile(r"ldr\s+lr,\s*\[x21,")
+DART_CLOSURE_LOAD_RE = re.compile(r"ldur\s+x\d+,\s*\[x\d+,\s*#0x1f\]")
+UNLINKED_RE = re.compile(r"UnlinkedCall:\s+(0x[0-9a-f]+)\s+-\s+(.+?)\s*$")
+INSN_OFFSET_RE = re.compile(r"(0x[0-9a-f]+):\s+(.*?)(?:\s+;\s+.*)?$")
+BRANCH_AFTER_CHECK_RE = re.compile(r"^\s*//\s+(0x[0-9a-f]+):\s+(tbnz|tbz|cbz|cbnz|b\.\w+)\s+(.*)$")
+STORE_FIELD_RE = re.compile(r"^\s*//\s+(0x[0-9a-f]+):\s+StoreField:\s+(.*)$")
+LOAD_FIELD_IR_RE = re.compile(r"^\s*//\s+(0x[0-9a-f]+):\s+LoadField:\s+(.*)$")
+BRANCH_TARGET_RE = re.compile(r"#(0x[0-9a-f]+)\s*$")
+FN_AT_RE = re.compile(r"function at (0x[0-9a-f]+)")
+POOL_OWNER_RE = re.compile(r"\[(\w+)\] (\w+)::<anonymous closure> \((0x[0-9a-f]+)\)")
 
 
 def norm_dart_name(text: str) -> str:
@@ -908,6 +931,8 @@ class DartSymbols:
     asm_addrs: Dict[int, str] = field(default_factory=dict)    # from '** addr:' + signature
     pool: Dict[int, str] = field(default_factory=dict)         # pool slot -> closure code addr
     pool_name: Dict[int, str] = field(default_factory=dict)    # code addr -> owner '[lib] Class'
+    pool_desc: Dict[int, str] = field(default_factory=dict)    # pool slot -> pp.txt description
+    pool_line: Dict[int, int] = field(default_factory=dict)    # pool slot -> pp.txt line number
 
     def resolve(self, target: int) -> Tuple[Optional[str], str]:
         if target in self.names:
@@ -942,11 +967,13 @@ def load_dart_symbols(b: Bundle) -> Tuple[DartSymbols, int]:
         sym.ranges.sort()
         sym.starts = [r[0] for r in sym.ranges]
     if b.has("output/blutter/pp.txt"):
-        for line in b.text("output/blutter/pp.txt").splitlines():
+        for lineno, line in enumerate(b.text("output/blutter/pp.txt").splitlines(), 1):
             m = DART_PP_RE.match(line.strip())
             if not m:
                 continue
             slot, body = int(m.group(1), 16), m.group(2)
+            sym.pool_desc.setdefault(slot, body.strip())
+            sym.pool_line.setdefault(slot, lineno)
             am = ANON_CLOSURE_RE.match(body)
             if am:
                 code = int(am.group(2), 16)
@@ -1003,6 +1030,8 @@ def dart_edges(b: Bundle, g: Graph, sym: DartSymbols, chain: str) -> Dict[str, o
         "unresolved": 0, "distinct_targets": set(), "inline_vs_table_exact": 0,
         "inline_vs_table_variant": 0, "inline_vs_table_conflict": 0,
         "inline_vs_table_disagree": [], "closure_slots": 0, "fan_in": {},
+        "pool_comment_lines": 0, "pool_slot_loads": 0, "blr_lines": 0,
+        "blr_unlinked": 0, "blr_gdt": 0, "blr_closure": 0, "blr_other": 0,
     }
     for name in sorted(b.names()):
         if not name.startswith("output/blutter/asm/") or not name.endswith(".dart"):
@@ -1013,6 +1042,11 @@ def dart_edges(b: Bundle, g: Graph, sym: DartSymbols, chain: str) -> Dict[str, o
         cur: Optional[DartFn] = None
         pending = None
         cur_class = None
+        pending_unlinked = None      # (target, stub name, slot) of an UnlinkedCall load
+        pending_gdt = None           # 'cid_x0 + 0x7a9' from blutter's GDT IR line
+        pending_gdt_load = False     # saw `ldr lr, [x21, ...]` (the dispatch-table read)
+        pending_closure = False      # saw `ClosureCall` / `ldur xN, [x0, #0x1f]`
+        recent: List[str] = []       # last raw listing lines, for evidence
         seen_disasm = False
         ir_calls: Dict[int, int] = {}
         for i, line in enumerate(lines, 1):
@@ -1027,6 +1061,11 @@ def dart_edges(b: Bundle, g: Graph, sym: DartSymbols, chain: str) -> Dict[str, o
                 cur = DartFn(sig=(pending[:-1].strip() if pending else "?"),
                              cls=cur_class or "", addr=int(am.group(1), 16), file=name, line=i)
                 pending = None
+                pending_unlinked = None
+                pending_gdt = None
+                pending_gdt_load = False
+                pending_closure = False
+                recent = []
                 continue
             im = DART_CALL_RE.search(line)
             if im:
@@ -1074,18 +1113,35 @@ def dart_edges(b: Bundle, g: Graph, sym: DartSymbols, chain: str) -> Dict[str, o
                        source=f"{name}:{i}", chain=chain,
                        note=f"file {name}, class {cur.cls}, function at {hx(cur.addr)}")
                 stats["branch_edges"] += 1
+            # --- IR annotations that classify the next `blr` ---------------
+            if "ClosureCall" in line:
+                pending_closure = True
+            gm = DART_GDT_IR_RE.search(line)
+            if gm:
+                pending_gdt = f"cid_{gm.group(1)} + {gm.group(2)}"
+            if DART_GDT_LOAD_RE.search(line):
+                pending_gdt_load = True
+            if DART_CLOSURE_LOAD_RE.search(line):
+                pending_closure = True
+
+            # --- object-pool loads: what this instruction pulls in ---------
             pm = DART_PP_RE.search(line)
-            if pm and "AnonymousClosure" in line and cur is not None:
+            if pm and cur is not None:
                 slot = int(pm.group(1), 16)
-                cm2 = ANON_CLOSURE_RE.search(pm.group(2))
-                if cm2:
+                desc = pm.group(2).strip()
+                im = INSN_OFFSET_RE.search(line)
+                off = int(im.group(1), 16) if im else None
+                insn = " ".join(im.group(2).split()) if im else ""
+                fn_label = f"{cur.cls}::{cur.sig}" if cur.cls else cur.sig
+                if off is not None:
+                    stats["pool_comment_lines"] += 1
+                cm2 = ANON_CLOSURE_RE.search(desc)
+                if "AnonymousClosure" in line and cm2:
                     code = int(cm2.group(2), 16)
                     owner = (cm2.group(3) or "").strip()
-                    off = int(re.match(r".*?(0x[0-9a-f]+):", line).group(1), 16) \
-                        if re.match(r".*?(0x[0-9a-f]+):", line) else None
                     g.edge("dart_instantiates_closure",
                            src_module=MOD_APP, src_offset=off,
-                           src_name=f"{cur.cls}::{cur.sig}" if cur.cls else cur.sig,
+                           src_name=fn_label,
                            src_insn=f"ldr xN, [PP, #0x{slot:x}]",
                            dst_module=MOD_APP, dst_offset=code,
                            dst_name=f"{owner} closure @ {hx(code)} (pool slot pp+{hx(slot)})",
@@ -1095,6 +1151,116 @@ def dart_edges(b: Bundle, g: Graph, sym: DartSymbols, chain: str) -> Dict[str, o
                            source=f"{name}:{i}", chain=chain,
                            note=f"closure allocated here runs at {hx(code)}")
                     stats["closure_slots"] += 1
+                elif off is not None:
+                    pline = sym.pool_line.get(slot)
+                    g.edge("loads_pool_slot",
+                           src_module=MOD_APP, src_offset=off,
+                           src_name=fn_label, src_insn=insn,
+                           dst_module=MOD_POOL, dst_offset=slot, dst_name=desc,
+                           resolved_by="the slot is named in the same disassembly line; its "
+                                       "content comes from the pool dump"
+                                       + (f" (pp.txt:{pline})" if pline else ""),
+                           confidence="proven",
+                           evidence=f"{name}:{i} inside `{cur.sig}` (function entry "
+                                    f"{hx(cur.addr)}), instruction `{line.strip()}`",
+                           source=f"{name}:{i}", chain=chain, dst_kind="pool_slot",
+                           note=f"file {name}, class {cur.cls}, function at {hx(cur.addr)}")
+                    stats["pool_slot_loads"] += 1
+                    um = UNLINKED_RE.match(desc)
+                    if um:
+                        pending_unlinked = (int(um.group(1), 16), um.group(2).strip(), slot)
+
+            # --- `blr`: the indirect calls the Dart half actually makes ----
+            blr = DART_BLR_RE.search(line)
+            if blr and cur is not None:
+                off, reg = int(blr.group(1), 16), blr.group(2)
+                fn_label = f"{cur.cls}::{cur.sig}" if cur.cls else cur.sig
+                stats["blr_lines"] += 1
+                ctx = " / ".join(recent[-3:])
+                ev = (f"{name}:{i} inside `{cur.sig}` (function entry {hx(cur.addr)}), "
+                      f"instruction `{line.strip()}`; preceding: {ctx}")
+                note = f"file {name}, class {cur.cls}, function at {hx(cur.addr)}"
+                if pending_unlinked:
+                    tgt, stub, slot = pending_unlinked
+                    stats["blr_unlinked"] += 1
+                    g.edge("calls_unlinked_slot",
+                           src_module=MOD_APP, src_offset=off, src_name=fn_label,
+                           src_insn=f"blr {reg}",
+                           dst_module=MOD_APP, dst_offset=tgt, dst_name=stub,
+                           resolved_by=f"the UnlinkedCall entry at pool slot pp+{hx(slot)} holds the "
+                                       f"miss handler's entry point, and the `ldp x5, lr, [x16]` "
+                                       f"before this blr is what loads it",
+                           confidence="strong", evidence=ev, source=f"{name}:{i}",
+                           chain=chain, note=note)
+                elif pending_gdt or pending_gdt_load:
+                    stats["blr_gdt"] += 1
+                    if pending_gdt:
+                        delta = pending_gdt
+                    elif any(re.search(r"mov\s+lr,\s*x\d+\s*$", r) for r in recent):
+                        delta = "cid + 0"
+                    else:
+                        delta = "cid, no delta annotated at this site"
+                    g.edge("dart_gdt_dispatch",
+                           src_module=MOD_APP, src_offset=off, src_name=fn_label,
+                           src_insn=f"blr {reg}",
+                           dst_module=MOD_DARTVM, dst_offset=None,
+                           dst_name=f"GDT[{delta}] - the Dart dispatch table, indexed by the "
+                                    f"receiver's class id",
+                           resolved_by="`ldr lr, [x21, lr, lsl #3]` before the blr is the dispatch-"
+                                       "table read"
+                                       + (" and blutter's IR line names the delta"
+                                          if pending_gdt else
+                                          "; the index is the class id itself, no delta added"),
+                           confidence="probable", evidence=ev, source=f"{name}:{i}",
+                           chain=chain, dst_kind="runtime", note=note)
+                elif pending_closure:
+                    stats["blr_closure"] += 1
+                    g.edge("dart_closure_call",
+                           src_module=MOD_APP, src_offset=off, src_name=fn_label,
+                           src_insn=f"blr {reg}",
+                           dst_module=MOD_DARTVM, dst_offset=None,
+                           dst_name="*closure+0x1f - the closure object's own entry point",
+                           resolved_by="blutter's `ClosureCall` IR line plus the "
+                                       "`ldur xN, [x0, #0x1f]` that loads the entry point",
+                           confidence="probable", evidence=ev, source=f"{name}:{i}",
+                           chain=chain, dst_kind="runtime", note=note)
+                else:
+                    stats["blr_other"] += 1
+                    shape, how, conf = None, "", "candidate"
+                    if any("THR::vm_tag" in r for r in recent):
+                        shape = (f"*{reg} - the continuation address the caller handed in "
+                                 f"(stored to THR::vm_tag by the instruction before)")
+                        how = ("the listing stores the same register to THR::vm_tag immediately "
+                               "before the blr, which is the async-body handoff shape")
+                        conf = "probable"
+                    else:
+                        fld = next((m for r in recent
+                                    for m in [DART_FIELD_LOAD_RE.search(r)]
+                                    if m and f"x{m.group(1)}" == reg), None)
+                        if fld:
+                            shape = (f"*{reg} - a function pointer read from object field_"
+                                     f"{fld.group(2)}")
+                            how = (f"blutter's `LoadField: r{fld.group(1)} = r?->field_"
+                                   f"{fld.group(2)}` line two instructions above the blr")
+                            conf = "probable"
+                    if shape is None:
+                        shape = f"*{reg} - target filled earlier in this listing"
+                        how = ("(unresolved) the register is not a dispatch-table, closure, "
+                               "UnlinkedCall or object-field load in the committed listing")
+                    g.edge("dart_indirect_call",
+                           src_module=MOD_APP, src_offset=off, src_name=fn_label,
+                           src_insn=f"blr {reg}",
+                           dst_module=MOD_DARTVM, dst_offset=None, dst_name=shape,
+                           resolved_by=how, confidence=conf, evidence=ev,
+                           source=f"{name}:{i}", chain=chain, dst_kind="runtime", note=note)
+                pending_unlinked = None
+                pending_gdt = None
+                pending_gdt_load = False
+                pending_closure = False
+
+            recent.append(" ".join(line.split())[3:])
+            if len(recent) > 6:
+                recent.pop(0)
         if seen_disasm:
             stats["files_with_disasm"] += 1
     return stats
@@ -1382,6 +1548,203 @@ def build(b: Bundle, lang: str) -> dict:
                         + ("" if pool_slot else " (no pool slot found)"),
                source=h["file"], chain=CH10, src_kind="pool_slot")
 
+    # ---------------- L5b: the C2 request path (CH-12) ---------------------
+    # The endpoint is a pool String; the routine that uses it has no committed
+    # disassembly, so the request side is attributed by pool-slot adjacency (the
+    # method F8 §4 documents, with its limit stated).  The *response* side is
+    # disassembled, and every step of it is anchored at a real instruction.
+    CH12 = "CH-12"
+    pj = F["tools"]["blutter"]["pool_join"]
+    ep = next(x for x in F["libapp"]["indicators"]
+              if x["category"] == "c2_endpoint" and "api/request" in x["value"])
+    verdict, slot_txt = pj.get(ep["value"], ("pool-absent", ""))
+    ep_slot = int(slot_txt.split("+")[1], 16) if slot_txt.startswith("pp+") else None
+    check("the C2 endpoint is an exact object-pool slot",
+          verdict == "pool-exact" and ep_slot is not None
+          and ep["value"] in sym.pool_desc.get(ep_slot, ""),
+          f"{ep['value']} = {slot_txt} ({verdict}) at output/blutter/pp.txt:"
+          f"{sym.pool_line.get(ep_slot, '?')}; the same string is a raw byte run at "
+          f"libapp.so file offset {hx(ep['file_offset'])} per F5 - one string, two "
+          f"coordinate systems")
+    check("every blr in the committed Dart listings is classified",
+          dstats["blr_unlinked"] + dstats["blr_gdt"] + dstats["blr_closure"]
+          + dstats["blr_other"] == dstats["blr_lines"],
+          f"{dstats['blr_lines']} blr instructions: {dstats['blr_unlinked']} through an "
+          f"UnlinkedCall pool slot, {dstats['blr_gdt']} through the dispatch table (GDT), "
+          f"{dstats['blr_closure']} through a closure object, {dstats['blr_other']} other")
+    check("every object-pool reference in the listings became an edge",
+          dstats["pool_slot_loads"] + dstats["closure_slots"] == dstats["pool_comment_lines"],
+          f"{dstats['pool_comment_lines']} listing lines carry a [pp+..] comment: "
+          f"{dstats['pool_slot_loads']} loads_pool_slot + {dstats['closure_slots']} "
+          f"dart_instantiates_closure")
+
+    slots_sorted = sorted(sym.pool_desc)
+
+    def find_slot(substr: str, lo: int = 0) -> Optional[int]:
+        return next((sl for sl in slots_sorted
+                     if sl >= lo and substr in sym.pool_desc[sl]), None)
+
+    act_slot = find_slot("action=upload_profile_image")
+    mp_lo = find_slot("----WebKitFormBoundary")
+    mp_hi = find_slot('String: "post"', mp_lo or 0)
+    pr_lo = find_slot("[dart:io] _ip", (mp_hi or 0) + 8)
+    pr_hi = find_slot('String: ".jpg', pr_lo or 0)
+
+    owners: Dict[tuple, int] = {}
+    for sl in range((ep_slot or 0) - 0x40, (ep_slot or 0) + 0x48, 8):
+        m = POOL_OWNER_RE.search(sym.pool_desc.get(sl, ""))
+        if m:
+            key = (m.group(1), m.group(2), int(m.group(3), 16))
+            owners[key] = owners.get(key, 0) + 1
+    owner = max(sorted(owners), key=lambda k: owners[k]) if owners else None
+    check("the endpoint sits inside one closure family's pool run",
+          owner is not None and owners.get(owner, 0) >= 3,
+          (f"the slots around pp+{hx(ep_slot)} that name an owner all name "
+           f"[{owner[0]}] {owner[1]}::<anonymous closure> ({hx(owner[2])}), "
+           f"{owners.get(owner, 0)} of them within +-0x40 bytes" if owner else
+           "no owner found in the neighbouring slots"))
+
+    if owner:
+        o_lib, o_cls, o_addr = owner
+        o_file = f"output/blutter/asm/{o_lib}.dart"
+        o_size = None
+        if b.has(o_file):
+            om = re.search(r"\*\* addr: " + hx(o_addr) + r", size: (-?0x[0-9a-f]+)",
+                           b.text(o_file))
+            o_size = om.group(1) if om else None
+        o_label = f"[{o_lib}] {o_cls}::<anonymous closure> @ {hx(o_addr)}"
+        o_insn = (f"(no committed listing: blutter gives size {o_size})"
+                  if o_size in (None, "-0x1") else f"(listing at {hx(o_addr)}, size {o_size})")
+
+        def run_note(lo: Optional[int], hi: Optional[int]) -> str:
+            if lo is None or hi is None:
+                return ""
+            return "; ".join(f"pp+{hx(sl)} {sym.pool_desc[sl]}"
+                             for sl in range(lo, hi + 8, 8) if sl in sym.pool_desc)
+
+        def run_count(lo: Optional[int], hi: Optional[int]) -> int:
+            return 0 if lo is None or hi is None else (hi - lo) // 8 + 1
+
+        def adjacent(dst_slot, dst_name, what, note, first=None, last=None):
+            if dst_slot is None:
+                return
+            # a pool String is shown as the value it holds, not as 'String: "…"'
+            if dst_name.startswith('String: '):
+                dst_name = dst_name[len('String: '):]
+            lo = first if first is not None else dst_slot
+            hi = last if last is not None else dst_slot
+            pline = sym.pool_line.get(lo)
+            g.edge("uses_pool_string",
+                   src_module=MOD_APP, src_offset=o_addr, src_name=o_label, src_insn=o_insn,
+                   dst_module=MOD_POOL, dst_offset=lo, dst_name=dst_name,
+                   resolved_by=f"object-pool slot adjacency: pp+{hx(lo)}"
+                               + (f"..pp+{hx(hi)}" if hi != lo else "")
+                               + f" sit in the same allocation run as the {o_cls} closure slots "
+                                 f"that name {hx(o_addr)} as their owner (F8 §4 records this method "
+                                 f"and its limit: adjacency is not a call graph)",
+                   confidence="probable",
+                   evidence=what + (f"; output/blutter/pp.txt:{pline}" if pline else ""),
+                   source=f"output/blutter/pp.txt:{pline}" if pline else "output/blutter/pp.txt",
+                   chain=CH12, src_kind="function", dst_kind="pool_slot", note=note)
+
+        adjacent(ep_slot, f'{sym.pool_desc.get(ep_slot, "")}',
+                 f"the same string F5 found as a raw byte run at libapp.so file offset "
+                 f"{hx(ep['file_offset'])} and F8 confirmed pool-exact at {slot_txt}",
+                 f"endpoint of the request; second coordinate: libapp.so file "
+                 f"{hx(ep['file_offset'])}")
+        adjacent(act_slot, f'{sym.pool_desc.get(act_slot, "")}',
+                 "the slot right after the endpoint, in the same run",
+                 "the `?` is regex-escaped, i.e. Dart holds this as a pattern, exactly like the "
+                 "2 store links in F8 §2")
+        adjacent(mp_lo, f"multipart POST template ({run_count(mp_lo, mp_hi)} slots "
+                        f"pp+{hx(mp_lo)}..{hx(mp_hi)})",
+                 "consecutive slots between the endpoint run and the next unrelated entry",
+                 run_note(mp_lo, mp_hi))
+        adjacent(pr_lo, f"post-response run ({run_count(pr_lo, pr_hi)} slots "
+                        f"pp+{hx(pr_lo)}..{hx(pr_hi)})",
+                 "consecutive slots after the POST template, same run",
+                 run_note(pr_lo, pr_hi))
+
+    # ---- the response handler: located through the graph, not hard-coded ----
+    succ = next((e for e in g.edges if e.kind == "loads_pool_slot"
+                 and e.dst_name == '"success"'), None)
+    if succ is not None:
+        fn_file = succ.source.split(":")[0]
+        fm = FN_AT_RE.search(succ.note or "")
+        fn_entry = int(fm.group(1), 16) if fm else None
+        fn_note = succ.note
+        fn_label = succ.src_name
+        text = b.text(fn_file)
+        sm = re.search(r"\*\* addr: " + hx(fn_entry) + r", size: (0x[0-9a-f]+)", text)
+        fn_end = fn_entry + int(sm.group(1), 16) if sm else None
+        gdt = next((e for e in g.edges if e.kind == "dart_gdt_dispatch"
+                    and e.note == fn_note), None)
+        lines = text.splitlines()
+        br = next(((int(m.group(1), 16), m.group(2), m.group(3), ln)
+                   for ln, l in enumerate(lines, 1)
+                   for m in [BRANCH_AFTER_CHECK_RE.match(l)]
+                   if m and gdt is not None and fn_end is not None
+                   and gdt.src_offset < int(m.group(1), 16) <= fn_end), None)
+        sf = next(((int(m.group(1), 16), m.group(2), ln)
+                   for ln, l in enumerate(lines, 1)
+                   for m in [STORE_FIELD_RE.match(l)]
+                   if m and br is not None and fn_end is not None
+                   and br[0] < int(m.group(1), 16) <= fn_end), None)
+        lf = next(((int(m.group(1), 16), m.group(2))
+                   for ln, l in enumerate(lines, 1)
+                   for m in [LOAD_FIELD_IR_RE.match(l)]
+                   if m and sf is not None and br is not None
+                   and br[0] < int(m.group(1), 16) < sf[0]), None)
+        fld = next((e for e in g.edges if e.kind == "loads_pool_slot"
+                    and e.dst_name.startswith("Field <") and e.note == fn_note), None)
+        check("the C2 response handler's decision branch and store were located",
+              br is not None and sf is not None,
+              (f"in {fn_file}, function {hx(fn_entry)} size {hx(fn_end - fn_entry)}: the branch "
+               f"after the dispatch is `{br[1]} {br[2]}` at {hx(br[0])} and the store is "
+               f"`{sf[1]}` at {hx(sf[0])}" if br and sf else
+               f"branch={br}, store={sf} in {fn_file} function {hx(fn_entry or 0)}"))
+
+        def insn_at(off: int) -> str:
+            for l in lines:
+                m = INSN_OFFSET_RE.search(l)
+                if m and int(m.group(1), 16) == off and not l.strip().startswith("// 0x"):
+                    return " ".join(m.group(2).split())
+            return ""
+
+        if br:
+            tgt = BRANCH_TARGET_RE.search(br[2])
+            g.edge("branch_on_check",
+                   src_module=MOD_APP, src_offset=br[0], src_name=fn_label,
+                   src_insn=f"{br[1]} {' '.join(br[2].split())}",
+                   dst_module=MOD_APP,
+                   dst_offset=int(tgt.group(1), 16) if tgt else None,
+                   dst_name=(f"the merge point at {tgt.group(1)} of the same function - where the "
+                             f"handler continues when the check does NOT hold" if tgt
+                             else "the merge point of the same function"),
+                   resolved_by="the decoded conditional branch inside the response handler; the bit "
+                               "it tests is the result of the dispatch two instructions earlier",
+                   confidence="proven",
+                   evidence=f"{fn_file}:{br[3]} inside `{fn_label.split('::')[-1]}` "
+                            f"(function entry {hx(fn_entry)}), instruction "
+                            f"`{lines[br[3] - 1].strip()}`",
+                   source=f"{fn_file}:{br[3]}", chain=CH12, note=fn_note)
+        if sf:
+            dst_slot = fld.dst_offset if fld else None
+            g.edge("stores_response_field",
+                   src_module=MOD_APP, src_offset=sf[0], src_name=fn_label,
+                   src_insn=insn_at(sf[0]) or "StoreField",
+                   dst_module=MOD_POOL if fld else MOD_APP, dst_offset=dst_slot,
+                   dst_name=((f"{fld.dst_name}" + (f"; the value lands in ({lf[1].split('=')[-1].strip()})->{sf[1].split('=')[0].strip()}" if lf else f"; {sf[1]}"))
+                             if fld else sf[1]),
+                   resolved_by="blutter's own StoreField IR line for this instruction, plus the pool "
+                               "slot that names the field being initialised",
+                   confidence="proven",
+                   evidence=f"{fn_file}:{sf[2]} inside `{fn_label.split('::')[-1]}` "
+                            f"(function entry {hx(fn_entry)}), IR line `{lines[sf[2] - 1].strip()}` "
+                            f"/ instruction `{insn_at(sf[0])}`",
+                   source=f"{fn_file}:{sf[2]}", chain=CH12,
+                   dst_kind="pool_slot" if fld else "field", note=fn_note)
+
     # ---------------- L6: engine ----------------
     for name, offs in F["libapp"]["engine_api_names"].items():
         eoffs = F["libflutter"]["engine_api_names"].get(name)
@@ -1561,6 +1924,14 @@ CHAIN_TH = {
               "(ระบุ offset ทั้งสองฝั่ง)",
               "ไม่มี disassembly ของ handler ทั้ง 3 ตัวใน dump ('** addr' มาคู่กับ size -1) "
               "จึงไล่ hop ขาออกจากชุดหลักฐานนี้ไม่ได้; pool slot (pp+…) คือจุดที่ควร hook เมื่อรันจริง"),
+    "CH-12": ("endpoint C2 /api/request/: อะไรทำงานต่อเมื่อเช็ค response ผ่านแล้ว",
+              "ตอบจากหลักฐานที่ commit ไว้ว่า endpoint ที่ hard-code ไว้ถูกใช้ทำอะไร และเกิดอะไรขึ้น "
+              "หลังเช็ค response สำเร็จ — ฝั่งคำขอผูกด้วย object-pool adjacency เพราะ blutter ระบุ "
+              "routine นั้นไว้ด้วย size -0x1 ส่วนฝั่ง response ไล่ระดับทีละคำสั่งตั้งแต่ call ที่ "
+              "decode ไปจนถึงคำสั่งที่เก็บค่า",
+              "endpoint ตัวที่สอง (https://www.snakeengine.com/topup/, pp+0x17790 = libapp.so file "
+              "0x3d50e) ไม่ได้ถูกไล่ในที่นี้: ไม่มี listing ที่ commit ไว้ใดอ้าง slot ของมัน และ "
+              "เพื่อนบ้านของมันเป็น allocation run คนละชุด"),
     "CH-11": ("call edge ระดับ instruction ของ Dart (จัดอันดับตาม fan-in)",
               "disassembly ของ blutter ให้ offset จริงสำหรับฝั่ง Dart ตารางนี้คือเป้าหมายที่ถูกเรียกบ่อย "
               "ที่สุด 12 อันดับ; edge ทั้งหมดอยู่ใน call_linkage.csv เรียงตาม offset", None),
@@ -1808,6 +2179,175 @@ def define_chains(g: Graph, F: dict, le: dict, dstats: dict, sym: DartSymbols,
                                f"{dstats['unresolved']} hop เหลือแค่ address "
                                f"(เป้าหมายไม่ซ้ำกันทั้งหมด {len(dstats['distinct_targets'])} ตัว)"))
 
+    # CH-12 the C2 endpoint: what runs once its response check passes
+    c2_uses = sorted(find_kind("uses_pool_string"), key=lambda e: e.dst_offset or 0)
+    br = find_kind("branch_on_check")
+    walk: List[Edge] = []
+    if br:
+        fn_file = br[0].source.split(":")[0]
+        walk = sorted([e for e in g.edges
+                       if e.src_name == br[0].src_name and e.src_offset is not None
+                       and e.source.startswith(fn_file)],
+                      key=lambda e: e.src_offset)
+    post = [e for e in c2_uses if "post-response" in e.dst_name]
+    pre = [e for e in c2_uses if e not in post]
+
+    def c2_text(e: Edge, key: Optional[str] = None) -> str:
+        d, k = e.dst_name, e.kind
+        if k == "uses_pool_string":
+            if "api/request" in d:
+                return T("the endpoint the request is built from; its second coordinate is the raw "
+                         "byte run at libapp.so file 0x43fe5 (F5) and F8 confirms pool-exact",
+                         "endpoint ที่ใช้ประกอบคำขอ — พิกัดที่สองของมันคือ byte run ที่ libapp.so "
+                         "file offset 0x43fe5 (F5) และ F8 ยืนยันว่า pool-exact")
+            if "action=" in d:
+                return T("the action appended to the endpoint: upload_profile_image. Its question "
+                         "mark is stored regex-escaped, so Dart holds this as a pattern, exactly "
+                         "like the 2 store links in F8 §2",
+                         "action ที่ต่อท้าย endpoint: upload_profile_image — เครื่องหมาย question "
+                         "mark ถูกเก็บแบบ escape ไว้ จึงเป็น *แพตเทิร์น* ฝั่ง Dart เหมือน store link "
+                         "2 ตัวใน F8 §2")
+            if "multipart" in d:
+                return T("the POST body template: 12 consecutive slots hold the boundary, "
+                         "multipart/form-data, Content-Type, the form-data part for the image, "
+                         "image/jpeg, the -- terminators, both upload error strings and the method "
+                         "name post (itemised in the CSV note column)",
+                         "แม่แบบ body ของ POST: 12 slot ติดกันเก็บ boundary, multipart/form-data, "
+                         "Content-Type, part ของรูป, image/jpeg, ตัวปิด --, ข้อความผิดพลาดของการ "
+                         "อัปโหลด 2 เส้น และชื่อ method post (รายการเต็มอยู่ในคอลัมน์ note ของ CSV)")
+            return T("what the same routine loads once the upload answer is in: a dart:io file "
+                     "closure (0x30ff78), Cannot delete file, TypeArguments <String, Uint8List> and "
+                     "a .jpg path with a cache-buster suffix - the uploaded image is fetched back as "
+                     "bytes and kept in a Map<String, Uint8List>",
+                     "สิ่งที่ routine เดิมโหลดเมื่อได้คำตอบของการอัปโหลด: closure ฝั่ง dart:io "
+                     "(0x30ff78), Cannot delete file, TypeArguments <String, Uint8List> และ path "
+                     ".jpg ที่ต่อท้ายด้วย cache-buster — รูปที่อัปโหลดถูกดึงกลับเป็นไบต์แล้วเก็บใน "
+                     "Map<String, Uint8List>")
+        if k == "loads_pool_slot":
+            if d == '"success"':
+                return T("loads the key success from the object pool - the word the response is "
+                         "checked against",
+                         "โหลดคีย์ success จาก object pool — คำที่ใช้เช็ค response")
+            if d == '"data"':
+                return T("loads the key data - the value the endpoint returns",
+                         "โหลดคีย์ data — ค่าที่ endpoint ส่งกลับมา")
+            if d.startswith("UnlinkedCall"):
+                return T(f"loads the UnlinkedCall slot for the dynamic lookup of the key "
+                         f"{key or '?'} - a "
+                         f"call site that has never been linked, so its first word is the miss "
+                         f"handler",
+                         f"โหลด slot ชนิด UnlinkedCall สำหรับการอ่านคีย์ {key} แบบ dynamic — "
+                         f"call site นี้ยังไม่เคยถูก link word แรกของมันจึงเป็น miss handler")
+            if d == "Sentinel":
+                return T("loads the Sentinel that marks a late field as still uninitialised",
+                         "โหลดค่า Sentinel ที่แปลว่า field แบบ late ยังไม่ถูก initialise")
+            if d.startswith("Field <"):
+                return T("the destination of the response: the late static field Yoa.hne of library "
+                         "xkg (type Loa, class id 347, size 0x28, field-table offset 0xe78)",
+                         "ปลายทางของ response: field แบบ late static ชื่อ Yoa.hne ของ library xkg "
+                         "(ชนิด Loa, class id 347, size 0x28, offset ใน field table 0xe78)")
+            if d.startswith("Type:"):
+                return T("loads Type: int - the type the decoded value must satisfy",
+                         "โหลด Type: int — ประเภทที่ค่าซึ่ง decode ได้ต้องตรง")
+            if d == "Null":
+                return T("the Null argument handed to the type check",
+                         "อาร์กิวเมนต์ Null ที่ส่งให้การเช็คประเภท")
+            return T("loads a constant from the object pool", "โหลดค่าคงที่จาก object pool")
+        if k == "calls_unlinked_slot":
+            return T(f"the first execution of the dynamic lookup of {key or '?'} goes through "
+                     f"SwitchableCallMissStub (0x173c2c), which resolves the selector and patches "
+                     f"this slot",
+                     f"การอ่านค่า {key or '?'} แบบ dynamic ครั้งแรกวิ่งผ่าน SwitchableCallMissStub "
+                     f"(0x173c2c) ซึ่ง resolve selector แล้ว patch slot นี้")
+        if k == "dart_gdt_dispatch":
+            return T("the equality dispatch: the index is the class id loaded by LoadClassIdInstr "
+                     "(or the Smi class id 59 staged at 0x533168), so GDT[cid + 0] picks the "
+                     "implementation of == that decides the check",
+                     "dispatch ของการเทียบเท่า: index คือ class id ที่โหลดด้วย LoadClassIdInstr "
+                     "(หรือ cid 59 ของ Smi ที่ stage ไว้ที่ 0x533168) GDT[cid + 0] จึงเลือก "
+                     "implementation ของ == ที่ใช้ตัดสิน")
+        if k == "branch_on_check":
+            return T("THE DECISION: tbnz w0, #4 tests bit 4 of the comparison result, and the "
+                     "listing itself stages true as NULL+0x20 at 0x533178 - so false is NULL+0x10 "
+                     "and a set bit 4 means the answer was false. Check FAILED: jump to the merge "
+                     "point 0x53323c. Check PASSED: fall through to 0x533194 and store the value",
+                     "จุดตัดสิน: tbnz w0, #4 ทดสอบ bit 4 ของผลเทียบ และตัว listing เอง stage ค่า true "
+                     "ไว้เป็น NULL+0x20 ที่ 0x533178 — false จึงคือ NULL+0x10 และการที่ bit 4 ถูกเซ็ต "
+                     "แปลว่าผลเป็น false: เช็ค *ไม่ผ่าน* -> กระโดดไปจุดรวม 0x53323c; เช็ค *ผ่าน* -> "
+                     "ไหลต่อลงไปที่ 0x533194 แล้วเก็บค่า")
+        if k == "stores_response_field":
+            return T("WHAT IS STORED: StoreField writes the decoded int into the object that "
+                     "Yoa.hne->field_1f points at - the durable result of a passed check",
+                     "ค่าที่ถูกเก็บ: StoreField เขียน int ที่ decode ได้ลงอ็อบเจกต์ที่ "
+                     "Yoa.hne->field_1f ชี้อยู่ — ผลลัพธ์ถาวรของการเช็คที่ผ่าน")
+        if k == "dart_instantiates_closure":
+            return T("allocates the continuation closure 0x310338 of the same _Bpa family",
+                     "สร้าง closure 0x310338 ของครอบครัว _Bpa เดียวกันเพื่อใช้ต่อ")
+        if k == "dart_call":
+            if "InitLateStaticFieldStub" in d:
+                return T("WHAT GETS LOADED: Yoa.hne is late, so while it still holds the Sentinel "
+                         "this stub initialises the singleton and writes it to the field table "
+                         "(THR+0x68 then +0x1cf0)",
+                         "สิ่งที่ถูกโหลดเข้ามา: Yoa.hne เป็น late — ตราบใดที่ยังถือ Sentinel อยู่ "
+                         "stub นี้จะ initialise singleton แล้วเขียนลง field table (THR+0x68 แล้ว "
+                         "+0x1cf0)")
+            if "IsType_int_Stub" in d:
+                return T("checks and casts the decoded value to int",
+                         "เช็คและ cast ค่าที่ decode ได้ให้เป็น int")
+            if "AllocateClosureStub" in d:
+                return T("allocates the closure object", "allocate ตัว closure object")
+            if "StackOverflow" in d:
+                return T("the async frame's stack guard", "stack guard ของ async frame")
+            if "NullCastError" in d:
+                return T("the failure path: if Yoa.hne->field_1f is null a NullCastError is thrown",
+                         "เส้นทางล้มเหลว: ถ้า Yoa.hne->field_1f เป็น null จะโยน NullCastError")
+            if d.startswith("0x3102f4"):
+                return T("the response body is handed to an unnamed helper - no symbol in the "
+                         "committed dump covers 0x3102f4 (a decoder is the shape-consistent "
+                         "reading, but it stays unresolved)",
+                         "body ของ response ถูกส่งให้ helper ที่ไม่มีชื่อ — ไม่มีสัญลักษณ์ใดในชุด "
+                         "หลักฐานครอบคลุม 0x3102f4 (รูปทรงสอดคล้องกับตัว decode แต่ยังนับเป็น "
+                         "unresolved)")
+            if d.startswith("0x1a5b64"):
+                return T("hands (receiver, value, closure) to the unnamed helper 0x1a5b64: 3 call "
+                         "sites in the dump (0x533278, 0x535830, 0x53e950), two of them right after "
+                         "AwaitStub and all three passing a freshly allocated closure - a "
+                         "continuation-shaped helper",
+                         "ส่ง (receiver, ค่า, closure) ให้ helper 0x1a5b64 ที่ไม่มีชื่อ: มี 3 จุดเรียก "
+                         "ในชุดหลักฐาน (0x533278, 0x535830, 0x53e950) สองจุดอยู่หลัง AwaitStub "
+                         "ทันทีและทั้งสามส่ง closure ที่เพิ่ง allocate — รูปทรงแบบ continuation")
+            return T("a call inside the snapshot", "การเรียกภายใน snapshot")
+        if k == "dart_tail_call":
+            if e.dst_offset and e.dst_offset < (e.src_offset or 0):
+                return T("re-enters the body after the stack is grown",
+                         "กลับเข้า body หลังขยาย stack แล้ว")
+            return T("the merge: whether the check held or not, both paths continue through this "
+                     "same tail",
+                     "จุดรวม: ไม่ว่าจะเช็คผ่านหรือไม่ ทั้งสองเส้นทางเดินต่อด้วย tail เดียวกันนี้")
+        return T("see the CSV row", "ดูที่แถวใน CSV")
+
+    c2_hops = [hop(e, c2_text(e)) for e in pre]
+    key = None
+    for e in walk:
+        if e.kind == "loads_pool_slot" and e.dst_name.startswith('"'):
+            key = e.dst_name.strip('"')
+        c2_hops.append(hop(e, c2_text(e, key)))
+    c2_hops += [hop(e, c2_text(e)) for e in post]
+    if c2_hops:
+        chains.append(dict(id="CH-12", layer_path="L5", layout="steps",
+                           title="the C2 endpoint /api/request/: what runs once its response check "
+                                 "passes",
+                           goal="Answer from committed evidence what the hard-coded endpoint is used "
+                                "for and what happens after its response check succeeds. The request "
+                                "side is attributed by object-pool adjacency because blutter lists "
+                                "that routine with size -0x1; the response side is walked "
+                                "instruction by instruction, from the decode call to the store.",
+                           hops=c2_hops,
+                           note="The second endpoint (https://www.snakeengine.com/topup/, "
+                                "pp+0x17790 = libapp.so file 0x3d50e) is not walked: no committed "
+                                "listing references its slot and its neighbourhood is a different "
+                                "allocation run."))
+
     for ch in chains:
         title_th, goal_th, note_th = CHAIN_TH.get(
             ch["id"], (ch["title"], ch["goal"], ch.get("note")))
@@ -1818,7 +2358,10 @@ def define_chains(g: Graph, F: dict, le: dict, dstats: dict, sym: DartSymbols,
             h["n"] = i
             for e in g.edges:
                 if e.id == h["edge"]:
-                    e.chain = e.chain or ch["id"]
+                    have = [x for x in (e.chain or "").split(";") if x]
+                    if ch["id"] not in have:
+                        have.append(ch["id"])
+                    e.chain = ";".join(have)
                     e.hop = e.hop or i
     return chains
 
@@ -1916,9 +2459,15 @@ def code(s: str, limit: int = 0) -> str:
     return "`" + t + "`"
 
 
+def clip(text: str, limit: int) -> str:
+    """Truncate with an ellipsis instead of cutting a word in half."""
+    t = str(text)
+    return t if len(t) <= limit else t[:limit - 1].rstrip() + "…"
+
+
 def md_loc(module: str, offset) -> str:
     """`module+offset` for anything addressable; bare `module` for the runtime/kernel."""
-    if module in (MOD_RUNTIME, MOD_KERNEL):
+    if module in (MOD_RUNTIME, MOD_KERNEL, MOD_DARTVM):
         return f"`{module}`"
     return f"`{module}`{('+' + hx(offset)) if offset not in (None, '') else ''}"
 
@@ -1971,7 +2520,7 @@ def render_md(data: dict) -> str:
         A("1. วิธีอ่านหนึ่ง hop (How to read a hop)")
         A("2. สรุปภาพรวม (Summary)")
         A("3. ตารางสัญลักษณ์ที่ใช้แกะ indirect hop (Symbol tables)")
-        A("4. สายการเรียก (Chains) — CH-01 … CH-11")
+        A(f"4. สายการเรียก (Chains) — {chains[0]['id']} … {chains[-1]['id']}")
         A("5. edge ทั้งหมด เรียงตาม layer (Every edge, by layer)")
         A("6. hop ที่ยังปิดไม่ได้ และวิธีปิด (Unresolved hops)")
         A("7. ช่องว่างที่มุมมองนี้เผยให้เห็น (Gaps)")
@@ -1997,7 +2546,7 @@ def render_md(data: dict) -> str:
     A("|---|---|")
     A("| `caller` | `module+offset` of the **instruction** that transfers control |")
     A("| `instruction` | the decoded text of that instruction (AArch64, dex invoke, or Dart `bl`) |")
-    A("| `callee` | `module+offset` when the target is a fixed offset, `module#name` when it is a symbol, `runtime#…` when the target only exists at run time |")
+    A("| `callee` | `module+offset` when the target is a fixed offset, `module#name` when it is a symbol, `libapp.so!pp+offset` when it is an object-pool slot, `android-runtime`/`dart-vm` when the target only exists at run time |")
     A("| `resolved by` | *how* the callee name was obtained — export table, JNIEnv slot index, syscall number, Ghidra's callgraph, blutter's inline stub comment, blutter's own IDA name table |")
     A("| `conf.` | `proven` (byte/offset level) · `strong` (two sources agree) · `probable` (shape-based) · `candidate` (hypothesis) |")
     A("")
@@ -2066,6 +2615,16 @@ def render_md(data: dict) -> str:
         f"{d['files_with_disasm']} จาก {d['files']} ไฟล์ asm; {d['inline_named']} เส้นมีชื่อ stub ที่ "
         f"blutter แนบมาในบรรทัด, {d['resolved_by_table']} เส้นแกะได้ผ่าน `addNames.py`, "
         f"{d['unresolved']} เส้นเหลือแค่ address (เป้าหมายไม่ซ้ำกัน {d['distinct_targets']} ตัว)"))
+    A(T(f"Pool and indirect detail: {d['pool_slot_loads']} listing lines load an object-pool slot "
+        f"(plus {d['closure_slots']} that allocate a closure), and all {d['blr_lines']} `blr` "
+        f"instructions are classified - {d['blr_unlinked']} through an UnlinkedCall slot (each "
+        f"resolves to the miss stub named in `pp.txt`), {d['blr_gdt']} through the dispatch table, "
+        f"{d['blr_closure']} through a closure object, {d['blr_other']} other.",
+        f"รายละเอียด object pool และ indirect call: มี {d['pool_slot_loads']} บรรทัดที่โหลด slot "
+        f"จาก object pool (บวกอีก {d['closure_slots']} บรรทัดที่ allocate closure) และ `blr` ทั้ง "
+        f"{d['blr_lines']} ตัวถูกจำแนกครบ — {d['blr_unlinked']} ตัวผ่าน slot ชนิด UnlinkedCall "
+        f"(แต่ละตัว resolve ไปยัง miss stub ที่มีชื่อใน `pp.txt`), {d['blr_gdt']} ตัวผ่าน dispatch "
+        f"table, {d['blr_closure']} ตัวผ่าน closure object และอื่น ๆ {d['blr_other']} ตัว"))
     A("")
 
     # ---------------- 3 ----------------
@@ -2183,6 +2742,41 @@ def render_md(data: dict) -> str:
                         f"{code(esc(e.src_name))} | {md_loc(e.dst_module, e.dst_offset)} "
                         f"{code(esc(e.dst_name), 60)}")
                 A(body + (tail if uniform else f" | {esc(h['text'])}" + tail))
+        elif ch.get("layout") == "steps":
+            present = [rows[h["edge"]] for h in ch["hops"] if rows.get(h["edge"])]
+            callers: List[str] = []
+            for e in present:
+                if e.src_name not in callers:
+                    callers.append(e.src_name)
+            if len(callers) > 1:
+                A(T(f"{len(callers)} callers take part; the table below gives only their offsets:",
+                    f"มีผู้เรียก {len(callers)} ตัวในสายนี้ ตารางข้างล่างจึงแสดงแค่ offset:"))
+                A("")
+                for nm in callers:
+                    mine = [e for e in present if e.src_name == nm]
+                    offs = sorted({e.src_offset for e in mine if e.src_offset is not None})
+                    span = hx(offs[0]) if len(offs) == 1 else f"{hx(offs[0])}..{hx(offs[-1])}"
+                    A(f"- {code(esc(nm), 110)} — "
+                      + T(f"{len(mine)} hops at offset {span}",
+                          f"{len(mine)} hop ที่ offset {span}"))
+                A("")
+            A(T("| # | caller (module+offset) | instruction | callee | what happens here | conf. |",
+                "| # | caller (module+offset) | instruction | callee | ขั้นนี้ทำอะไร | conf. |"))
+            A("|---|---|---|---|---|---|")
+            for h in ch["hops"]:
+                e = rows.get(h["edge"])
+                if e is None:
+                    A(f"| {h['n']} | — | — | — | *{esc(h['text'])}* **MISSING** | — |")
+                    continue
+                A(f"| {h['n']} | {md_loc(e.src_module, e.src_offset)} | "
+                  f"{code(e.src_insn, 58)} | "
+                  f"{md_loc(e.dst_module, e.dst_offset)} {code(esc(e.dst_name), 58)} | "
+                  f"{esc(h['text'])} | {e.confidence} |")
+            A("")
+            A(T("_`resolved by`, the caller name and the full evidence line of every step are "
+                "columns of `call_linkage.csv` (its `chain` column contains CH-12)._",
+                "_คอลัมน์ `resolved by`, ชื่อผู้เรียก และบรรทัดหลักฐานเต็มของทุกขั้นอยู่ใน "
+                "`call_linkage.csv` (คอลัมน์ `chain` มี CH-12 อยู่)_"))
         else:
             A("| # | caller | instruction | callee | resolved by | conf. |")
             A("|---|---|---|---|---|---|")
@@ -2239,11 +2833,11 @@ def render_md(data: dict) -> str:
         if lid == "L5" and len(sel) > 40:
             # one row per distinct callee, ranked by fan-in: the whole Dart call
             # graph in 30 lines instead of 500
-            groups: Dict[int, List[Edge]] = {}
+            groups: Dict[tuple, List[Edge]] = {}
             for e in sel:
                 if e.dst_offset is not None:
-                    groups.setdefault(e.dst_offset, []).append(e)
-            ranked = sorted(groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
+                    groups.setdefault((e.dst_module, e.dst_offset), []).append(e)
+            ranked = sorted(groups.items(), key=lambda kv: (-len(kv[1]), kv[0][1]))
             A(T(f"_{len(sel)} Dart hops over {len(groups)} distinct callees. Grouped by callee and "
                 f"ranked by fan-in; the top {min(30, len(ranked))} are shown, all {len(sel)} rows are "
                 f"in `call_linkage.csv` (filter `layer=L5`)._",
@@ -2253,12 +2847,12 @@ def render_md(data: dict) -> str:
             A("")
             A("| callee | name | resolved by | fan-in | callers (first 3) | conf. |")
             A("|---|---|---|---|---|---|")
-            for tgt, grp in ranked[:30]:
+            for (dmod, tgt), grp in ranked[:30]:
                 ex = grp[0]
                 callers = ", ".join(f"`{hx(g.src_offset)}`" for g in
                                     sorted(grp, key=lambda g: g.src_offset or 0)[:3])
-                A(f"| `libapp.so`+{hx(tgt)} | {code(esc(ex.dst_name)[:60])} | "
-                  f"{esc(ex.resolved_by)[:70]} | {len(grp)} | {callers}"
+                A(f"| {md_loc(dmod, tgt)} | {code(esc(ex.dst_name), 60)} | "
+                  f"{esc(clip(ex.resolved_by, 70))} | {len(grp)} | {callers}"
                   f"{', …' if len(grp) > 3 else ''} | {ex.confidence} |")
             A("")
             continue
@@ -2282,7 +2876,8 @@ def render_md(data: dict) -> str:
     A(T("## Unresolved hops and how to close them", "## hop ที่ยังปิดไม่ได้ และวิธีปิด (Unresolved hops)"))
     A("")
     runtime_only = {"calls_vtable0", "calls_syscall_stub", "jumps_into_generated",
-                    "computes_branch", "writes_generated_code"}
+                    "computes_branch", "writes_generated_code",
+                    "dart_gdt_dispatch", "dart_closure_call", "dart_indirect_call"}
     unres = [e for e in edges
              if "(unresolved)" in e.resolved_by or e.kind in runtime_only
              or (e.kind == "calls_entry_point" and e.dst_offset is None)]
@@ -2317,6 +2912,16 @@ def render_md(data: dict) -> str:
                                         "hook `RegisterNatives` inside `libflutter.so`"),
         "calls_entry_point": ("the export exists but the bundle records no offset for it",
                               "`readelf --dyn-syms flutter_libs/libflutter.so | grep JNI_OnLoad`"),
+        "dart_gdt_dispatch": ("the dispatch-table entry is picked from the receiver's class id at "
+                              "run time",
+                              "map the class id to a class with blutter's `objs.txt`, then read "
+                              "`GDT[cid+delta]`; or `Interceptor.attach` the blr and print `lr`"),
+        "dart_closure_call": ("the closure object's entry point is only known once the closure "
+                              "exists",
+                              "hook the blr and print the word at `closure+0x1f`, or xref the pool "
+                              "slot that allocated the closure (`dart_instantiates_closure` rows)"),
+        "dart_indirect_call": ("the register's source is not one of the recognised shapes",
+                               "single-step the site in a debugger and record the target"),
     }
     for k, sel in sorted(groups.items(), key=lambda kv: (-len(kv[1]), kv[0])):
         what, how = recipes.get(k, ("the callee is not named in the committed evidence",
@@ -2365,6 +2970,15 @@ def render_md(data: dict) -> str:
          "the registration is real and the handler shape is known, but no Java caller reaches it - "
          "so it is reached reflectively, from Dart, or it is dead. This is a call-graph hole, not a "
          "missing fact."),
+        ("**medium**", "the routine that issues the C2 request has no committed disassembly",
+         "the 6 `[Kkg] _Bpa` closures that own the endpoint's pool run (0x2f7aac, 0x2f8928, "
+         "0x2f8998, 0x310338, 0x310360, 0x3103b0) are all listed with `size: -0x1`; of that family "
+         "only 0x533110 and 0x5332c4 are disassembled",
+         "the request itself - URL assembly, the multipart POST, the HTTP client call - is therefore "
+         "attributed by pool adjacency at `probable`, not proven instruction by instruction, and "
+         "`CH-12` walks only the response side. Disassemble 0x2f8928 in IDA (it is inside `.text`, "
+         "`0x160000`+4,178,912) or hook the 4 pool slots pp+0x139d8, pp+0x139e0, pp+0x13a38 and "
+         "pp+0x13ac0 at run time."),
         ("**low**", "5 PLT stubs the windows call are unnamed",
          "`0x81f140` (called with `w0=#0xc`, result used as a 12-byte record), `0x81f250` "
          "(`(ptr, ptr, 8) -> int`, result tested - memcmp-shaped), `0x7775d8`, `0x777fb0`, `0x7778a8` "
@@ -2405,6 +3019,14 @@ def render_md(data: dict) -> str:
          "การ register มีจริงและรู้รูปทรงของ handler แล้ว แต่ไม่มี caller ฝั่ง Java ไปถึง — จึงเป็นไปได้ว่า "
          "ถูกเรียกผ่าน reflection, จาก Dart, หรือเป็น dead code; นี่คือรูใน call graph "
          "ไม่ใช่ข้อเท็จจริงที่ขาดหาย"),
+        ("**medium**", "routine ที่ส่งคำขอไปยัง C2 ไม่มี disassembly ในชุดหลักฐาน",
+         "closure ทั้ง 6 ตัวของ `[Kkg] _Bpa` ที่เป็นเจ้าของ pool run ของ endpoint (0x2f7aac, "
+         "0x2f8928, 0x2f8998, 0x310338, 0x310360, 0x3103b0) ถูกระบุไว้ด้วย `size: -0x1` ทั้งหมด; "
+         "ในครอบครัวนี้มีแค่ 0x533110 และ 0x5332c4 ที่ถูก disassemble",
+         "ตัวคำขอเอง — การประกอบ URL, การ POST แบบ multipart, การเรียก HTTP client — จึงถูกผูกด้วย "
+         "pool adjacency ที่ระดับ `probable` ไม่ใช่พิสูจน์ทีละคำสั่ง และ `CH-12` ไล่เฉพาะฝั่ง "
+         "response; วิธีปิดคือ disassemble 0x2f8928 ใน IDA (อยู่ใน `.text` ที่ `0x160000`+4,178,912) "
+         "หรือ hook pool slot ทั้ง 4 (pp+0x139d8, pp+0x139e0, pp+0x13a38, pp+0x13ac0) ตอนรัน"),
         ("**low**", "PLT stub 5 ตัวที่ window เรียกแต่ยังไม่มีชื่อ",
          "`0x81f140` (เรียกด้วย `w0=#0xc` ผลลัพธ์ถูกใช้เป็น record 12 ไบต์), `0x81f250` "
          "(`(ptr, ptr, 8) -> int` แล้วทดสอบผลลัพธ์ — รูปทรง memcmp), `0x7775d8`, `0x777fb0`, "

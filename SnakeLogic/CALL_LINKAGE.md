@@ -19,7 +19,7 @@ _สร้างโดย `tools/build_call_linkage.py` จาก `SnakeLogic/` 
 1. วิธีอ่านหนึ่ง hop (How to read a hop)
 2. สรุปภาพรวม (Summary)
 3. ตารางสัญลักษณ์ที่ใช้แกะ indirect hop (Symbol tables)
-4. สายการเรียก (Chains) — CH-01 … CH-11
+4. สายการเรียก (Chains) — CH-01 … CH-12
 5. edge ทั้งหมด เรียงตาม layer (Every edge, by layer)
 6. hop ที่ยังปิดไม่ได้ และวิธีปิด (Unresolved hops)
 7. ช่องว่างที่มุมมองนี้เผยให้เห็น (Gaps)
@@ -33,7 +33,7 @@ _สร้างโดย `tools/build_call_linkage.py` จาก `SnakeLogic/` 
 |---|---|
 | `caller` | `module+offset` of the **instruction** that transfers control |
 | `instruction` | the decoded text of that instruction (AArch64, dex invoke, or Dart `bl`) |
-| `callee` | `module+offset` when the target is a fixed offset, `module#name` when it is a symbol, `runtime#…` when the target only exists at run time |
+| `callee` | `module+offset` when the target is a fixed offset, `module#name` when it is a symbol, `libapp.so!pp+offset` when it is an object-pool slot, `android-runtime`/`dart-vm` when the target only exists at run time |
 | `resolved by` | *how* the callee name was obtained — export table, JNIEnv slot index, syscall number, Ghidra's callgraph, blutter's inline stub comment, blutter's own IDA name table |
 | `conf.` | `proven` (byte/offset level) · `strong` (two sources agree) · `probable` (shape-based) · `candidate` (hypothesis) |
 
@@ -64,6 +64,14 @@ Edge kinds:
 | `dart_call` | bl inside the Dart AOT snapshot (410) |
 | `dart_tail_call` | b (tail branch) to a Dart runtime stub (125) |
 | `dart_instantiates_closure` | ldr xN,[PP,#slot] of an AnonymousClosure - allocates a handler (11) |
+| `loads_pool_slot` | ldr/add of an object-pool slot - the constant this instruction loads (242) |
+| `calls_unlinked_slot` | blr through an UnlinkedCall pool slot - the miss handler it dispatches to (2) |
+| `dart_gdt_dispatch` | blr through GDT[cid+delta] - a virtual/interface call resolved at run time (13) |
+| `dart_closure_call` | blr through *closure+0x1f - calling a closure object (9) |
+| `dart_indirect_call` | blr through a register this listing filled earlier (2) |
+| `uses_pool_string` | a routine attributed to a pool String by slot adjacency (no committed instruction) (4) |
+| `branch_on_check` | the conditional branch that decides pass/fail of a check (1) |
+| `stores_response_field` | StoreField of a decoded response value into a lazily-initialised field (1) |
 | `binds_engine_symbol` | a snapshot name that libflutter.so must export/hold (11) |
 
 ข้อตกลงสองข้อที่ต้องพูดให้ชัด:
@@ -77,8 +85,8 @@ Edge kinds:
 
 ## สรุปภาพรวม (Summary)
 
-- **691 hop** กระจายอยู่ใน **11 สายการเรียก**, ครอบคลุม 1048 node ที่ไม่ซ้ำกัน
-- ระดับความมั่นใจ: proven=441, strong=121, probable=14, candidate=115  (`proven` = ระดับไบต์/offset · `strong` = สองแหล่งตรงกัน · `probable` = จากรูปทรง · `candidate` = สมมติฐาน)
+- **965 hop** กระจายอยู่ใน **12 สายการเรียก**, ครอบคลุม 1470 node ที่ไม่ซ้ำกัน
+- ระดับความมั่นใจ: proven=685, strong=123, probable=42, candidate=115  (`proven` = ระดับไบต์/offset · `strong` = สองแหล่งตรงกัน · `probable` = จากรูปทรง · `candidate` = สมมติฐาน)
 
 | layer | what it covers | hops |
 |---|---|---|
@@ -86,7 +94,7 @@ Edge kinds:
 | `L2` loader | ELF loader - .init_array slots and exported entry points | 48 |
 | `L3` native | libengine.so machine code - decoded AArch64 instructions | 35 |
 | `L4` jni | JNI boundary - JNIEnv function-table slots, RegisterNatives | 13 |
-| `L5` dart | Dart AOT snapshot - libapp.so instruction-level call edges | 546 |
+| `L5` dart | Dart AOT snapshot - libapp.so instruction-level call edges | 820 |
 | `L6` engine | Flutter engine - libflutter.so symbols the snapshot binds to | 12 |
 
 | chain | title | layers | hops |
@@ -102,8 +110,10 @@ Edge kinds:
 | `CH-09` | ฝั่ง Flutter ใช้กลไกเดียวกัน | L1 -> L2 -> L6 | 3 |
 | `CH-10` | handler ของ Dart platform channel และสัญลักษณ์ engine ที่มันวิ่งอยู่ | L5 -> L6 | 14 |
 | `CH-11` | call edge ระดับ instruction ของ Dart (จัดอันดับตาม fan-in) | L5 | 12 |
+| `CH-12` | endpoint C2 /api/request/: อะไรทำงานต่อเมื่อเช็ค response ผ่านแล้ว | L5 | 27 |
 
 รายละเอียดฝั่ง Dart: branch edge ที่ถอดรหัสได้ 535 เส้น ใน 39 จาก 672 ไฟล์ asm; 315 เส้นมีชื่อ stub ที่ blutter แนบมาในบรรทัด, 105 เส้นแกะได้ผ่าน `addNames.py`, 115 เส้นเหลือแค่ address (เป้าหมายไม่ซ้ำกัน 252 ตัว)
+รายละเอียด object pool และ indirect call: มี 242 บรรทัดที่โหลด slot จาก object pool (บวกอีก 8 บรรทัดที่ allocate closure) และ `blr` ทั้ง 26 ตัวถูกจำแนกครบ — 2 ตัวผ่าน slot ชนิด UnlinkedCall (แต่ละตัว resolve ไปยัง miss stub ที่มีชื่อใน `pp.txt`), 13 ตัวผ่าน dispatch table, 9 ตัวผ่าน closure object และอื่น ๆ 2 ตัว
 
 ## ตารางสัญลักษณ์ที่ใช้แกะ indirect hop (Symbol tables)
 
@@ -253,7 +263,7 @@ JNI_OnLoad ไม่ได้ register อะไรเลย (0 JNIEnv slot load
 
 > blr ทั้ง 2 ครั้งถูกอธิบายครบ (F4: blr_count = 2) และ svc ทั้ง 4 คือ syscall ทั้งหมดใน 420 คำสั่งที่ถอดรหัสได้
 
-window เดียวกันนี้ให้ edge อีก 4 เส้นที่ไม่ใช่ control transfer ของการเดินนี้ (calls_entry_point, calls_plt, calls_syscall) — ดูได้ในตาราง layer ข้างล่าง และใน `call_linkage.csv` โดยกรอง chain `CH-03`
+window เดียวกันนี้ให้ edge อีก 3 เส้นที่ไม่ใช่ control transfer ของการเดินนี้ (calls_plt, calls_syscall) — ดูได้ในตาราง layer ข้างล่าง และใน `call_linkage.csv` โดยกรอง chain `CH-03`
 
 ### `CH-04` — registration site 0xf3a08 -> com/snake/helper/Native
 
@@ -444,9 +454,56 @@ disassembly ของ blutter ให้ offset จริงสำหรับฝ
 
 > 315 hops carry blutter's own inline stub name, 105 more resolve through addNames.py, 115 stay address-only (252 distinct targets overall).
 
+### `CH-12` — endpoint C2 /api/request/: อะไรทำงานต่อเมื่อเช็ค response ผ่านแล้ว
+
+*L5* · 27 hops
+
+ตอบจากหลักฐานที่ commit ไว้ว่า endpoint ที่ hard-code ไว้ถูกใช้ทำอะไร และเกิดอะไรขึ้น หลังเช็ค response สำเร็จ — ฝั่งคำขอผูกด้วย object-pool adjacency เพราะ blutter ระบุ routine นั้นไว้ด้วย size -0x1 ส่วนฝั่ง response ไล่ระดับทีละคำสั่งตั้งแต่ call ที่ decode ไปจนถึงคำสั่งที่เก็บค่า
+
+มีผู้เรียก 2 ตัวในสายนี้ ตารางข้างล่างจึงแสดงแค่ offset:
+
+- `[Kkg] _Bpa::<anonymous closure> @ 0x2f8928` — 4 hop ที่ offset 0x2f8928
+- `_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)` — 23 hop ที่ offset 0x53313c..0x533294
+
+| # | caller (module+offset) | instruction | callee | ขั้นนี้ทำอะไร | conf. |
+|---|---|---|---|---|---|
+| 1 | `libapp.so`+0x2f8928 | `(no committed listing: blutter gives size -0x1)` | `libapp.so!pp`+0x139d8 `"https://rest.snakeseller.com/api/request/"` | endpoint ที่ใช้ประกอบคำขอ — พิกัดที่สองของมันคือ byte run ที่ libapp.so file offset 0x43fe5 (F5) และ F8 ยืนยันว่า pool-exact | probable |
+| 2 | `libapp.so`+0x2f8928 | `(no committed listing: blutter gives size -0x1)` | `libapp.so!pp`+0x139e0 `"\?action=upload_profile_image"` | action ที่ต่อท้าย endpoint: upload_profile_image — เครื่องหมาย question mark ถูกเก็บแบบ escape ไว้ จึงเป็น *แพตเทิร์น* ฝั่ง Dart เหมือน store link 2 ตัวใน F8 §2 | probable |
+| 3 | `libapp.so`+0x2f8928 | `(no committed listing: blutter gives size -0x1)` | `libapp.so!pp`+0x13a38 `multipart POST template (12 slots pp+0x13a38..0x13a90)` | แม่แบบ body ของ POST: 12 slot ติดกันเก็บ boundary, multipart/form-data, Content-Type, part ของรูป, image/jpeg, ตัวปิด --, ข้อความผิดพลาดของการ อัปโหลด 2 เส้น และชื่อ method post (รายการเต็มอยู่ในคอลัมน์ note ของ CSV) | probable |
+| 4 | `libapp.so`+0x53313c | `bl #0x3102f4` | `libapp.so`+0x3102f4 `0x3102f4` | body ของ response ถูกส่งให้ helper ที่ไม่มีชื่อ — ไม่มีสัญลักษณ์ใดในชุด หลักฐานครอบคลุม 0x3102f4 (รูปทรงสอดคล้องกับตัว decode แต่ยังนับเป็น unresolved) | candidate |
+| 5 | `libapp.so`+0x533144 | `add x16, PP, #0x13, lsl #12` | `libapp.so!pp`+0x139f8 `"success"` | โหลดคีย์ success จาก object pool — คำที่ใช้เช็ค response | proven |
+| 6 | `libapp.so`+0x533158 | `add x16, PP, #0x13, lsl #12` | `libapp.so!pp`+0x13a00 `UnlinkedCall: 0x173c2c - SwitchableCallMissStub` | โหลด slot ชนิด UnlinkedCall สำหรับการอ่านคีย์ success แบบ dynamic — call site นี้ยังไม่เคยถูก link word แรกของมันจึงเป็น miss handler | proven |
+| 7 | `libapp.so`+0x533164 | `blr lr` | `libapp.so`+0x173c2c `SwitchableCallMissStub` | การอ่านค่า success แบบ dynamic ครั้งแรกวิ่งผ่าน SwitchableCallMissStub (0x173c2c) ซึ่ง resolve selector แล้ว patch slot นี้ | strong |
+| 8 | `libapp.so`+0x53318c | `blr lr` | `dart-vm` `GDT[cid + 0] - the Dart dispatch table, indexed by the re…` | dispatch ของการเทียบเท่า: index คือ class id ที่โหลดด้วย LoadClassIdInstr (หรือ cid 59 ของ Smi ที่ stage ไว้ที่ 0x533168) GDT[cid + 0] จึงเลือก implementation ของ == ที่ใช้ตัดสิน | probable |
+| 9 | `libapp.so`+0x533190 | `tbnz w0, #4, #0x53323c` | `libapp.so`+0x53323c `the merge point at 0x53323c of the same function - where…` | จุดตัดสิน: tbnz w0, #4 ทดสอบ bit 4 ของผลเทียบ และตัว listing เอง stage ค่า true ไว้เป็น NULL+0x20 ที่ 0x533178 — false จึงคือ NULL+0x10 และการที่ bit 4 ถูกเซ็ต แปลว่าผลเป็น false: เช็ค *ไม่ผ่าน* -> กระโดดไปจุดรวม 0x53323c; เช็ค *ผ่าน* -> ไหลต่อลงไปที่ 0x533194 แล้วเก็บค่า | proven |
+| 10 | `libapp.so`+0x53319c | `ldr x16, [PP, #0x40]` | `libapp.so!pp`+0x40 `Sentinel` | โหลดค่า Sentinel ที่แปลว่า field แบบ late ยังไม่ถูก initialise | proven |
+| 11 | `libapp.so`+0x5331a8 | `add x2, PP, #0xd, lsl #12` | `libapp.so!pp`+0xd9e0 `Field <Yoa.hne>: static late (offset: 0xe78)` | ปลายทางของ response: field แบบ late static ชื่อ Yoa.hne ของ library xkg (ชนิด Loa, class id 347, size 0x28, offset ใน field table 0xe78) | proven |
+| 12 | `libapp.so`+0x5331b0 | `bl #0x5526e0  ; InitLateStaticFieldStub` | `libapp.so`+0x5526e0 `InitLateStaticFieldStub` | สิ่งที่ถูกโหลดเข้ามา: Yoa.hne เป็น late — ตราบใดที่ยังถือ Sentinel อยู่ stub นี้จะ initialise singleton แล้วเขียนลง field table (THR+0x68 แล้ว +0x1cf0) | proven |
+| 13 | `libapp.so`+0x5331cc | `ldr lr, [PP, #0x1340]` | `libapp.so!pp`+0x1340 `"data"` | โหลดคีย์ data — ค่าที่ endpoint ส่งกลับมา | proven |
+| 14 | `libapp.so`+0x5331dc | `add x16, PP, #0x13, lsl #12` | `libapp.so!pp`+0x13a10 `UnlinkedCall: 0x173c2c - SwitchableCallMissStub` | โหลด slot ชนิด UnlinkedCall สำหรับการอ่านคีย์ data แบบ dynamic — call site นี้ยังไม่เคยถูก link word แรกของมันจึงเป็น miss handler | proven |
+| 15 | `libapp.so`+0x5331e8 | `blr lr` | `libapp.so`+0x173c2c `SwitchableCallMissStub` | การอ่านค่า data แบบ dynamic ครั้งแรกวิ่งผ่าน SwitchableCallMissStub (0x173c2c) ซึ่ง resolve selector แล้ว patch slot นี้ | strong |
+| 16 | `libapp.so`+0x533214 | `ldr x8, [PP, #0xf80]` | `libapp.so!pp`+0xf80 `Type: int` | โหลด Type: int — ประเภทที่ค่าซึ่ง decode ได้ต้องตรง | proven |
+| 17 | `libapp.so`+0x533218 | `add x3, PP, #0x13, lsl #12` | `libapp.so!pp`+0x13a20 `Null` | อาร์กิวเมนต์ Null ที่ส่งให้การเช็คประเภท | proven |
+| 18 | `libapp.so`+0x533220 | `bl #0x55b758  ; IsType_int_Stub` | `libapp.so`+0x55b758 `IsType_int_Stub` | เช็คและ cast ค่าที่ decode ได้ให้เป็น int | proven |
+| 19 | `libapp.so`+0x533238 | `stur x1, [x0, #0x1b]` | `libapp.so!pp`+0xd9e0 `Field <Yoa.hne>: static late (offset: 0xe78); the value l…` | ค่าที่ถูกเก็บ: StoreField เขียน int ที่ decode ได้ลงอ็อบเจกต์ที่ Yoa.hne->field_1f ชี้อยู่ — ผลลัพธ์ถาวรของการเช็คที่ผ่าน | proven |
+| 20 | `libapp.so`+0x533240 | `b #0x533250` | `libapp.so`+0x533250 `Kkg__Bpa::_anon_closure_533110` | จุดรวม: ไม่ว่าจะเช็คผ่านหรือไม่ ทั้งสองเส้นทางเดินต่อด้วย tail เดียวกันนี้ | strong |
+| 21 | `libapp.so`+0x533264 | `ldr xN, [PP, #0x13a30]` | `libapp.so`+0x310338 `[Kkg] _Bpa::<anonymous closure> closure @ 0x310338 (pool…` | สร้าง closure 0x310338 ของครอบครัว _Bpa เดียวกันเพื่อใช้ต่อ | proven |
+| 22 | `libapp.so`+0x53326c | `bl #0x553954  ; AllocateClosureStub` | `libapp.so`+0x553954 `AllocateClosureStub` | allocate ตัว closure object | proven |
+| 23 | `libapp.so`+0x533278 | `bl #0x1a5b64` | `libapp.so`+0x1a5b64 `0x1a5b64` | ส่ง (receiver, ค่า, closure) ให้ helper 0x1a5b64 ที่ไม่มีชื่อ: มี 3 จุดเรียก ในชุดหลักฐาน (0x533278, 0x535830, 0x53e950) สองจุดอยู่หลัง AwaitStub ทันทีและทั้งสามส่ง closure ที่เพิ่ง allocate — รูปทรงแบบ continuation | candidate |
+| 24 | `libapp.so`+0x53328c | `bl #0x554734  ; StackOverflowSharedWithoutFPURegsStub` | `libapp.so`+0x554734 `StackOverflowSharedWithoutFPURegsStub` | stack guard ของ async frame | proven |
+| 25 | `libapp.so`+0x533290 | `b #0x533138` | `libapp.so`+0x533138 `Kkg__Bpa::_anon_closure_533110` | กลับเข้า body หลังขยาย stack แล้ว | strong |
+| 26 | `libapp.so`+0x533294 | `bl #0x554cdc  ; NullCastErrorSharedWithoutFPURegsStub` | `libapp.so`+0x554cdc `NullCastErrorSharedWithoutFPURegsStub` | เส้นทางล้มเหลว: ถ้า Yoa.hne->field_1f เป็น null จะโยน NullCastError | proven |
+| 27 | `libapp.so`+0x2f8928 | `(no committed listing: blutter gives size -0x1)` | `libapp.so!pp`+0x13aa0 `post-response run (5 slots pp+0x13aa0..0x13ac0)` | สิ่งที่ routine เดิมโหลดเมื่อได้คำตอบของการอัปโหลด: closure ฝั่ง dart:io (0x30ff78), Cannot delete file, TypeArguments <String, Uint8List> และ path .jpg ที่ต่อท้ายด้วย cache-buster — รูปที่อัปโหลดถูกดึงกลับเป็นไบต์แล้วเก็บใน Map<String, Uint8List> | probable |
+
+_คอลัมน์ `resolved by`, ชื่อผู้เรียก และบรรทัดหลักฐานเต็มของทุกขั้นอยู่ใน `call_linkage.csv` (คอลัมน์ `chain` มี CH-12 อยู่)_
+
+> endpoint ตัวที่สอง (https://www.snakeengine.com/topup/, pp+0x17790 = libapp.so file 0x3d50e) ไม่ได้ถูกไล่ในที่นี้: ไม่มี listing ที่ commit ไว้ใดอ้าง slot ของมัน และ เพื่อนบ้านของมันเป็น allocation run คนละชุด
+
+**2 จาก 27 hop ไปไม่ถึงชื่อ**: `0x53313c` → `0x3102f4`; `0x533278` → `0x1a5b64` — ดูวิธีปิดในส่วน hop ที่ยังปิดไม่ได้ข้างล่าง
+
 ## edge ทั้งหมด เรียงตาม layer (Every edge, by layer)
 
-เรียงตามโมดูลและ offset ของผู้เรียก — ลำดับเดียวกับ `call_linkage.csv` ที่เก็บทั้ง 691 แถวพร้อม evidence string ของแต่ละแถว
+เรียงตามโมดูลและ offset ของผู้เรียก — ลำดับเดียวกับ `call_linkage.csv` ที่เก็บทั้ง 965 แถวพร้อม evidence string ของแต่ละแถว
 
 ### `L1` dex — Dalvik bytecode - classes.dex invoke/loader offsets
 
@@ -496,11 +553,11 @@ _แสดง 6 รายการแรกและ 3 รายการสุ�
 
 | caller | instruction | callee | kind | chain | conf. |
 |---|---|---|---|---|---|
-| `android-runtime` | `call DT_INIT/JNI_OnLoad after the .init_array runs` | `libengine.so`+0xf3fa0 `JNI_OnLoad` | `calls_entry_point` | CH-03 | proven |
+| `android-runtime` | `call DT_INIT/JNI_OnLoad after the .init_array runs` | `libengine.so`+0xf3fa0 `JNI_OnLoad` | `calls_entry_point` | CH-03;CH-01 | proven |
 | `android-runtime` | `call through the fnPtr registered by RegisterNatives` | `libengine.so`+0x81eeb0 `.mytext fnPtr 0x81eeb0 (decodes as 'ret'; the body starts at 0x81eeb4)` | `calls_entry_point` | CH-06 | strong |
 | `android-runtime` | `dlopen` | `libengine.so` `lib/arm64-v8a/libengine.so` | `loads_library` | CH-01 | proven |
 | `android-runtime` | `dlopen` | `libflutter.so` `lib/arm64-v8a/libflutter.so` | `loads_library` | CH-09 | proven |
-| `libengine.so`+0x825c78 | `R_AARCH64_RELATIVE addend (the slot holds no file bytes)` | `libengine.so`+0x11ab10 `_INIT_0 (.text, prologue e80f19fcfd7b01a9...)` | `loader_init_call` | CH-02 | proven |
+| `libengine.so`+0x825c78 | `R_AARCH64_RELATIVE addend (the slot holds no file bytes)` | `libengine.so`+0x11ab10 `_INIT_0 (.text, prologue e80f19fcfd7b01a9...)` | `loader_init_call` | CH-02;CH-01 | proven |
 | `libengine.so`+0x825c80 | `R_AARCH64_RELATIVE addend (the slot holds no file bytes)` | `libengine.so`+0x147dec `_INIT_1 (.text, prologue e80f19fcfd7b01a9...)` | `loader_init_call` | CH-02 | proven |
 | `libengine.so`+0x825dc0 | `R_AARCH64_RELATIVE addend (the slot holds no file bytes)` | `libengine.so`+0x8f5b4 `_INIT_41 (.text, prologue fd7bbfa9fd030091...)` | `loader_init_call` | CH-02 | proven |
 | `libengine.so`+0x825dc8 | `R_AARCH64_RELATIVE addend (the slot holds no file bytes)` | `libengine.so`+0x7e2590 `_INIT_42 (.text, prologue 3f2303d5fd7bbea9...)` | `loader_init_call` | CH-02 | proven |
@@ -554,7 +611,7 @@ _แสดง 6 รายการแรกและ 3 รายการสุ�
 | `libengine.so`+0xb0144 | `blr x8` | `android-runtime` `JNIEnv->RegisterNatives (slot 215)` | `registers_natives` | CH-07 | proven |
 | `libengine.so`+0xb018c | `blr x8` | `android-runtime` `JNIEnv->ExceptionClear (slot 17)` | `calls_jni_slot` | CH-07 | proven |
 | `libengine.so`+0xb40a8 | `nMethods = 2` | `classes.dex` `com/snake/helper/flagger (na, nb)` | `binds_fnptr_to_dex` | CH-05 | probable |
-| `libengine.so`+0xb40b0 | `stp/str x9 -> sp+0x48 (JNINativeMethod[1].fnPtr)` | `libengine.so`+0x81eeb0 `.mytext 0x81eeb0 (exec=True) - the only fnPtr of the 13 that survives…` | `stages_fnptr` | CH-05 | proven |
+| `libengine.so`+0xb40b0 | `stp/str x9 -> sp+0x48 (JNINativeMethod[1].fnPtr)` | `libengine.so`+0x81eeb0 `.mytext 0x81eeb0 (exec=True) - the only fnPtr of the 13 that survives…` | `stages_fnptr` | CH-05;CH-06 | proven |
 | `libengine.so`+0xb40b4 | `blr x8` | `android-runtime` `JNIEnv->RegisterNatives (slot 215)` | `registers_natives` | CH-05 | proven |
 | `libengine.so`+0xf39e8 | `blr x8` | `android-runtime` `JNIEnv->FindClass (slot 6)` | `finds_class` | CH-04 | proven |
 | `libengine.so`+0xf3a08 | `nMethods = 10` | `classes.dex` `com/snake/helper/Native (10 of its 11 declarations)` | `binds_fnptr_to_dex` | CH-04 | strong |
@@ -566,7 +623,7 @@ _แสดง 6 รายการแรกและ 3 รายการสุ�
 
 ### `L5` dart — Dart AOT snapshot - libapp.so instruction-level call edges
 
-_Dart 546 hop กระจายไปยัง callee ไม่ซ้ำกัน 263 ตัว — จัดกลุ่มตาม callee แล้วเรียงตาม fan-in แสดง 30 อันดับแรก ส่วนครบทั้ง 546 แถวอยู่ใน `call_linkage.csv` (กรอง `layer=L5`)_
+_Dart 820 hop กระจายไปยัง callee ไม่ซ้ำกัน 417 ตัว — จัดกลุ่มตาม callee แล้วเรียงตาม fan-in แสดง 30 อันดับแรก ส่วนครบทั้ง 820 แถวอยู่ใน `call_linkage.csv` (กรอง `layer=L5`)_
 
 | callee | name | resolved by | fan-in | callers (first 3) | conf. |
 |---|---|---|---|---|---|
@@ -576,30 +633,30 @@ _Dart 546 hop กระจายไปยัง callee ไม่ซ้ำกั�
 | `libapp.so`+0x519244 | `ReturnAsyncNotFutureStub` | blutter's inline stub comment in the same listing | 20 | `0x518a0c`, `0x51c118`, `0x527fa0`, … | proven |
 | `libapp.so`+0x519270 | `InitAsyncStub` | blutter's inline stub comment in the same listing | 17 | `0x5189a8`, `0x51c054`, `0x527e80`, … | proven |
 | `libapp.so`+0x5527dc | `ThrowStub` | blutter's inline stub comment in the same listing | 16 | `0x513958`, `0x51e0d0`, `0x520504`, … | proven |
+| `libapp.so!pp`+0xf80 | `Type: int` | the slot is named in the same disassembly line; its content comes fro… | 15 | `0x50fb44`, `0x513944`, `0x51b1d0`, … | proven |
 | `libapp.so`+0x55b758 | `IsType_int_Stub` | blutter's inline stub comment in the same listing | 15 | `0x50fb50`, `0x513950`, `0x51b1dc`, … | proven |
+| `libapp.so!pp`+0x6d0 | `"Attempt to execute code removed by Dart AOT compiler (TFA)"` | the slot is named in the same disassembly line; its content comes fro… | 14 | `0x513954`, `0x51e0cc`, `0x520500`, … | proven |
+| `libapp.so!pp`+0x40 | `Sentinel` | the slot is named in the same disassembly line; its content comes fro… | 11 | `0x52b57c`, `0x53319c`, `0x535848`, … | proven |
+| `libapp.so!pp`+0x2f8 | `TypeArguments: <void?>` | the slot is named in the same disassembly line; its content comes fro… | 11 | `0x5189c4`, `0x51c050`, `0x527e7c`, … | proven |
 | `libapp.so`+0x554cdc | `NullCastErrorSharedWithoutFPURegsStub` | blutter's inline stub comment in the same listing | 11 | `0x521758`, `0x52175c`, `0x527fac`, … | proven |
 | `libapp.so`+0x554b7c | `RangeErrorSharedWithoutFPURegsStub` | blutter's inline stub comment in the same listing | 10 | `0x51b24c`, `0x53ef88`, `0x53ef8c`, … | proven |
 | `libapp.so`+0x553954 | `AllocateClosureStub` | blutter's inline stub comment in the same listing | 7 | `0x53326c`, `0x535824`, `0x53db84`, … | proven |
 | `libapp.so`+0x554e8c | `NullErrorSharedWithoutFPURegsStub` | blutter's inline stub comment in the same listing | 6 | `0x51c160`, `0x51c164`, `0x5399d4`, … | proven |
+| `libapp.so!pp`+0x68 | `"A Dart object attempted to access a native peer, but the n…` | the slot is named in the same disassembly line; its content comes fro… | 4 | `0x539878`, `0x5398c4`, `0x53992c`, … | proven |
+| `libapp.so!pp`+0x70 | `TypeArguments: <Never>` | the slot is named in the same disassembly line; its content comes fro… | 4 | `0x539888`, `0x5398d4`, `0x539940`, … | proven |
+| `libapp.so!pp`+0x298 | `List(5) [0, 0x2, 0x2, 0x2, Null]` | the slot is named in the same disassembly line; its content comes fro… | 4 | `0x51c074`, `0x51c108`, `0x51c13c`, … | proven |
+| `libapp.so!pp`+0xd58 | `TypeArguments: <Null?>` | the slot is named in the same disassembly line; its content comes fro… | 4 | `0x5189a4`, `0x53db60`, `0x53db88`, … | proven |
+| `libapp.so!pp`+0x2290 | `TypeArguments: <List<Object>>` | the slot is named in the same disassembly line; its content comes fro… | 4 | `0x516a00`, `0x51c0ac`, `0x53669c`, … | proven |
+| `libapp.so!pp`+0x22a0 | `Obj!Vw@36bb31` | the slot is named in the same disassembly line; its content comes fro… | 4 | `0x516a10`, `0x51c0bc`, `0x5366b0`, … | proven |
 | `libapp.so`+0x177354 | `[dart:core] StateError::_throwNew` | blutter's inline stub comment in the same listing | 4 | `0x539880`, `0x5398cc`, `0x539934`, … | proven |
 | `libapp.so`+0x19ac78 | `0x19ac78` | (unresolved) no symbol in the committed dump covers this code address | 4 | `0x516a14`, `0x51c0c4`, `0x5366b4`, … | candidate |
 | `libapp.so`+0x5136ac | `AllocatedxStub -> dx (size=0x2c)` | blutter's inline stub comment in the same listing | 4 | `0x516a04`, `0x51c0b0`, `0x5366a0`, … | proven |
-| `libapp.so`+0x515150 | `AllocatePointerStub -> Pointer<X0 bound NativeType> (size=-0` | blutter's inline stub comment in the same listing | 4 | `0x53988c`, `0x5398d8`, `0x539944`, … | proven |
+| `libapp.so`+0x515150 | `AllocatePointerStub -> Pointer<X0 bound NativeType> (size=-…` | blutter's inline stub comment in the same listing | 4 | `0x53988c`, `0x5398d8`, `0x539944`, … | proven |
 | `libapp.so`+0x53ef68 | `kkg__ioa::ugf_53ec84` | inside the function blutter names at 0x53ec84 (add_func range) | 4 | `0x53ed4c`, `0x53ede4`, `0x53ee84`, … | strong |
 | `libapp.so`+0x5527b0 | `ReThrowStub` | blutter's inline stub comment in the same listing | 4 | `0x51c150`, `0x521748`, `0x52183c`, … | proven |
 | `libapp.so`+0x552d4c | `WriteBarrierWrappersStub` | blutter's inline stub comment in the same listing | 4 | `0x5215dc`, `0x5364b4`, `0x53ed8c`, … | proven |
-| `libapp.so`+0x17d558 | `0x17d558` | (unresolved) no symbol in the committed dump covers this code address | 3 | `0x516a38`, `0x51c0e8`, `0x53bd80` | candidate |
-| `libapp.so`+0x197214 | `[dart:_internal] LateError::_throwLocalNotInitialized` | blutter's inline stub comment in the same listing | 3 | `0x54b25c`, `0x557540`, `0x5575cc` | proven |
-| `libapp.so`+0x1a5b64 | `0x1a5b64` | (unresolved) no symbol in the committed dump covers this code address | 3 | `0x533278`, `0x535830`, `0x53e950` | candidate |
-| `libapp.so`+0x34c1d8 | `0x34c1d8` | (unresolved) no symbol in the committed dump covers this code address | 3 | `0x5574a8`, `0x5574e0`, `0x557508` | candidate |
-| `libapp.so`+0x49c190 | `0x49c190` | (unresolved) no symbol in the committed dump covers this code address | 3 | `0x52155c`, `0x52167c`, `0x5217dc` | candidate |
-| `libapp.so`+0x513784 | `AllocatehxStub -> hx (size=0x14)` | blutter's inline stub comment in the same listing | 3 | `0x516a18`, `0x51c0c8`, `0x53bd60` | proven |
-| `libapp.so`+0x5526e0 | `InitLateStaticFieldStub` | blutter's inline stub comment in the same listing | 3 | `0x5331b0`, `0x53e8c0`, `0x53ecf0` | proven |
-| `libapp.so`+0x5548b4 | `AllocateMintSharedWithoutFPURegsStub` | blutter's inline stub comment in the same listing | 3 | `0x52154c`, `0x54b1a8`, `0x54d3e4` | proven |
-| `libapp.so`+0x554f64 | `LateInitializationErrorSharedWithoutFPURegsStub` | blutter's inline stub comment in the same listing | 3 | `0x535878`, `0x53591c`, `0x543f30` | proven |
-| `libapp.so`+0x182650 | `0x182650` | (unresolved) no symbol in the committed dump covers this code address | 2 | `0x53408c`, `0x5340ac` | candidate |
-| `libapp.so`+0x189e5c | `[dart:core] Map::Map._fromLiteral` | blutter's inline stub comment in the same listing | 2 | `0x5357e8`, `0x535a08` | proven |
-| `libapp.so`+0x1afcac | `0x1afcac` | (unresolved) no symbol in the committed dump covers this code address | 2 | `0x5189d0`, `0x52b7ec` | candidate |
+| `libapp.so!pp`+0x270 | `List(5) [0, 0x3, 0x3, 0x3, Null]` | the slot is named in the same disassembly line; its content comes fro… | 3 | `0x5364dc`, `0x536508`, `0x54b1f8` | proven |
+| `libapp.so!pp`+0x430 | `List(5) [0, 0x1, 0, 0x1, Null]` | the slot is named in the same disassembly line; its content comes fro… | 3 | `0x527f94`, `0x53981c`, `0x557480` | proven |
 
 ### `L6` engine — Flutter engine - libflutter.so symbols the snapshot binds to
 
@@ -623,9 +680,12 @@ _Dart 546 hop กระจายไปยัง callee ไม่ซ้ำกั�
 | kind | hops | first caller offsets | what is missing | one step that closes it |
 |---|---|---|---|---|
 | `dart_call` | 115 | `0x50fb60`, `0x5137fc`, `0x513858`, `0x5138e8`, `0x5169e4`, `0x516a14` … | a Dart code address blutter could not name | load `libapp.so` in IDA and run the committed `output/blutter/ida_script/addNames.py`, then re-resolve |
+| `dart_gdt_dispatch` | 13 | `0x521584`, `0x53318c`, `0x5359cc`, `0x53ee2c`, `0x54b144`, `0x54b174` … | the dispatch-table entry is picked from the receiver's class id at run time | map the class id to a class with blutter's `objs.txt`, then read `GDT[cid+delta]`; or `Interceptor.attach` the blr and print `lr` |
 | `calls_direct` | 9 | `0xb0088`, `0xb0094`, `0xb00e4`, `0xb4050`, `0xb405c`, `0xf3988` … | a `.text` offset no symbol covers | run Ghidra/IDA over `binaries/libengine.so` and name the function containing the target, or read `.rela.plt` if the target is a stub |
+| `dart_closure_call` | 9 | `0x51c07c`, `0x51c110`, `0x51c144`, `0x5364e4`, `0x536510`, `0x5365cc` … | the closure object's entry point is only known once the closure exists | hook the blr and print the word at `closure+0x1f`, or xref the pool slot that allocated the closure (`dart_instantiates_closure` rows) |
 | `calls_syscall_stub` | 3 | `0xb0068`, `0xb403c`, `0xf3968` | the function pointer holding the syscall stub is not named | the stub is reached through a register filled earlier in the protected body; a Frida `Interceptor` on the `blr` site prints the resolved pointer |
 | `calls_vtable0` | 3 | `0xb00c4`, `0xb407c`, `0xf39c4` | the callee is `*obj`, filled at run time | hook the decoder object's constructor (the `bl` that returns it) and dump the first word of the returned object |
+| `dart_indirect_call` | 2 | `0x52b7a8`, `0x537260` | the register's source is not one of the recognised shapes | single-step the site in a debugger and record the target |
 | `jumps_into_generated` | 2 | `0xf40e0`, `0xf43f4` | the target page exists only after `mmap` | `analysis_scripts/frida_dump_register_natives.js` already hooks this family; dump the page after the `blr` and disassemble it |
 | `writes_generated_code` | 2 | `0xf4078`, `0xf40a0` | the bytes written are computed, not stored | breakpoint the `str` and read the destination page |
 | `calls_entry_point` | 1 | `linker (dlopen of libflutter.so)` | the export exists but the bundle records no offset for it | `readelf --dyn-syms flutter_libs/libflutter.so | grep JNI_OnLoad` |
@@ -648,6 +708,9 @@ _Dart 546 hop กระจายไปยัง callee ไม่ซ้ำกั�
 - **medium** `Lcom/snake/helper/flagger;` ประกาศ native 2 ตัวที่ไม่มีอะไรเรียก  
   evidence: F2 บันทึก invoke site ไว้ 0 จุด แต่ site `0xb40a8` register เมธอดให้คลาสนี้พอดี 2 ตัว และเป็นแหล่งของ fnPtr ตัวเดียวที่กู้คืนได้จาก 13 ตัว  
   impact: การ register มีจริงและรู้รูปทรงของ handler แล้ว แต่ไม่มี caller ฝั่ง Java ไปถึง — จึงเป็นไปได้ว่า ถูกเรียกผ่าน reflection, จาก Dart, หรือเป็น dead code; นี่คือรูใน call graph ไม่ใช่ข้อเท็จจริงที่ขาดหาย
+- **medium** routine ที่ส่งคำขอไปยัง C2 ไม่มี disassembly ในชุดหลักฐาน  
+  evidence: closure ทั้ง 6 ตัวของ `[Kkg] _Bpa` ที่เป็นเจ้าของ pool run ของ endpoint (0x2f7aac, 0x2f8928, 0x2f8998, 0x310338, 0x310360, 0x3103b0) ถูกระบุไว้ด้วย `size: -0x1` ทั้งหมด; ในครอบครัวนี้มีแค่ 0x533110 และ 0x5332c4 ที่ถูก disassemble  
+  impact: ตัวคำขอเอง — การประกอบ URL, การ POST แบบ multipart, การเรียก HTTP client — จึงถูกผูกด้วย pool adjacency ที่ระดับ `probable` ไม่ใช่พิสูจน์ทีละคำสั่ง และ `CH-12` ไล่เฉพาะฝั่ง response; วิธีปิดคือ disassemble 0x2f8928 ใน IDA (อยู่ใน `.text` ที่ `0x160000`+4,178,912) หรือ hook pool slot ทั้ง 4 (pp+0x139d8, pp+0x139e0, pp+0x13a38, pp+0x13ac0) ตอนรัน
 - **low** PLT stub 5 ตัวที่ window เรียกแต่ยังไม่มีชื่อ  
   evidence: `0x81f140` (เรียกด้วย `w0=#0xc` ผลลัพธ์ถูกใช้เป็น record 12 ไบต์), `0x81f250` (`(ptr, ptr, 8) -> int` แล้วทดสอบผลลัพธ์ — รูปทรง memcmp), `0x7775d8`, `0x777fb0`, `0x7778a8` (แต่ละตัวคืนอ็อบเจกต์ที่ word แรกถูกเรียกต่อ)  
   impact: บันทึกเป็นรูปทรงแทนชื่อ; ปิดได้ด้วยการอ่าน `.rela.plt` หรือให้ Ghidra ไล่ 5 offset นั้นหนึ่งรอบ
@@ -660,13 +723,18 @@ _Dart 546 hop กระจายไปยัง callee ไม่ซ้ำกั�
 
 ## การตรวจสอบ (Verification)
 
-ทั้ง 15/15 รายการถูกตรวจซ้ำกับชุดหลักฐานทุกครั้งที่ build และต้องผ่านทั้งหมด:
+ทั้ง 20/20 รายการถูกตรวจซ้ำกับชุดหลักฐานทุกครั้งที่ build และต้องผ่านทั้งหมด:
 
 | result | check | detail |
 |---|---|---|
 | PASS | JNI_OnLoad is in the parsed export table | 17 defined dynamic exports parsed from F4 (F4 reports 17 names); JNI_OnLoad -> JNI_OnLoad |
 | PASS | every F2 caller offset became an edge | 20 invoke offsets extracted from F2 (F2 says 20 for Lcom/snake/helper/Native; and 0 for Lcom/snake/helper/flagger;) |
 | PASS | every curated annotation points at a real instruction | annotations checked against the decoded listings |
+| PASS | the C2 endpoint is an exact object-pool slot | https://rest.snakeseller.com/api/request/ = pp+0x139d8 (pool-exact) at output/blutter/pp.txt:16623; the same string is a raw byte run at libapp.so file offset 0x43fe5 per F5 - one string, two coordinate systems |
+| PASS | every blr in the committed Dart listings is classified | 26 blr instructions: 2 through an UnlinkedCall pool slot, 13 through the dispatch table (GDT), 9 through a closure object, 2 other |
+| PASS | every object-pool reference in the listings became an edge | 250 listing lines carry a [pp+..] comment: 242 loads_pool_slot + 8 dart_instantiates_closure |
+| PASS | the endpoint sits inside one closure family's pool run | the slots around pp+0x139d8 that name an owner all name [Kkg] _Bpa::<anonymous closure> (0x2f8928), 3 of them within +-0x40 bytes |
+| PASS | the C2 response handler's decision branch and store were located | in output/blutter/asm/Kkg.dart, function 0x533110 size 0x188: the branch after the dispatch is `tbnz w0, #4, #0x53323c` at 0x533190 and the store is `r0->field_1b = r1` at 0x533238 |
 | PASS | RegisterNatives nMethods total == custom native declarations | 13 registered across 3 sites vs 13 declared in the dex |
 | PASS | the recovered fnPtr lies inside .mytext | 0x81eeb0 in 0x81eeac..0x81efa0 |
 | PASS | JNI_OnLoad edges start at the exported entry point | F4c decodes 420 instructions from 0xf3fa0 |
@@ -676,8 +744,8 @@ _Dart 546 hop กระจายไปยัง callee ไม่ซ้ำกั�
 | PASS | blutter's inline stub names agree with its own IDA name table | of the 315 hops that carry an inline name, 301 match addNames.py exactly after decoration is stripped, 2 are the same address under a different label form (e.g. '[dart:core] Map::Map._fromLiteral' vs 'dart_core_Map::factory_ctor__fromLiteral'), 0 conflict; the remaining 12 have no addNames.py entry at all, so the inline comment is the only name they get |
 | PASS | every IR-level 'r0 = call' line has the matching bl instruction | 115/115 IR call lines are the same hop as a decoded bl at the same offset |
 | PASS | no hop is published twice | the instruction scan and the structured fragment records agree; no duplicate hops were produced |
-| PASS | no dangling node reference | 691 edges, 1048 nodes |
-| PASS | chain hops all exist in the edge set | 136 hops across 11 chains |
+| PASS | no dangling node reference | 965 edges, 1470 nodes |
+| PASS | chain hops all exist in the edge set | 163 hops across 12 chains |
 | PASS | the extracted tree and the zip carry identical inputs | SnakeLogic/ fingerprint d0eb6c05b6ab740919abc72ff702a6a4 vs SnakeLogic.zip fingerprint d0eb6c05b6ab740919abc72ff702a6a4 over 699 input files (the 3 generated artifacts are excluded from both) |
 
 การตรวจสอบระดับไบต์ 45 รายการที่อยู่เบื้องหลัง hop เหล่านี้อยู่ใน `VERIFICATION.txt` ข้าง

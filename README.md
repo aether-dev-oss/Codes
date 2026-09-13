@@ -14,7 +14,7 @@ versionName 2.2.6), a Flutter app shipping a protected `libengine.so`.
 | `SnakeLogic/` | ชุดเดียวกันแบบแตกไฟล์ — ที่ที่เอกสารวิเคราะห์ทั้งหมดอยู่ (the same bundle extracted; this is where the analysis documents live) |
 | `SnakeLogic/LINKAGE.md` | ข้อเท็จจริงข้าม fragment: fact ไหนใน fragment ไหนพูดถึงเรื่องเดียวกัน (cross-fragment *fact* linkage) |
 | `SnakeLogic/CALL_LINKAGE.md` | **สายการเรียก**: instruction ที่ offset ไหนโอน control ไปยังอะไร เรียงเป็น chain ข้าม layer (cross-layer *call* linkage, instruction ↔ offset) |
-| `SnakeLogic/call_linkage.csv` | hop ทั้งหมด 691 แถว — หนึ่งแถวต่อหนึ่งการโอน control เรียงตาม layer/module/offset |
+| `SnakeLogic/call_linkage.csv` | hop ทั้งหมด 965 แถว — หนึ่งแถวต่อหนึ่งการโอน control (หรือต่อการโหลดค่าคงที่หนึ่งครั้ง) เรียงตาม layer/module/offset |
 | `SnakeLogic/call_linkage.json` | กราฟเดียวกันแบบ machine-readable: nodes, edges, chains, symbol tables, checks |
 | `SnakeLogic/VERIFICATION.txt` | การตรวจระดับไบต์ 45 รายการของ `LINKAGE.md` |
 | `SnakeLogic/links.csv`, `links.json` | กราฟ fact ของ `LINKAGE.md` |
@@ -40,10 +40,11 @@ python3 tools/build_call_linkage.py --src SnakeLogic.zip --out /tmp/out
 ```
 
 ค่าเริ่มต้นคือ `--lang both`: คำอธิบายเป็นไทย ส่วนตาราง offset ชื่อ symbol และ
-mnemonic คงเป็นอังกฤษตามต้นฉบับ ผลลัพธ์ deterministic — รันซ้ำได้ไฟล์เหมือนเดิมทุกไบต์
+mnemonic คงเป็นอังกฤษตามต้นฉบับ ทุก hop อ้างบรรทัดหลักฐานเสมอ (เช่น
+`output/blutter/asm/Kkg.dart:58`) ผลลัพธ์ deterministic — รันซ้ำได้ไฟล์เหมือนเดิมทุกไบต์
 และ `SnakeLogic/` กับ `SnakeLogic.zip` ให้ลายนิ้วมือเดียวกัน (`d0eb6c05…`) ซึ่งถูกตรวจทุกครั้งที่ build
 
-## สายการเรียก 11 สาย (the 11 chains)
+## สายการเรียก 12 สาย (the 12 chains)
 
 | chain | จาก → ไป |
 |---|---|
@@ -58,3 +59,4 @@ mnemonic คงเป็นอังกฤษตามต้นฉบับ ผ�
 | `CH-09` | `FlutterJNI.loadLibrary()` → `libflutter.so` → `JNI_OnLoad` (native 41 ตัว) |
 | `CH-10` | Dart MethodCall handler 3 ตัว (`_pfc`/`_cec`/`_eec`) + สัญลักษณ์ engine 11 ตัว |
 | `CH-11` | Dart `bl`/`b` ระดับ instruction จัดอันดับตาม fan-in |
+| `CH-12` | endpoint C2 `https://rest.snakeseller.com/api/request/` — อะไรถูกเรียกและอะไรถูกโหลดหลังเช็ค `success` ผ่าน (ไล่ระดับคำสั่งที่ `0x533110`) |
