@@ -1,0 +1,9 @@
+2333:[pp+0x3c70] String: "decompressLicenses"
+2337:[pp+0x3c90] String: "utf8DecodeLicenses"
+2340:[pp+0x3ca8] String: "parseLicenses"
+13007:    "readableName": "clientAuth",
+16623:[pp+0x139d8] String: "https://rest.snakeseller.com/api/request/"
+19840:[pp+0x17790] String: "https://www.snakeengine.com/topup/"
+20147:[pp+0x17d78] String: "https://discord.com/invite/"
+20148:[pp+0x17d80] String: "https://t.me/"
+20149:[pp+0x17d88] String: "https://wa.me/"

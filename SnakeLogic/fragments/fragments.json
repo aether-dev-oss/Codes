@@ -1,0 +1,2760 @@
+{
+  "generated_by": "analysis_scripts/extract_fragments.py",
+  "apk": {
+    "path": "apks/SNAKE.apk",
+    "sha256": "f847608605ea1da9a7452f2072ee59e4dc26a900ca2aad0315c967c9c896d561",
+    "members": 997,
+    "integrity_ok": true,
+    "provenance": [
+      {
+        "apk_entry": "lib/arm64-v8a/libapp.so",
+        "repo_path": "binaries/libapp.so",
+        "apk_sha256": "2d3577fbaaacc7cb63e5b04a5a21572eeee1e0d55b223941d6a5496a91a427c8",
+        "repo_sha256": "2d3577fbaaacc7cb63e5b04a5a21572eeee1e0d55b223941d6a5496a91a427c8",
+        "match": true,
+        "apk_size": 5637024,
+        "repo_size": 5637024,
+        "note": ""
+      },
+      {
+        "apk_entry": "lib/arm64-v8a/libengine.so",
+        "repo_path": "binaries/libengine.so",
+        "apk_sha256": "f5d751e6bde8f0595eda9836338e845b029a41d2362743a2a4619ba99f41e3be",
+        "repo_sha256": "f5d751e6bde8f0595eda9836338e845b029a41d2362743a2a4619ba99f41e3be",
+        "match": true,
+        "apk_size": 8544568,
+        "repo_size": 8544568,
+        "note": ""
+      },
+      {
+        "apk_entry": "lib/arm64-v8a/libflutter.so",
+        "repo_path": "flutter_libs/libflutter.so",
+        "apk_sha256": "0baa710d6b7f7de2f8bcc05aa2950bab2989f3a4c95bc7f7bcc23ce84626ee52",
+        "repo_sha256": "0baa710d6b7f7de2f8bcc05aa2950bab2989f3a4c95bc7f7bcc23ce84626ee52",
+        "match": true,
+        "apk_size": 10714752,
+        "repo_size": 10714752,
+        "note": ""
+      }
+    ],
+    "abis": {
+      "arm64-v8a": [
+        "lib/arm64-v8a/libapp.so",
+        "lib/arm64-v8a/libengine.so",
+        "lib/arm64-v8a/libflutter.so"
+      ]
+    },
+    "dex_sha256": "e2b1fb586a9a85b4f094340458ea350eb1faafd602b8a4a287d4b3b97297af11"
+  },
+  "manifest": {
+    "package": "com.snake",
+    "versionName": "2.2.6",
+    "versionCode": null,
+    "minSdk": "28",
+    "targetSdk": "35",
+    "application": "com.snake.App",
+    "mainActivity": "com.Entry",
+    "permissions": [
+      "android.permission.ACCESS_NETWORK_STATE",
+      "android.permission.POST_NOTIFICATIONS",
+      "android.permission.WAKE_LOCK",
+      "com.google.android.c2dm.permission.RECEIVE",
+      "android.permission.FOREGROUND_SERVICE_SPECIAL_USE",
+      "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
+      "android.permission.QUERY_ADVANCED_PROTECTION_MODE",
+      "android.permission.QUERY_ALL_PACKAGES",
+      "android.permission.CREDENTIAL_MANAGER_SET_ALLOWED_PROVIDERS",
+      "android.permission.BIND_EXTERNAL_SERVICE",
+      "android.permission.WRITE_SOCIAL_STREAM",
+      "android.permission.READ_SOCIAL_STREAM",
+      "android.permission.READ_PROFILE",
+      "android.permission.WRITE_PROFILE",
+      "android.permission.READ_USER_DICTIONARY",
+      "android.permission.WRITE_USER_DICTIONARY",
+      "android.permission.USE_CREDENTIALS",
+      "android.permission.AUTHENTICATE_ACCOUNTS",
+      "android.permission.DETECT_SCREEN_CAPTURE",
+      "com.samsung.svoice.sync.READ_DATABASE",
+      "com.samsung.svoice.sync.ACCESS_SERVICE",
+      "com.samsung.svoice.sync.WRITE_DATABASE",
+      "com.sec.android.app.voicenote.Controller",
+      "com.sec.android.permission.VOIP_INTERFACE",
+      "com.sec.android.permission.LAUNCH_PERSONAL_PAGE_SERVICE",
+      "com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY",
+      "com.samsung.android.providers.context.permission.READ_RECORD_AUDIO",
+      "com.samsung.android.providers.context.permission.WRITE_RECORD_AUDIO",
+      "com.sec.android.settings.permission.SOFT_RESET",
+      "sec.android.permission.READ_MSG_PREF",
+      "com.samsung.android.scloud.backup.lib.read",
+      "com.samsung.android.scloud.backup.lib.write",
+      "com.android.alarm.permission.SET_ALARM",
+      "com.android.voicemail.permission.ADD_VOICEMAIL",
+      "com.android.voicemail.permission.READ_WRITE_ALL_VOICEMAIL",
+      "com.huawei.authentication.HW_ACCESS_AUTH_SERVICE",
+      "com.android.vending.BILLING",
+      "com.android.vending.CHECK_LICENSE",
+      "com.google.android.providers.talk.permission.READ_ONLY",
+      "com.google.android.providers.talk.permission.WRITE_ONLY",
+      "com.google.android.gms.permission.ACTIVITY_RECOGNITION",
+      "com.google.android.gms.permission.AD_ID_NOTIFICATION",
+      "com.google.android.providers.gsf.permission.READ_GSERVICES",
+      "com.android.launcher.permission.INSTALL_SHORTCUT",
+      "com.android.launcher.permission.UNINSTALL_SHORTCUT",
+      "android.permission.READ_APP_BADGE",
+      "com.google.android.launcher.permission.READ_SETTINGS",
+      "com.oppo.launcher.permission.READ_SETTINGS",
+      "com.oppo.launcher.permission.WRITE_SETTINGS",
+      "me.everything.badger.permission.BADGE_COUNT_READ",
+      "me.everything.badger.permission.BADGE_COUNT_WRITE",
+      "com.android.launcher.permission.READ_SETTINGS",
+      "com.sec.android.provider.badge.permission.READ",
+      "com.sec.android.provider.badge.permission.WRITE",
+      "com.htc.launcher.permission.READ_SETTINGS",
+      "com.htc.launcher.permission.UPDATE_SHORTCUT",
+      "com.sonyericsson.home.permission.BROADCAST_BADGE",
+      "com.sonymobile.home.permission.PROVIDER_INSERT_BADGE",
+      "com.anddoes.launcher.permission.UPDATE_COUNT",
+      "com.majeur.launcher.permission.UPDATE_BADGE",
+      "com.huawei.android.launcher.permission.CHANGE_BADGE",
+      "com.huawei.android.launcher.permission.READ_SETTINGS",
+      "com.huawei.android.launcher.permission.WRITE_SETTINGS",
+      "com.android.launcher.permission.READ_SETTINGS",
+      "com.android.launcher.permission.WRITE_SETTINGS",
+      "com.android.launcher3.permission.READ_SETTINGS",
+      "com.android.launcher2.permission.READ_SETTINGS",
+      "com.teslacoilsw.launcher.permission.READ_SETTINGS",
+      "com.actionlauncher.playstore.permission.READ_SETTINGS",
+      "com.mx.launcher.permission.READ_SETTINGS",
+      "com.anddoes.launcher.permission.READ_SETTINGS",
+      "com.apusapps.launcher.permission.READ_SETTINGS",
+      "com.tsf.shell.permission.READ_SETTINGS",
+      "com.htc.launcher.permission.READ_SETTINGS",
+      "com.lenovo.launcher.permission.READ_SETTINGS",
+      "com.oppo.launcher.permission.READ_SETTINGS",
+      "com.bbk.launcher2.permission.READ_SETTINGS",
+      "com.s.launcher.permission.READ_SETTINGS",
+      "cn.nubia.launcher.permission.READ_SETTINGS",
+      "com.huawei.android.launcher.permission.READ_SETTINGS",
+      "com.huawei.android.launcher.permission.CHANGE_BADGE",
+      "android.permission.INTERNET",
+      "android.permission.CAMERA",
+      "android.permission.FLASHLIGHT",
+      "android.permission.CAMERA",
+      "android.permission.ACCESS_COARSE_LOCATION",
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS",
+      "android.permission.ACCESS_WIFI_STATE",
+      "android.permission.CHANGE_NETWORK_STATE",
+      "android.permission.CHANGE_WIFI_MULTICAST_STATE",
+      "android.permission.CHANGE_WIFI_STATE",
+      "android.permission.MOUNT_UNMOUNT_FILESYSTEMS",
+      "android.permission.WRITE_EXTERNAL_STORAGE",
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.BATTERY_STATS",
+      "android.permission.BODY_SENSORS",
+      "android.permission.BROADCAST_STICKY",
+      "android.permission.DISABLE_KEYGUARD",
+      "android.permission.EXPAND_STATUS_BAR",
+      "android.permission.GET_ACCOUNTS",
+      "android.permission.MANAGE_ACCOUNTS",
+      "android.permission.READ_PHONE_STATE",
+      "android.permission.CHANGE_CONFIGURATION",
+      "android.permission.WRITE_SETTINGS",
+      "android.permission.GET_TASKS",
+      "android.permission.KILL_BACKGROUND_PROCESSES",
+      "android.permission.REORDER_TASKS",
+      "android.permission.PERSISTENT_ACTIVITY",
+      "android.permission.RECORD_AUDIO",
+      "android.permission.BLUETOOTH_CONNECT",
+      "android.permission.BLUETOOTH_SCAN",
+      "android.permission.BLUETOOTH",
+      "android.permission.BLUETOOTH_ADMIN",
+      "android.permission.NFC",
+      "android.permission.MODIFY_AUDIO_SETTINGS",
+      "android.permission.VIBRATE",
+      "android.permission.USE_FINGERPRINT",
+      "com.android.browser.permission.READ_HISTORY_BOOKMARKS",
+      "com.android.browser.permission.WRITE_HISTORY_BOOKMARKS",
+      "android.permission.CLEAR_APP_CACHE",
+      "android.permission.GET_PACKAGE_SIZE",
+      "android.permission.WRITE_SYNC_SETTINGS",
+      "android.permission.READ_SYNC_SETTINGS",
+      "android.permission.READ_SYNC_STATS",
+      "android.permission.SUBSCRIBED_FEEDS_READ",
+      "android.permission.SUBSCRIBED_FEEDS_WRITE",
+      "android.permission.WRITE_CALENDAR",
+      "android.permission.READ_CALENDAR",
+      "android.permission.READ_CONTACTS",
+      "android.permission.WRITE_CONTACTS",
+      "android.permission.READ_LOGS",
+      "android.permission.RESTART_PACKAGES",
+      "android.permission.SET_TIME",
+      "android.permission.SET_TIME_ZONE",
+      "android.permission.SET_WALLPAPER",
+      "android.permission.SET_WALLPAPER_HINTS",
+      "android.permission.TRANSMIT_IR",
+      "android.permission.USE_SIP",
+      "android.permission.GET_INTENT_SENDER_INTENT",
+      "android.permission.BIND_DIRECTORY_SEARCH",
+      "android.permission.UPDATE_APP_OPS_STATS",
+      "android.permission.INSTALL_PACKAGES",
+      "android.permission.DELETE_PACKAGES",
+      "android.permission.CLEAR_APP_USER_DATA",
+      "android.permission.WRITE_MEDIA_STORAGE",
+      "android.permission.ACCESS_CACHE_FILESYSTEM",
+      "android.permission.DEVICE_POWER",
+      "android.permission.BIND_APPWIDGET",
+      "android.permission.ACCOUNT_MANAGER",
+      "android.permission.PACKAGE_USAGE_STATS",
+      "android.permission.READ_INSTALL_SESSIONS",
+      "android.permission.READ_OWNER_DATA",
+      "android.permission.READ_CELL_BROADCASTS",
+      "android.permission.WRITE_CLIPS",
+      "android.permission.READ_CLIPS",
+      "android.permission.GET_CLIPS",
+      "android.permission.WRITE_OWNER_DATA",
+      "android.permission.ACCESS_GPS",
+      "android.permission.ACCESS_WIMAX_STATE",
+      "android.permission.ACCESS_DOWNLOAD_MANAGER",
+      "android.permission.CHANGE_WIMAX_STATE",
+      "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
+      "android.permission.CALL_PHONE",
+      "android.permission.SEND_SMS",
+      "android.permission.PROCESS_OUTGOING_CALLS",
+      "android.permission.PROCESS_OUTGOING_CALLS",
+      "android.permission.CALL_PHONE",
+      "android.permission.READ_CALL_LOG",
+      "android.permission.WRITE_CALL_LOG",
+      "android.provider.Telephony.SMS_RECEIVED",
+      "android.permission.BROADCAST_WAP_PUSH",
+      "android.permission.BROADCAST_SMS",
+      "android.permission.SEND_RESPOND_VIA_MESSAGE",
+      "android.permission.GET_INTENT_SENDER_INTENT",
+      "android.permission.FOREGROUND_SERVICE",
+      "android.permission.MANAGE_EXTERNAL_STORAGE",
+      "android.permission.QUERY_ALL_PACKAGES",
+      "android.permission.HIDE_OVERLAY_WINDOWS",
+      "com.google.android.gms.permission.AD_ID",
+      "android.permission.ACCESS_ADSERVICES_ATTRIBUTION",
+      "android.permission.ACCESS_ADSERVICES_AD_ID",
+      "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
+      "com.snake.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    ],
+    "components": [
+      {
+        "kind": "activity",
+        "name": "com.Entry"
+      },
+      {
+        "kind": "receiver",
+        "name": "com.google.firebase.iid.FirebaseInstanceIdReceiver"
+      },
+      {
+        "kind": "service",
+        "name": "com.google.firebase.messaging.FirebaseMessagingService"
+      },
+      {
+        "kind": "service",
+        "name": "com.google.firebase.components.ComponentDiscoveryService"
+      },
+      {
+        "kind": "provider",
+        "name": "com.snake.helper.SystemCallProvider"
+      },
+      {
+        "kind": "provider",
+        "name": "androidx.core.content.FileProvider"
+      },
+      {
+        "kind": "provider",
+        "name": "com.snake.helper.FileProvider"
+      },
+      {
+        "kind": "receiver",
+        "name": "com.snake.helper.ProxyBroadcastReceiver"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.DaemonService"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.DaemonService$DaemonInnerService"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyVpnService"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.InternalWebBrowser"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity$P0"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity$P0_L"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity$P1"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity$P1_L"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity$P2"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity$P2_L"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity$P3"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyActivity$P3_L"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.TransparentProxyActivity$P0"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.TransparentProxyActivity$P1"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.TransparentProxyActivity$P2"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.TransparentProxyActivity$P3"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyPendingActivity$P0"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyPendingActivity$P1"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyPendingActivity$P2"
+      },
+      {
+        "kind": "activity",
+        "name": "com.snake.helper.ProxyPendingActivity$P3"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyService$P0"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyService$P1"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyService$P2"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyService$P3"
+      },
+      {
+        "kind": "provider",
+        "name": "com.snake.helper.ProxyContentProvider$P0"
+      },
+      {
+        "kind": "provider",
+        "name": "com.snake.helper.ProxyContentProvider$P1"
+      },
+      {
+        "kind": "provider",
+        "name": "com.snake.helper.ProxyContentProvider$P2"
+      },
+      {
+        "kind": "provider",
+        "name": "com.snake.helper.ProxyContentProvider$P3"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyJobService$P0"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyJobService$P1"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyJobService$P2"
+      },
+      {
+        "kind": "service",
+        "name": "com.snake.helper.ProxyJobService$P3"
+      },
+      {
+        "kind": "receiver",
+        "name": "com.google.android.gms.measurement.AppMeasurementReceiver"
+      },
+      {
+        "kind": "service",
+        "name": "com.google.android.gms.measurement.AppMeasurementService"
+      },
+      {
+        "kind": "service",
+        "name": "com.google.android.gms.measurement.AppMeasurementJobService"
+      },
+      {
+        "kind": "activity",
+        "name": "com.google.android.gms.common.api.GoogleApiActivity"
+      },
+      {
+        "kind": "provider",
+        "name": "com.google.firebase.provider.FirebaseInitProvider"
+      },
+      {
+        "kind": "provider",
+        "name": "androidx.startup.InitializationProvider"
+      },
+      {
+        "kind": "service",
+        "name": "com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+      },
+      {
+        "kind": "service",
+        "name": "com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+      },
+      {
+        "kind": "receiver",
+        "name": "com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+      },
+      {
+        "kind": "receiver",
+        "name": "androidx.profileinstaller.ProfileInstallReceiver"
+      }
+    ]
+  },
+  "dex": {
+    "native_methods": [
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "ac",
+        "sig": "(Ljava/lang/Object;Ljava/lang/Object;)V",
+        "jni_long_name": "Java_com_snake_helper_Native_ac",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "aior",
+        "sig": "(Ljava/lang/String;Ljava/lang/String;)V",
+        "jni_long_name": "Java_com_snake_helper_Native_aior",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "awl",
+        "sig": "(Ljava/lang/String;)V",
+        "jni_long_name": "Java_com_snake_helper_Native_awl",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "chl",
+        "sig": "([B)Z",
+        "jni_long_name": "Java_com_snake_helper_Native_chl",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "djp",
+        "sig": "(I)[B",
+        "jni_long_name": "Java_com_snake_helper_Native_djp",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "eio",
+        "sig": "()V",
+        "jni_long_name": "Java_com_snake_helper_Native_eio",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "i",
+        "sig": "(I)V",
+        "jni_long_name": "Java_com_snake_helper_Native_i",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "ic",
+        "sig": "(Landroid/content/Context;)V",
+        "jni_long_name": "Java_com_snake_helper_Native_ic",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "ilil",
+        "sig": "(I)Ljava/lang/String;",
+        "jni_long_name": "Java_com_snake_helper_Native_ilil",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "pjowqpxe",
+        "sig": "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
+        "jni_long_name": "Java_com_snake_helper_Native_pjowqpxe",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/Native;",
+        "name": "update",
+        "sig": "(Ljava/lang/Object;Ljava/lang/reflect/Method;)V",
+        "jni_long_name": "Java_com_snake_helper_Native_update",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/flagger;",
+        "name": "na",
+        "sig": "()V",
+        "jni_long_name": "Java_com_snake_helper_flagger_na",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lcom/snake/helper/flagger;",
+        "name": "nb",
+        "sig": "()V",
+        "jni_long_name": "Java_com_snake_helper_flagger_nb",
+        "custom": true,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeAttach",
+        "sig": "(Lio/flutter/embedding/engine/FlutterJNI;)J",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeAttach",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeCleanupMessageData",
+        "sig": "(J)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeCleanupMessageData",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeDeferredComponentInstallFailure",
+        "sig": "(ILjava/lang/String;Z)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeDeferredComponentInstallFailure",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeDestroy",
+        "sig": "(J)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeDestroy",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeDispatchEmptyPlatformMessage",
+        "sig": "(JLjava/lang/String;I)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeDispatchEmptyPlatformMessage",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeDispatchPlatformMessage",
+        "sig": "(JLjava/lang/String;Ljava/nio/ByteBuffer;II)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeDispatchPlatformMessage",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeDispatchPointerDataPacket",
+        "sig": "(JLjava/nio/ByteBuffer;I)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeDispatchPointerDataPacket",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeDispatchSemanticsAction",
+        "sig": "(JIILjava/nio/ByteBuffer;I)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeDispatchSemanticsAction",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeFlutterTextUtilsIsEmoji",
+        "sig": "(I)Z",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeFlutterTextUtilsIsEmoji",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeFlutterTextUtilsIsEmojiModifier",
+        "sig": "(I)Z",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeFlutterTextUtilsIsEmojiModifier",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeFlutterTextUtilsIsEmojiModifierBase",
+        "sig": "(I)Z",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeFlutterTextUtilsIsEmojiModifierBase",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeFlutterTextUtilsIsRegionalIndicator",
+        "sig": "(I)Z",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeFlutterTextUtilsIsRegionalIndicator",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeFlutterTextUtilsIsVariationSelector",
+        "sig": "(I)Z",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeFlutterTextUtilsIsVariationSelector",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeGetBitmap",
+        "sig": "(J)Landroid/graphics/Bitmap;",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeGetBitmap",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeGetIsSoftwareRenderingEnabled",
+        "sig": "()Z",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeGetIsSoftwareRenderingEnabled",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeImageHeaderCallback",
+        "sig": "(JII)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeImageHeaderCallback",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeInit",
+        "sig": "(Landroid/content/Context;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeInit",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeInvokePlatformMessageEmptyResponseCallback",
+        "sig": "(JI)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeInvokePlatformMessageEmptyResponseCallback",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeInvokePlatformMessageResponseCallback",
+        "sig": "(JILjava/nio/ByteBuffer;I)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeInvokePlatformMessageResponseCallback",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeLoadDartDeferredLibrary",
+        "sig": "(JI[Ljava/lang/String;)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeLoadDartDeferredLibrary",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeLookupCallbackInformation",
+        "sig": "(J)Lio/flutter/view/FlutterCallbackInformation;",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeLookupCallbackInformation",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeMarkTextureFrameAvailable",
+        "sig": "(JJ)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeMarkTextureFrameAvailable",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeNotifyLowMemoryWarning",
+        "sig": "(J)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeNotifyLowMemoryWarning",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeOnVsync",
+        "sig": "(JJJ)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeOnVsync",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativePrefetchDefaultFontManager",
+        "sig": "()V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativePrefetchDefaultFontManager",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeRegisterImageTexture",
+        "sig": "(JJLjava/lang/ref/WeakReference;)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeRegisterImageTexture",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeRegisterTexture",
+        "sig": "(JJLjava/lang/ref/WeakReference;)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeRegisterTexture",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeRunBundleAndSnapshotFromLibrary",
+        "sig": "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Landroid/content/res/AssetManager;Ljava/util/List;)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeRunBundleAndSnapshotFromLibrary",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeScheduleFrame",
+        "sig": "(J)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeScheduleFrame",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeSetAccessibilityFeatures",
+        "sig": "(JI)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeSetAccessibilityFeatures",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeSetSemanticsEnabled",
+        "sig": "(JZ)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeSetSemanticsEnabled",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeSetViewportMetrics",
+        "sig": "(JFIIIIIIIIIIIIIII[I[I[I)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeSetViewportMetrics",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeSpawn",
+        "sig": "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/flutter/embedding/engine/FlutterJNI;",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeSpawn",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeSurfaceChanged",
+        "sig": "(JII)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeSurfaceChanged",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeSurfaceCreated",
+        "sig": "(JLandroid/view/Surface;)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeSurfaceCreated",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeSurfaceDestroyed",
+        "sig": "(J)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeSurfaceDestroyed",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeSurfaceWindowChanged",
+        "sig": "(JLandroid/view/Surface;)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeSurfaceWindowChanged",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeUnregisterTexture",
+        "sig": "(JJ)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeUnregisterTexture",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeUpdateDisplayMetrics",
+        "sig": "(J)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeUpdateDisplayMetrics",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeUpdateJavaAssetManager",
+        "sig": "(JLandroid/content/res/AssetManager;Ljava/lang/String;)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeUpdateJavaAssetManager",
+        "custom": false,
+        "exported_by": []
+      },
+      {
+        "class": "Lio/flutter/embedding/engine/FlutterJNI;",
+        "name": "nativeUpdateRefreshRate",
+        "sig": "(F)V",
+        "jni_long_name": "Java_io_flutter_embedding_engine_FlutterJNI_nativeUpdateRefreshRate",
+        "custom": false,
+        "exported_by": []
+      }
+    ],
+    "loader_call_sites": [
+      {
+        "site_off": 2845742,
+        "loader": "Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V",
+        "inside": "Lcom/snake/App;-><clinit>()V",
+        "literal": "engine",
+        "how": "fill-array-data+String([B)",
+        "evidence": "fill-array-data instruction at file 0x2b6c22 points to the payload at 0x2b6c38 (ident=0x0300, element_width=1, size=6); the 6 bytes at 0x2b6c40 are 656e67696e65 = 'engine'",
+        "payload_off": 2845760,
+        "payload_hex": "656e67696e65"
+      },
+      {
+        "site_off": 2863066,
+        "loader": "Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V",
+        "inside": "Lio/flutter/embedding/engine/FlutterJNI;->loadLibrary()V",
+        "literal": "flutter",
+        "how": "const-string",
+        "evidence": "const-string \"flutter\" at file 0x2bafd6 in Lio/flutter/embedding/engine/FlutterJNI;->loadLibrary()V",
+        "payload_off": 2863062,
+        "payload_hex": ""
+      }
+    ],
+    "native_callers": {
+      "Lcom/snake/helper/Native;": [
+        "Landroidx/appcompat/view/menu/b8;->callActivityOnResume(Landroid/app/Activity;)V",
+        "Landroidx/appcompat/view/menu/jv0;->O2(Ljava/lang/String;Ljava/lang/String;)V",
+        "Landroidx/appcompat/view/menu/ne0;->run()V",
+        "Landroidx/appcompat/view/menu/p60;->uncaughtException(Ljava/lang/Thread;Ljava/lang/Throwable;)V",
+        "Landroidx/appcompat/view/menu/vx;->b(Ljava/lang/String;JZ)V",
+        "Landroidx/appcompat/view/menu/vx;->c(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V",
+        "Landroidx/appcompat/view/menu/vx;->f(Landroid/app/Activity;Ljava/lang/String;IJZ)V",
+        "Landroidx/appcompat/view/menu/yu0;->f(Landroid/content/Context;Landroidx/appcompat/view/menu/wb;)V",
+        "Landroidx/appcompat/view/menu/z10;->a(Ljava/lang/String;)V",
+        "Landroidx/appcompat/view/menu/z10;->b(Ljava/lang/String;Ljava/lang/String;)V",
+        "Landroidx/appcompat/view/menu/z10;->c(Landroid/content/Context;)V",
+        "Lcom/Entry;->C(Landroidx/appcompat/view/menu/id0;Landroidx/appcompat/view/menu/kd0$d;)V",
+        "Lcom/snake/helper/Native;->a(Landroid/app/Activity;Ljava/lang/String;IJZ)V",
+        "Lcom/snake/helper/Native;->logIn(Ljava/lang/String;J)V",
+        "Lio/flutter/view/TextureRegistry$SurfaceTextureEntry;->setOnTrimMemoryListener(Lio/flutter/view/TextureRegistry$b;)V"
+      ],
+      "Lcom/snake/helper/flagger;": []
+    }
+  },
+  "libengine": {
+    "sha256": "f5d751e6bde8f0595eda9836338e845b029a41d2362743a2a4619ba99f41e3be",
+    "build_id": "1012c2caf5541be356d42b83494cc9bfe6bb1837",
+    "soname": "libengine.so",
+    "needed": [
+      "libm.so",
+      "libdl.so",
+      "libc.so"
+    ],
+    "java_symbol_exports": [],
+    "exports": [
+      "_ZTCNSt6__ndk119basic_istringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE0_NS_13basic_istreamIcS2_EE",
+      "_ZTVNSt6__ndk119basic_istringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE",
+      "_ZTVNSt6__ndk115basic_stringbufIcNS_11char_traitsIcEENS_9allocatorIcEEEE",
+      "_ZTTNSt6__ndk114basic_ifstreamIcNS_11char_traitsIcEEEE",
+      "_ZTTNSt6__ndk118basic_stringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE",
+      "_ZTCNSt6__ndk119basic_ostringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE0_NS_13basic_ostreamIcS2_EE",
+      "_ZTTNSt6__ndk119basic_ostringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE",
+      "_ZTTNSt6__ndk119basic_istringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE",
+      "_ZTVNSt6__ndk114basic_ifstreamIcNS_11char_traitsIcEEEE",
+      "_ZTCNSt6__ndk114basic_ifstreamIcNS_11char_traitsIcEEEE0_NS_13basic_istreamIcS2_EE",
+      "_ZTVNSt6__ndk118basic_stringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE",
+      "_ZTCNSt6__ndk118basic_stringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE0_NS_13basic_istreamIcS2_EE",
+      "_ZTVNSt6__ndk119basic_ostringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE",
+      "JNI_OnLoad",
+      "_ZTCNSt6__ndk118basic_stringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE0_NS_14basic_iostreamIcS2_EE",
+      "_ZTVNSt6__ndk113basic_filebufIcNS_11char_traitsIcEEEE",
+      "_ZTCNSt6__ndk118basic_stringstreamIcNS_11char_traitsIcEENS_9allocatorIcEEEE16_NS_13basic_ostreamIcS2_EE"
+    ],
+    "nonstandard_sections": [
+      {
+        "name": ".mytext",
+        "addr": "0x81eeac",
+        "size": 244,
+        "writable": false,
+        "executable": true,
+        "type": "SHT_PROGBITS"
+      }
+    ],
+    "register_natives_sites": [
+      {
+        "va": "0xb0140",
+        "base": "env",
+        "count": 1,
+        "count_evidence": "0xb0130: w3, #1  (arg3 = nMethods, set before the blr at 0xb0144)",
+        "table": "sp+0x38",
+        "table_evidence": "0xb0124: x2, sp, #0x38 — the JNINativeMethod[] is assembled on the stack, so name/sig/fnPtr are runtime values; the stores into that frame below are what can still be recovered statically",
+        "class_name_len": 8,
+        "class_name_evidence": "byte-decode loop at 0xb00d0 runs 8 times (strb + add x20,x20,#1 + cmp x20,#8 + b.ne)  [all loop bounds in window: [8]]",
+        "find_class_va": null,
+        "fnptrs": [
+          {
+            "entry": 0,
+            "field": "signature",
+            "offset": "sp+0x40",
+            "store_va": "0xafb38",
+            "reg": "x24",
+            "value": null,
+            "value_kind": "runtime value",
+            "section": null,
+            "executable": false
+          },
+          {
+            "entry": 0,
+            "field": "fnPtr",
+            "offset": "sp+0x48",
+            "store_va": "0xafb38",
+            "reg": "x22",
+            "value": null,
+            "value_kind": null,
+            "section": null,
+            "executable": false
+          }
+        ]
+      },
+      {
+        "va": "0xb40a8",
+        "base": "env",
+        "count": 2,
+        "count_evidence": "0xb40ac: w3, #2  (arg3 = nMethods, set before the blr at 0xb40b4)",
+        "table": "sp+0x20",
+        "table_evidence": "0xb409c: x2, sp, #0x20 — the JNINativeMethod[] is assembled on the stack, so name/sig/fnPtr are runtime values; the stores into that frame below are what can still be recovered statically",
+        "class_name_len": 3,
+        "class_name_evidence": "byte-decode loop at 0xb4088 runs 3 times (strb + add x19,x19,#1 + cmp x19,#3 + b.ne)  [all loop bounds in window: [2, 3]]",
+        "find_class_va": null,
+        "fnptrs": [
+          {
+            "entry": 1,
+            "field": "name",
+            "offset": "sp+0x38",
+            "store_va": "0xb3b1c",
+            "reg": "x22",
+            "value": null,
+            "value_kind": "runtime value",
+            "section": null,
+            "executable": false
+          },
+          {
+            "entry": 1,
+            "field": "signature",
+            "offset": "sp+0x40",
+            "store_va": "0xb40b0",
+            "reg": "x21",
+            "value": null,
+            "value_kind": "runtime value",
+            "section": null,
+            "executable": false
+          },
+          {
+            "entry": 1,
+            "field": "fnPtr",
+            "offset": "sp+0x48",
+            "store_va": "0xb40b0",
+            "reg": "x9",
+            "value": "0x81eeb0",
+            "value_kind": "absolute",
+            "section": ".mytext",
+            "executable": true
+          }
+        ]
+      },
+      {
+        "va": "0xf3a08",
+        "base": "env",
+        "count": 10,
+        "count_evidence": "0xf3a04: w3, #0xa  (arg3 = nMethods, set before the blr at 0xf3a0c)",
+        "table": "0x828ee8",
+        "table_evidence": "0xf39fc: x2, x2, #0xee8 — absolute table at 0x828ee8 in .bss",
+        "class_name_len": 23,
+        "class_name_evidence": "FindClass at 0xf39e4; byte-decode loop at 0xf39d0 runs 23 times (strb + add x19,x19,#1 + cmp x19,#23 + b.ne), so the JNI class name it materialises is that many characters long  [all loop bounds in window: [23]]",
+        "find_class_va": "0xf39e4",
+        "fnptrs": []
+      }
+    ],
+    "register_natives_total": 13,
+    "slot_0x6b8_loads": [
+      {
+        "va": "0xb0140",
+        "indirect": true,
+        "base": "env",
+        "evidence": "ldr x8, [x19] at file 0xb013c — x8 = *JNIEnv, i.e. the JNI function-table pointer"
+      },
+      {
+        "va": "0xb40a8",
+        "indirect": true,
+        "base": "env",
+        "evidence": "ldr x8, [x25] at file 0xb4090 — x8 = *JNIEnv, i.e. the JNI function-table pointer"
+      },
+      {
+        "va": "0xf3a08",
+        "indirect": true,
+        "base": "env",
+        "evidence": "ldr x8, [x24] at file 0xf39f0 — x8 = *JNIEnv, i.e. the JNI function-table pointer"
+      },
+      {
+        "va": "0x79d338",
+        "indirect": true,
+        "base": "global",
+        "evidence": "adrp x8,#0x828000 at file 0x79d32c — points at 0x828000 (.bss), not at JNIEnv"
+      },
+      {
+        "va": "0x7fea74",
+        "indirect": false,
+        "base": "global",
+        "evidence": "adrp x8,#0x839000 at file 0x7fea70 — points at 0x839000 (.bss), not at JNIEnv"
+      },
+      {
+        "va": "0x81f514",
+        "indirect": false,
+        "base": "global",
+        "evidence": "adrp x16,#0x826000 at file 0x81f510 — points at 0x826000 (.got), not at JNIEnv"
+      }
+    ],
+    "jni_onload": {
+      "insns_decoded": 420,
+      "syscalls": [
+        {
+          "va": 999448,
+          "number": 222,
+          "name": "mmap",
+          "args": {
+            "x2": "0x7",
+            "x3": "0x22"
+          },
+          "prot": "RWX"
+        },
+        {
+          "va": 999708,
+          "number": 222,
+          "name": "mmap",
+          "args": {
+            "x0": "0x27",
+            "x2": "0x7",
+            "x3": "0x22"
+          },
+          "prot": "RWX"
+        },
+        {
+          "va": 1000488,
+          "number": 53,
+          "name": "fchmodat",
+          "args": {},
+          "prot": null
+        },
+        {
+          "va": 1000536,
+          "number": 53,
+          "name": "fchmodat",
+          "args": {},
+          "prot": null
+        }
+      ],
+      "rwx_mmaps": [
+        "0xf4018",
+        "0xf411c"
+      ],
+      "branch_opcode_values": [
+        "0xf4040",
+        "0xf4090"
+      ],
+      "blr_count": 2
+    },
+    "mytext": {
+      "addr": "0x81eeac",
+      "size": 244,
+      "env_slots": [
+        {
+          "va": "0x81eed0",
+          "offset": "0x38",
+          "name": "FromReflectedMethod"
+        }
+      ],
+      "insns": [
+        "0x81eeac: ret ",
+        "0x81eeb0: ret ",
+        "0x81eeb4: stp x29, x30, [sp, #-0x20]!",
+        "0x81eeb8: stp x20, x19, [sp, #0x10]",
+        "0x81eebc: mov x29, sp",
+        "0x81eec0: ldr x8, [x0]",
+        "0x81eec4: mov x1, x3",
+        "0x81eec8: mov x19, x2",
+        "0x81eecc: mov x20, x0",
+        "0x81eed0: ldr x8, [x8, #0x38]",
+        "0x81eed4: blr x8",
+        "0x81eed8: mov x2, x0",
+        "0x81eedc: mov x0, x20",
+        "0x81eee0: mov x1, x19",
+        "0x81eee4: bl #0xb01c4",
+        "0x81eee8: adrp x8, #0x828000",
+        "0x81eeec: ldrsw x8, [x8, #0xd98]",
+        "0x81eef0: ldr w9, [x0, x8]",
+        "0x81eef4: orr w10, w9, #1",
+        "0x81eef8: cmp w10, w9",
+        "0x81eefc: b.eq #0x81ef08",
+        "0x81ef00: mov w9, w10",
+        "0x81ef04: str w10, [x0, x8]",
+        "0x81ef08: adrp x10, #0x828000",
+        "0x81ef0c: ldr w10, [x10, #0xd90]",
+        "0x81ef10: cmp w10, #0x1d",
+        "0x81ef14: b.lt #0x81ef28",
+        "0x81ef18: orr w10, w9, #0x10000000",
+        "0x81ef1c: cmp w10, w9",
+        "0x81ef20: b.eq #0x81ef28",
+        "0x81ef24: str w10, [x0, x8]",
+        "0x81ef28: ldp x20, x19, [sp, #0x10]",
+        "0x81ef2c: ldp x29, x30, [sp], #0x20",
+        "0x81ef30: ret ",
+        "0x81ef34: stp x29, x30, [sp, #-0x10]!",
+        "0x81ef38: mov x29, sp",
+        "0x81ef3c: mov x1, x3",
+        "0x81ef40: bl #0xb134c",
+        "0x81ef44: adrp x8, #0x828000",
+        "0x81ef48: ldrsw x8, [x8, #0xd98]",
+        "0x81ef4c: ldr w9, [x0, x8]",
+        "0x81ef50: orr w10, w9, #1",
+        "0x81ef54: cmp w10, w9",
+        "0x81ef58: b.eq #0x81ef64",
+        "0x81ef5c: mov w9, w10",
+        "0x81ef60: str w10, [x0, x8]",
+        "0x81ef64: adrp x10, #0x828000",
+        "0x81ef68: ldr w10, [x10, #0xd90]",
+        "0x81ef6c: cmp w10, #0x1d",
+        "0x81ef70: b.lt #0x81ef88",
+        "0x81ef74: orr w10, w9, #0x10000000",
+        "0x81ef78: cmp w10, w9",
+        "0x81ef7c: b.eq #0x81ef88",
+        "0x81ef80: mov w9, w10",
+        "0x81ef84: str w10, [x0, x8]",
+        "0x81ef88: and w10, w9, #0xffffffef",
+        "0x81ef8c: cmp w10, w9",
+        "0x81ef90: b.eq #0x81ef98",
+        "0x81ef94: str w10, [x0, x8]",
+        "0x81ef98: ldp x29, x30, [sp], #0x10",
+        "0x81ef9c: ret "
+      ]
+    },
+    "init_array": [
+      {
+        "index": 0,
+        "slot": "0x825c78",
+        "target": "0x11ab10",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 1,
+        "slot": "0x825c80",
+        "target": "0x147dec",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 2,
+        "slot": "0x825c88",
+        "target": "0x1750d8",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 3,
+        "slot": "0x825c90",
+        "target": "0x1a23c4",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 4,
+        "slot": "0x825c98",
+        "target": "0x1cf6b0",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 5,
+        "slot": "0x825ca0",
+        "target": "0x1fc99c",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 6,
+        "slot": "0x825ca8",
+        "target": "0x229c88",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 7,
+        "slot": "0x825cb0",
+        "target": "0x256f74",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 8,
+        "slot": "0x825cb8",
+        "target": "0x284260",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 9,
+        "slot": "0x825cc0",
+        "target": "0x2b154c",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 10,
+        "slot": "0x825cc8",
+        "target": "0x2de838",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 11,
+        "slot": "0x825cd0",
+        "target": "0x30bb24",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 12,
+        "slot": "0x825cd8",
+        "target": "0x338e10",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 13,
+        "slot": "0x825ce0",
+        "target": "0x3660ec",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 14,
+        "slot": "0x825ce8",
+        "target": "0x3933b8",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 15,
+        "slot": "0x825cf0",
+        "target": "0x3c06a4",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 16,
+        "slot": "0x825cf8",
+        "target": "0x3ed990",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 17,
+        "slot": "0x825d00",
+        "target": "0x41ac7c",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 18,
+        "slot": "0x825d08",
+        "target": "0xf8098",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 19,
+        "slot": "0x825d10",
+        "target": "0x447f68",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 20,
+        "slot": "0x825d18",
+        "target": "0x475254",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 21,
+        "slot": "0x825d20",
+        "target": "0x4a2540",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 22,
+        "slot": "0x825d28",
+        "target": "0x4cf82c",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 23,
+        "slot": "0x825d30",
+        "target": "0x4fcb18",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 24,
+        "slot": "0x825d38",
+        "target": "0x529e04",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 25,
+        "slot": "0x825d40",
+        "target": "0x5570f0",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 26,
+        "slot": "0x825d48",
+        "target": "0x5843dc",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 27,
+        "slot": "0x825d50",
+        "target": "0x5b16c8",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 28,
+        "slot": "0x825d58",
+        "target": "0x5de9b4",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 29,
+        "slot": "0x825d60",
+        "target": "0x60bca0",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 30,
+        "slot": "0x825d68",
+        "target": "0x638f8c",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 31,
+        "slot": "0x825d70",
+        "target": "0x666278",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 32,
+        "slot": "0x825d78",
+        "target": "0x693564",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 33,
+        "slot": "0x825d80",
+        "target": "0x6c0850",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 34,
+        "slot": "0x825d88",
+        "target": "0x6edb3c",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 35,
+        "slot": "0x825d90",
+        "target": "0x71ae28",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 36,
+        "slot": "0x825d98",
+        "target": "0x748114",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9"
+      },
+      {
+        "index": 37,
+        "slot": "0x825da0",
+        "target": "0x794ac",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "ffc302d1fd7b05a9fd430191fc6f06a9"
+      },
+      {
+        "index": 38,
+        "slot": "0x825da8",
+        "target": "0x8e270",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "ff0301d1fd7b02a9fd830091f44f03a9"
+      },
+      {
+        "index": 39,
+        "slot": "0x825db0",
+        "target": "0x8f4f0",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "fd7bbfa9fd030091c83c00b008c11591"
+      },
+      {
+        "index": 40,
+        "slot": "0x825db8",
+        "target": "0x8f554",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "fd7bbfa9fd030091c83c00b008011691"
+      },
+      {
+        "index": 41,
+        "slot": "0x825dc0",
+        "target": "0x8f5b4",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "fd7bbfa9fd030091c83c00b008c11691"
+      },
+      {
+        "index": 42,
+        "slot": "0x825dc8",
+        "target": "0x7e2590",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "3f2303d5fd7bbea9f30b00f9fd030091"
+      },
+      {
+        "index": 43,
+        "slot": "0x825dd0",
+        "target": "0x81ae24",
+        "value_from": "reloc",
+        "section": ".text",
+        "prologue": "3f2303d5ffc301d1fe4f06a900028052"
+      }
+    ],
+    "init_array_chains": [
+      {
+        "prologue": "e80f19fcfd7b01a9fd430091fc6f02a9",
+        "count": 37,
+        "indexes": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36
+        ],
+        "first": "0x11ab10",
+        "last": "0x748114",
+        "section": ".text",
+        "strides": {
+          "0x2d2ec": 31,
+          "0x2d2dc": 2,
+          "0x2d2cc": 1,
+          "-0x322be4": 1,
+          "0x34fed0": 1
+        },
+        "value_from": [
+          "reloc"
+        ],
+        "span_bytes": 6477316
+      }
+    ],
+    "imports_of_note": [
+      {
+        "symbol": "_ZN16xcrash_oneheader6detail5pipe2EPii",
+        "meaning": "xCrash (one-header build) native crash handler"
+      },
+      {
+        "symbol": "__system_property_get",
+        "meaning": "reads Android system properties (device/ROM fingerprinting)"
+      },
+      {
+        "symbol": "dl_iterate_phdr",
+        "meaning": "enumerates loaded ELF images (unwinding / self-inspection)"
+      },
+      {
+        "symbol": "dladdr",
+        "meaning": "address -> symbol/library resolution at runtime"
+      },
+      {
+        "symbol": "dlsym",
+        "meaning": "dynamic symbol lookup (late binding without a PLT import)"
+      },
+      {
+        "symbol": "getaddrinfo",
+        "meaning": "DNS resolution"
+      },
+      {
+        "symbol": "getauxval",
+        "meaning": "reads the auxiliary vector (AT_HWCAP feature detection)"
+      },
+      {
+        "symbol": "ioctl",
+        "meaning": "device/control ioctls"
+      },
+      {
+        "symbol": "mmap",
+        "meaning": "maps memory at runtime"
+      },
+      {
+        "symbol": "mprotect",
+        "meaning": "changes page protection at runtime"
+      },
+      {
+        "symbol": "prctl",
+        "meaning": "process control (dumpability / tracer behaviour / thread name)"
+      },
+      {
+        "symbol": "process_vm_readv",
+        "meaning": "cross-process memory read (crash dump / inspection)"
+      },
+      {
+        "symbol": "pthread_create",
+        "meaning": "spawns threads"
+      }
+    ],
+    "import_count": 136,
+    "word_pattern_upper_bounds": {
+      "svc0_encoding": 25805,
+      "ldr_x_reg_0x6b8": 6,
+      "movz_0x14000000": 12199
+    },
+    "jni_identifier_probe": {
+      "terms_searched": [
+        "(I)Ljava/lang/String;",
+        "(I)V",
+        "(I)[B",
+        "(Landroid/content/Context;)V",
+        "(Ljava/lang/Object;Ljava/lang/Object;)V",
+        "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V",
+        "(Ljava/lang/Object;Ljava/lang/reflect/Method;)V",
+        "(Ljava/lang/String;)V",
+        "(Ljava/lang/String;Ljava/lang/String;)V",
+        "([B)Z",
+        "Java_com_snake_helper_Native_ac",
+        "Java_com_snake_helper_Native_ac__Ljava_lang_Object_1003bLjava_lang_Object_1003b",
+        "Java_com_snake_helper_Native_aior",
+        "Java_com_snake_helper_Native_aior__Ljava_lang_String_1003bLjava_lang_String_1003b",
+        "Java_com_snake_helper_Native_awl",
+        "Java_com_snake_helper_Native_awl__Ljava_lang_String_1003b",
+        "Java_com_snake_helper_Native_chl",
+        "Java_com_snake_helper_Native_chl___1005bB",
+        "Java_com_snake_helper_Native_djp",
+        "Java_com_snake_helper_Native_djp__I_1005b",
+        "Java_com_snake_helper_Native_eio",
+        "Java_com_snake_helper_Native_eio__",
+        "Java_com_snake_helper_Native_i",
+        "Java_com_snake_helper_Native_i__I",
+        "Java_com_snake_helper_Native_ic",
+        "Java_com_snake_helper_Native_ic__Landroid_content_Context_1003b",
+        "Java_com_snake_helper_Native_ilil",
+        "Java_com_snake_helper_Native_ilil__ILjava_lang_String",
+        "Java_com_snake_helper_Native_pjowqpxe",
+        "Java_com_snake_helper_Native_pjowqpxe__Ljava_lang_Object_1003bLjava_lang_Object_1003bLjava_lang_Object_1003b",
+        "Java_com_snake_helper_Native_update",
+        "Java_com_snake_helper_Native_update__Ljava_lang_Object_1003bLjava_lang_reflect_Method_1003b",
+        "Java_com_snake_helper_flagger_na",
+        "Java_com_snake_helper_flagger_na__",
+        "Java_com_snake_helper_flagger_nb",
+        "Java_com_snake_helper_flagger_nb__",
+        "Lcom/snake/helper/Native;",
+        "Lcom/snake/helper/flagger;",
+        "aior",
+        "com.snake",
+        "com.snake.helper.Native",
+        "com.snake.helper.flagger",
+        "com/snake",
+        "com/snake/helper/Native",
+        "com/snake/helper/flagger",
+        "ilil",
+        "pjowqpxe",
+        "update"
+      ],
+      "terms_too_short": [
+        "()V",
+        "ac",
+        "awl",
+        "chl",
+        "djp",
+        "eio",
+        "i",
+        "ic",
+        "na",
+        "nb"
+      ],
+      "terms_found": [],
+      "hits": {}
+    }
+  },
+  "libapp": {
+    "sha256": "2d3577fbaaacc7cb63e5b04a5a21572eeee1e0d55b223941d6a5496a91a427c8",
+    "build_id": "63956a450772e13c10d2440539822110",
+    "snapshot_versions": [
+      {
+        "file_offset": 532,
+        "va": 532,
+        "version": "80a49c7111088100a233b2ae788e1f48",
+        "features": "product no-code_comments dwarf_stack_traces_mode dedup_instructions no-tsan no-msan arm64 android compressed-pointers",
+        "kind": "features-adjacent",
+        "in_symbol": "_kDartVmSnapshotData"
+      },
+      {
+        "file_offset": 16596,
+        "va": 16596,
+        "version": "80a49c7111088100a233b2ae788e1f48",
+        "features": "product no-code_comments dwarf_stack_traces_mode dedup_instructions no-tsan no-msan arm64 android compressed-pointers",
+        "kind": "features-adjacent",
+        "in_symbol": "_kDartIsolateSnapshotData"
+      }
+    ],
+    "dart_symbols": {
+      "_kDartVmSnapshotInstructions": "0x160000",
+      "_kDartIsolateSnapshotInstructions": "0x176b40",
+      "_kDartVmSnapshotData": "0x200",
+      "_kDartIsolateSnapshotData": "0x40c0",
+      "_kDartSnapshotBuildId": "0x1c8"
+    },
+    "sections": [
+      {
+        "name": ".note.gnu.build-id",
+        "addr": "0x1c8",
+        "size": 32,
+        "writable": false,
+        "executable": false
+      },
+      {
+        "name": ".rodata",
+        "addr": "0x200",
+        "size": 1394112,
+        "writable": false,
+        "executable": false
+      },
+      {
+        "name": ".eh_frame",
+        "addr": "0x1547c0",
+        "size": 66,
+        "writable": false,
+        "executable": false
+      },
+      {
+        "name": ".dynstr",
+        "addr": "0x154808",
+        "size": 133,
+        "writable": false,
+        "executable": false
+      },
+      {
+        "name": ".dynsym",
+        "addr": "0x154890",
+        "size": 144,
+        "writable": false,
+        "executable": false
+      },
+      {
+        "name": ".hash",
+        "addr": "0x154920",
+        "size": 56,
+        "writable": false,
+        "executable": false
+      },
+      {
+        "name": ".text",
+        "addr": "0x160000",
+        "size": 4178912,
+        "writable": false,
+        "executable": true
+      },
+      {
+        "name": ".bss",
+        "addr": "0x560000",
+        "size": 32,
+        "writable": true,
+        "executable": false
+      },
+      {
+        "name": ".dynamic",
+        "addr": "0x560020",
+        "size": 96,
+        "writable": true,
+        "executable": false
+      },
+      {
+        "name": ".shstrtab",
+        "addr": "0x0",
+        "size": 90,
+        "writable": false,
+        "executable": false
+      }
+    ],
+    "indicator_counts": {
+      "auth_token": 6,
+      "brand": 2,
+      "c2_endpoint": 2,
+      "license": 3,
+      "social_link": 4,
+      "store_link": 2,
+      "url": 5,
+      "version_lock": 3
+    },
+    "hosts": {
+      "imgur.com": 4,
+      "api.flutter.dev": 2,
+      "www.facebook.com": 1,
+      "flagsapi.com": 1,
+      "wa.me": 1,
+      "apkpure.com": 1,
+      "www.snakeengine.com": 1,
+      "t.me": 1,
+      "rest.snakeseller.com": 1,
+      "flutter.dev": 1,
+      "play.google.com": 1,
+      "discord.com": 1
+    },
+    "indicators": [
+      {
+        "category": "auth_token",
+        "value": "Access Token",
+        "file_offset": 240727,
+        "va": -1
+      },
+      {
+        "category": "auth_token",
+        "value": "ENCRYPTED_SIZE",
+        "file_offset": 183172,
+        "va": -1
+      },
+      {
+        "category": "auth_token",
+        "value": "access token",
+        "file_offset": 127211,
+        "va": -1
+      },
+      {
+        "category": "auth_token",
+        "value": "authorization",
+        "file_offset": 264401,
+        "va": -1
+      },
+      {
+        "category": "auth_token",
+        "value": "deviceId",
+        "file_offset": 277731,
+        "va": -1
+      },
+      {
+        "category": "auth_token",
+        "value": "encryptedData",
+        "file_offset": 272320,
+        "va": -1
+      },
+      {
+        "category": "brand",
+        "value": "Snake Engine",
+        "file_offset": 180196,
+        "va": -1
+      },
+      {
+        "category": "brand",
+        "value": "com.snake",
+        "file_offset": 245050,
+        "va": -1
+      },
+      {
+        "category": "c2_endpoint",
+        "value": "https://rest.snakeseller.com/api/request/",
+        "file_offset": 278501,
+        "va": -1
+      },
+      {
+        "category": "c2_endpoint",
+        "value": "https://www.snakeengine.com/topup/",
+        "file_offset": 251150,
+        "va": -1
+      },
+      {
+        "category": "license",
+        "value": "decompressLicenses",
+        "file_offset": 120287,
+        "va": -1
+      },
+      {
+        "category": "license",
+        "value": "parseLicenses",
+        "file_offset": 174582,
+        "va": -1
+      },
+      {
+        "category": "license",
+        "value": "utf8DecodeLicenses",
+        "file_offset": 321381,
+        "va": -1
+      },
+      {
+        "category": "social_link",
+        "value": "https://discord.com/invite/",
+        "file_offset": 319779,
+        "va": -1
+      },
+      {
+        "category": "social_link",
+        "value": "https://t.me/",
+        "file_offset": 262857,
+        "va": -1
+      },
+      {
+        "category": "social_link",
+        "value": "https://wa.me/",
+        "file_offset": 210796,
+        "va": -1
+      },
+      {
+        "category": "social_link",
+        "value": "https://www.facebook.com/",
+        "file_offset": 128365,
+        "va": -1
+      },
+      {
+        "category": "store_link",
+        "value": "https://apkpure.com/search?q=",
+        "file_offset": 235778,
+        "va": -1
+      },
+      {
+        "category": "store_link",
+        "value": "https://play.google.com/store/apps/details?id=",
+        "file_offset": 309883,
+        "va": -1
+      },
+      {
+        "category": "url",
+        "value": "https://api.flutter.dev/flutter/dart-ui/ChannelBuffers-class.html",
+        "file_offset": 256540,
+        "va": -1
+      },
+      {
+        "category": "url",
+        "value": "https://api.flutter.dev/flutter/material/Scaffold/of.html",
+        "file_offset": 216751,
+        "va": -1
+      },
+      {
+        "category": "url",
+        "value": "https://flagsapi.com/",
+        "file_offset": 181777,
+        "va": -1
+      },
+      {
+        "category": "url",
+        "value": "https://flutter.dev/docs/release/breaking-changes/network-policy-ios-android.",
+        "file_offset": 299337,
+        "va": -1
+      },
+      {
+        "category": "url",
+        "value": "https://imgur.com/",
+        "file_offset": 119205,
+        "va": -1
+      },
+      {
+        "category": "version_lock",
+        "value": "currently supported version",
+        "file_offset": 271322,
+        "va": -1
+      },
+      {
+        "category": "version_lock",
+        "value": "not OFFCIAL",
+        "file_offset": 145933,
+        "va": -1
+      },
+      {
+        "category": "version_lock",
+        "value": "not supported",
+        "file_offset": 116158,
+        "va": -1
+      }
+    ],
+    "java_identity_probe": {
+      "terms_searched": [
+        "Lcom/snake/helper/Native;",
+        "Lcom/snake/helper/flagger;",
+        "com.snake",
+        "com.snake.helper.Native",
+        "com.snake.helper.flagger",
+        "com/snake",
+        "com/snake/helper/Native",
+        "com/snake/helper/flagger"
+      ],
+      "hits": {
+        "com.snake": [
+          "0x3bd3a"
+        ]
+      }
+    },
+    "identity_strings": [
+      {
+        "offset": "0x2bfe4",
+        "va": "",
+        "text": "You are not connected to the internet, Snake Engine needs an active internet connection"
+      },
+      {
+        "offset": "0x3387f",
+        "va": "",
+        "text": "Hindi ka konektado sa internet, kailangan ng Snake Engine ng aktibong koneksyon sa internet"
+      },
+      {
+        "offset": "0x3ae49",
+        "va": "",
+        "text": "Snake Engine"
+      },
+      {
+        "offset": "0x3bd3a",
+        "va": "",
+        "text": "com.snake"
+      },
+      {
+        "offset": "0x3d50e",
+        "va": "",
+        "text": "https://www.snakeengine.com/topup/"
+      },
+      {
+        "offset": "0x4343a",
+        "va": "",
+        "text": "helperError"
+      },
+      {
+        "offset": "0x43fe5",
+        "va": "",
+        "text": "https://rest.snakeseller.com/api/request/"
+      },
+      {
+        "offset": "0x444f5",
+        "va": "",
+        "text": "s conectado a Internet, Snake Engine necesita una conexi"
+      },
+      {
+        "offset": "0x49900",
+        "va": "",
+        "text": "Anda tidak disambungkan ke internet, Snake Engine memerlukan sambungan internet yang aktif"
+      }
+    ],
+    "engine_api_names": {
+      "PlatformConfigurationNativeApi::DefaultRouteName": [
+        "0x35285"
+      ],
+      "PlatformConfigurationNativeApi::EndWarmUpFrame": [
+        "0x1bbb9"
+      ],
+      "PlatformConfigurationNativeApi::GetRootIsolateToken": [
+        "0x3bc6d"
+      ],
+      "PlatformConfigurationNativeApi::Render": [
+        "0x489da"
+      ],
+      "PlatformConfigurationNativeApi::RequestDartPerformanceMode": [
+        "0x2cc51"
+      ],
+      "PlatformConfigurationNativeApi::RespondToPlatformMessage": [
+        "0x3291a"
+      ],
+      "PlatformConfigurationNativeApi::ScheduleFrame": [
+        "0x1d0d7"
+      ],
+      "PlatformConfigurationNativeApi::SendChannelUpdate": [
+        "0x23e4d"
+      ],
+      "PlatformConfigurationNativeApi::SendPlatformMessage": [
+        "0x404fc"
+      ],
+      "PlatformConfigurationNativeApi::SetNeedsReportTimings": [
+        "0x1c083"
+      ],
+      "PlatformConfigurationNativeApi::UpdateSemantics": [
+        "0x32be6"
+      ]
+    }
+  },
+  "libflutter": {
+    "sha256": "0baa710d6b7f7de2f8bcc05aa2950bab2989f3a4c95bc7f7bcc23ce84626ee52",
+    "build_id": "67d6564b8d334123ab2f76cbe8615dc2688a7cf8",
+    "snapshot_versions": [
+      {
+        "file_offset": 2011092,
+        "va": 2011092,
+        "version": "80a49c7111088100a233b2ae788e1f48",
+        "features": "",
+        "kind": "nul-delimited",
+        "in_symbol": "_binary_icudtl_dat_size"
+      }
+    ],
+    "pairing_with_libapp": {
+      "80a49c7111088100a233b2ae788e1f48": [
+        {
+          "file_offset": "0x1eafd4",
+          "va": "0x1eafd4",
+          "section": ".rodata"
+        }
+      ]
+    },
+    "java_symbol_exports": [],
+    "jni_onload_export": true,
+    "engine_api_names": {
+      "PlatformConfigurationNativeApi::ComputePlatformResolvedLocale": [
+        "0x1cef42"
+      ],
+      "PlatformConfigurationNativeApi::DefaultRouteName": [
+        "0x1ce1f9"
+      ],
+      "PlatformConfigurationNativeApi::EndWarmUpFrame": [
+        "0x1cdd4c"
+      ],
+      "PlatformConfigurationNativeApi::GetPersistentIsolateData": [
+        "0x1db47c"
+      ],
+      "PlatformConfigurationNativeApi::GetRootIsolateToken": [
+        "0x1c5150"
+      ],
+      "PlatformConfigurationNativeApi::GetScaledFontSize": [
+        "0x1cafe2"
+      ],
+      "PlatformConfigurationNativeApi::RegisterBackgroundIsolate": [
+        "0x1cbc24"
+      ],
+      "PlatformConfigurationNativeApi::Render": [
+        "0x1c06f1"
+      ],
+      "PlatformConfigurationNativeApi::RequestDartPerformanceMode": [
+        "0x1d0278"
+      ],
+      "PlatformConfigurationNativeApi::RespondToPlatformMessage": [
+        "0x1cf6ea"
+      ],
+      "PlatformConfigurationNativeApi::ScheduleFrame": [
+        "0x1cde34"
+      ],
+      "PlatformConfigurationNativeApi::SendChannelUpdate": [
+        "0x1cbeff"
+      ],
+      "PlatformConfigurationNativeApi::SendPlatformMessage": [
+        "0x1cf79b"
+      ],
+      "PlatformConfigurationNativeApi::SendPortPlatformMessage": [
+        "0x1cf6b2"
+      ],
+      "PlatformConfigurationNativeApi::SetIsolateDebugName": [
+        "0x1ce1b8"
+      ],
+      "PlatformConfigurationNativeApi::SetNeedsReportTimings": [
+        "0x1baec8"
+      ],
+      "PlatformConfigurationNativeApi::UpdateSemantics": [
+        "0x1bc97c"
+      ]
+    },
+    "api_names_shared_with_libapp": [
+      "PlatformConfigurationNativeApi::DefaultRouteName",
+      "PlatformConfigurationNativeApi::EndWarmUpFrame",
+      "PlatformConfigurationNativeApi::GetRootIsolateToken",
+      "PlatformConfigurationNativeApi::Render",
+      "PlatformConfigurationNativeApi::RequestDartPerformanceMode",
+      "PlatformConfigurationNativeApi::RespondToPlatformMessage",
+      "PlatformConfigurationNativeApi::ScheduleFrame",
+      "PlatformConfigurationNativeApi::SendChannelUpdate",
+      "PlatformConfigurationNativeApi::SendPlatformMessage",
+      "PlatformConfigurationNativeApi::SetNeedsReportTimings",
+      "PlatformConfigurationNativeApi::UpdateSemantics"
+    ],
+    "api_names_missing_from_engine": []
+  },
+  "tools": {
+    "artifacts": {
+      "evidence_ghidra.zip": "068b00bcced11b52ab9234b1343d3b6187f725fd7a65442bdb9e9e78e1a6e12e",
+      "evidence_results.zip": "75d5a2e77a538966342f1c5cd66f4a94aa60b33c177c22301c78309d668259ce"
+    },
+    "notes": [],
+    "ghidra": {
+      "image_base_delta": "0x100000",
+      "rebase_anchors": 46,
+      "rebase_consistent": true,
+      "jni_onload_va": "0x1f3fa0",
+      "jni_onload_decompiled_bytes": 12280,
+      "svc_sites": 40,
+      "syscall_immediates": {
+        "0x0": 20,
+        "0xde": 10
+      },
+      "mmap_calls": [
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        },
+        {
+          "prot": 7,
+          "flags": 34,
+          "args": [
+            "pcVar11",
+            "0",
+            "uVar4",
+            "7",
+            "0x22",
+            "0xffffffffffffffff",
+            "0"
+          ]
+        }
+      ],
+      "branch_opcode_writes": 10,
+      "jnienv_slot_hits": {
+        "0x6b8": 0,
+        "0x30": 0,
+        "0x38": 0
+      },
+      "bss_globals": [
+        "00110a70",
+        "0012e890",
+        "0012e8e8",
+        "00928048",
+        "00928050",
+        "00928058",
+        "00928060",
+        "00928068",
+        "00928070",
+        "00928078",
+        "00928080",
+        "00928088",
+        "5b00e224",
+        "75b17218b1b0efa0",
+        "75b17218b1b0efa1",
+        "75b17218b1b0efa2",
+        "75b17218b1b0efa3",
+        "7c532335",
+        "86e52bbd",
+        "91773445",
+        "9da56446",
+        "a8376cce",
+        "bc72622c",
+        "bef7a557",
+        "c989addf",
+        "e049e668",
+        "eadbeef0"
+      ],
+      "init_entries": 44,
+      "init_decompile_status": {
+        "timeout": 37,
+        "no function": 7
+      },
+      "init_targets_elf_va": [
+        "0x11ab10",
+        "0x147dec",
+        "0x1750d8",
+        "0x1a23c4",
+        "0x1cf6b0",
+        "0x1fc99c",
+        "0x229c88",
+        "0x256f74",
+        "0x284260",
+        "0x2b154c",
+        "0x2de838",
+        "0x30bb24",
+        "0x338e10",
+        "0x3660ec",
+        "0x3933b8",
+        "0x3c06a4",
+        "0x3ed990",
+        "0x41ac7c",
+        "0xf8098",
+        "0x447f68",
+        "0x475254",
+        "0x4a2540",
+        "0x4cf82c",
+        "0x4fcb18",
+        "0x529e04",
+        "0x5570f0",
+        "0x5843dc",
+        "0x5b16c8",
+        "0x5de9b4",
+        "0x60bca0",
+        "0x638f8c",
+        "0x666278",
+        "0x693564",
+        "0x6c0850",
+        "0x6edb3c",
+        "0x71ae28",
+        "0x748114",
+        "0x794ac",
+        "0x8e270",
+        "0x8f4f0",
+        "0x8f554",
+        "0x8f5b4",
+        "0x7e2590",
+        "0x81ae24"
+      ],
+      "callgraph": [
+        {
+          "va": "0x91f120",
+          "size": "0x10",
+          "name": "rand"
+        },
+        {
+          "va": "0x91ad58",
+          "size": "0x94",
+          "name": "FUN_0091ad58"
+        },
+        {
+          "va": "0x91eff0",
+          "size": "0x10",
+          "name": "__stack_chk_fail"
+        },
+        {
+          "va": "0x91f0e0",
+          "size": "0x10",
+          "name": "strlen"
+        },
+        {
+          "va": "0x91f110",
+          "size": "0x10",
+          "name": "sysconf"
+        }
+      ],
+      "register_natives_xrefs_note": "(symbol not found)",
+      "java_strings": [],
+      "unreachable_blocks": 7,
+      "jumptable_failures": 10,
+      "log_stats": {
+        "bytes": 355578,
+        "lsda_callsite_errors": 2278,
+        "error_lines": 4751,
+        "warning_lines": 0,
+        "decompiler_timeouts": 0
+      },
+      "readelf": {
+        "symtab_entries": 154,
+        "undefined": 136,
+        "defined": 17,
+        "sections": 26,
+        "strings_n8": 886
+      },
+      "cross_checks": {
+        "init_targets_matching_ours": 44,
+        "init_targets_total": 44,
+        "sections_shared": 26,
+        "sections_agreeing": 26,
+        "sections_disagreeing": [],
+        "dynsym_matches_ours": true
+      }
+    },
+    "blutter": {
+      "dart_version": "3.5.4",
+      "snapshot_hash": "80a49c7111088100a233b2ae788e1f48",
+      "target": "android arm64",
+      "snapshot_flags": "product no-code_comments dwarf_stack_traces_mode dedup_instructions no-tsan no-msan arm64 android compressed-pointers",
+      "load_address": "0x7f913de00000",
+      "dart_heap": "0x7f9000000000",
+      "dartvm_build": "blutter_dartvm3.5.4_android_arm64",
+      "snapshot_matches_libapp": true,
+      "snapshot_matches_libflutter": true,
+      "feature_string_matches": true,
+      "pool_entries": 18786,
+      "distinct_strings": 3623,
+      "asm_files": 672,
+      "objs_lines": 19568,
+      "frida_js_bytes": 210024,
+      "c2_asm_files": [
+        "output/blutter/asm/Ieg.dart"
+      ],
+      "c2_refs_pp": [
+        "2333:[pp+0x3c70] String: \"decompressLicenses\"",
+        "2337:[pp+0x3c90] String: \"utf8DecodeLicenses\"",
+        "2340:[pp+0x3ca8] String: \"parseLicenses\"",
+        "13007:    \"readableName\": \"clientAuth\",",
+        "16623:[pp+0x139d8] String: \"https://rest.snakeseller.com/api/request/\"",
+        "19840:[pp+0x17790] String: \"https://www.snakeengine.com/topup/\"",
+        "20147:[pp+0x17d78] String: \"https://discord.com/invite/\"",
+        "20148:[pp+0x17d80] String: \"https://t.me/\"",
+        "20149:[pp+0x17d88] String: \"https://wa.me/\""
+      ],
+      "c2_refs_objs": [],
+      "c2_headers": [],
+      "version_lock_refs": [
+        "output/blutter/pp.txt:38:[pp+0x130] String: \"\\\" is not supported by the platform. Refer to https://flutter.dev/docs/release/breaking-changes/network-policy-ios-android.\"",
+        "output/blutter/pp.txt:117:[pp+0x338] String: \"Microtasks are not supported\"",
+        "output/blutter/pp.txt:815:[pp+0x14c0] String: \"\\'print\\' is not supported\"",
+        "output/blutter/pp.txt:1054:[pp+0x1c10] String: \"Timer interface not supported.\"",
+        "output/blutter/pp.txt:1193:[pp+0x2080] String: \"\\'Uri.base\\' is not supported\"",
+        "output/blutter/pp.txt:10745:[pp+0xb4e0] String: \"Address family not supported by protocol family, sourceAddress.type must be \"",
+        "output/blutter/pp.txt:14984:[pp+0x112e0] String: \"This game version is not supported. please install other version . from * to #\"",
+        "output/blutter/pp.txt:14990:[pp+0x11310] String: \"The game you have installed is not OFFCIAL version. please install the official version from Google Play.\"",
+        "output/blutter/pp.txt:15518:[pp+0x12170] String: \" is not supported yet\"",
+        "output/blutter/pp.txt:28915:[pp+0x1ff58] String: \"The provided data does not match the currently supported version.\"",
+        "output/blutter/pp.txt:29172:[pp+0x20418] String: \"Image data format not supported: \"",
+        "output/blutter/pp.txt:29697:[pp+0x209a8] String: \"\\\" is not supported\""
+      ],
+      "methodcall_handlers": [
+        {
+          "file": "output/blutter/asm/Ieg.dart",
+          "line": 379,
+          "class": "_dX",
+          "signature": "[closure] Future<dynamic> _pfc(dynamic, MethodCall) {"
+        },
+        {
+          "file": "output/blutter/asm/Ieg.dart",
+          "line": 468,
+          "class": "_hX",
+          "signature": "[closure] Future<bool> _cec(dynamic, MethodCall) {"
+        },
+        {
+          "file": "output/blutter/asm/Ieg.dart",
+          "line": 471,
+          "class": "_hX",
+          "signature": "[closure] Future<dynamic> _eec(dynamic, MethodCall) {"
+        }
+      ],
+      "pool_join": {
+        "Access Token": [
+          "pool-exact",
+          "pp+0x11508"
+        ],
+        "ENCRYPTED_SIZE": [
+          "pool-absent",
+          ""
+        ],
+        "access token": [
+          "pool-embedded",
+          "pp+0x115c0 'This is your secure access token. Keep it safe and do not share '  [2 pool strings contain it]"
+        ],
+        "authorization": [
+          "pool-exact",
+          "pp+0xa640"
+        ],
+        "deviceId": [
+          "pool-exact",
+          "pp+0x43c0"
+        ],
+        "encryptedData": [
+          "pool-absent",
+          ""
+        ],
+        "Snake Engine": [
+          "pool-exact",
+          "pp+0xf620"
+        ],
+        "com.snake": [
+          "pool-exact",
+          "pp+0xe458"
+        ],
+        "https://rest.snakeseller.com/api/request/": [
+          "pool-exact",
+          "pp+0x139d8"
+        ],
+        "https://www.snakeengine.com/topup/": [
+          "pool-exact",
+          "pp+0x17790"
+        ],
+        "decompressLicenses": [
+          "pool-exact",
+          "pp+0x3c70"
+        ],
+        "parseLicenses": [
+          "pool-exact",
+          "pp+0x3ca8"
+        ],
+        "utf8DecodeLicenses": [
+          "pool-exact",
+          "pp+0x3c90"
+        ],
+        "https://discord.com/invite/": [
+          "pool-exact",
+          "pp+0x17d78"
+        ],
+        "https://t.me/": [
+          "pool-exact",
+          "pp+0x17d80"
+        ],
+        "https://wa.me/": [
+          "pool-exact",
+          "pp+0x17d88"
+        ],
+        "https://www.facebook.com/": [
+          "pool-exact",
+          "pp+0x17d90"
+        ],
+        "https://apkpure.com/search?q=": [
+          "pool-embedded",
+          "pp+0x178b0 'https://apkpure.com/search\\\\?q='"
+        ],
+        "https://play.google.com/store/apps/details?id=": [
+          "pool-embedded",
+          "pp+0x178b8 'https://play.google.com/store/apps/details\\\\?id='"
+        ],
+        "https://api.flutter.dev/flutter/dart-ui/ChannelBuffers-class.html": [
+          "pool-embedded",
+          "pp+0x408 ' channel was discarded before it could be handled.\\\\nThis happens'  [2 pool strings contain it]"
+        ],
+        "https://api.flutter.dev/flutter/material/Scaffold/of.html": [
+          "pool-embedded",
+          "pp+0x408 ' channel was discarded before it could be handled.\\\\nThis happens'  [2 pool strings contain it]"
+        ],
+        "https://flagsapi.com/": [
+          "pool-exact",
+          "pp+0x17c88"
+        ],
+        "https://flutter.dev/docs/release/breaking-changes/network-policy-ios-android.": [
+          "pool-embedded",
+          "pp+0x130 '\\\\\" is not supported by the platform. Refer to https://flutter.de'"
+        ],
+        "https://imgur.com/": [
+          "pool-embedded",
+          "pp+0x10c38 'If you have screen shots please upload to https://imgur.com/ and'  [6 pool strings contain it]"
+        ],
+        "currently supported version": [
+          "pool-embedded",
+          "pp+0x1ff58 'The provided data does not match the currently supported version'"
+        ],
+        "not OFFCIAL": [
+          "pool-embedded",
+          "pp+0x11310 'The game you have installed is not OFFCIAL version. please insta'"
+        ],
+        "not supported": [
+          "pool-embedded",
+          "pp+0x130 '\\\\\" is not supported by the platform. Refer to https://flutter.de'  [10 pool strings contain it]"
+        ]
+      },
+      "pool_exact_count": 15,
+      "self_inspection_cluster": [
+        {
+          "offset": "0xe428",
+          "kind": "Null",
+          "value": ""
+        },
+        {
+          "offset": "0xe430",
+          "kind": "String",
+          "value": "function result"
+        },
+        {
+          "offset": "0xe438",
+          "kind": "AnonymousClosure",
+          "value": "(0x38af64), in [kkg] _ioa::<anonymous closure> (0x37fe90)"
+        },
+        {
+          "offset": "0xe440",
+          "kind": "Field <Yoa.fne>",
+          "value": "static late final (offset: 0xe70)"
+        },
+        {
+          "offset": "0xe448",
+          "kind": "String",
+          "value": "/proc/self/maps"
+        },
+        {
+          "offset": "0xe450",
+          "kind": "Field <toa.yle>",
+          "value": "static late (offset: 0xe40)"
+        },
+        {
+          "offset": "0xe458",
+          "kind": "String",
+          "value": "com.snake"
+        },
+        {
+          "offset": "0xe460",
+          "kind": "String",
+          "value": "([0-9a-f]+)-([0-9a-f]+)\\\\s+(\\\\S+)\\\\s+([0-9a-f]+)\\\\s+(\\\\w+):([0-9a-f]+)\\\\s+(\\\\d+)\\\\s+(.*)"
+        },
+        {
+          "offset": "0xe468",
+          "kind": "String",
+          "value": "Failed to decode data using encoding \\'"
+        }
+      ],
+      "helper_error_verdict": "enum member 0 of 11 in Obj!_WF (siblings: helperError, icon, input, prefixIcon, suffixIcon, prefix, suffix, label, hint, counter, container)"
+    }
+  }
+}

@@ -1,0 +1,92 @@
+linkage verification — 45/45 passed
+
+[PASS] provenance lib/arm64-v8a/libapp.so
+        apk sha256 == repo sha256 == 2d3577fbaaacc7cb63e5b04a5a21572eeee1e0d55b223941d6a5496a91a427c8
+[PASS] provenance lib/arm64-v8a/libengine.so
+        apk sha256 == repo sha256 == f5d751e6bde8f0595eda9836338e845b029a41d2362743a2a4619ba99f41e3be
+[PASS] provenance lib/arm64-v8a/libflutter.so
+        apk sha256 == repo sha256 == 0baa710d6b7f7de2f8bcc05aa2950bab2989f3a4c95bc7f7bcc23ce84626ee52
+[PASS] APK zip integrity
+        zipfile.testzip() returned None
+[PASS] dex loads the library named "engine"
+        loader sites: ['0x2b6c2e']; SONAME=libengine.so
+[PASS] fill-array-data payload re-read from classes.dex decodes to the library name
+        classes.dex+0x2b6c40 = 656e67696e65 (b'engine')
+[PASS] manifest application class is the class that loads the native library
+        manifest=Lcom/snake/App;, loader classes=['Lcom/snake/App;', 'Lio/flutter/embedding/engine/FlutterJNI;']
+[PASS] no Java_* exports in libengine.so
+        found []
+[PASS] no Java_* exports in libflutter.so
+        found []
+[PASS] RegisterNatives total == custom native declarations
+        13 registered vs 13 declared
+[PASS] .mytext section exists and is executable
+        section=Section(name='.mytext', addr=8515244, offset=8515244, size=244, flags=6, type='SHT_PROGBITS')
+[PASS] every fnPtr recovered into .mytext really lies inside .mytext
+        pointers=['0x81eeb0'], range=0x81eeac..0x81efa0
+[PASS] .init_array values come from relocations, not file bytes
+        44/44 from R_AARCH64_RELATIVE
+[PASS] every .init_array target lands in an executable section
+        sections=['.text']
+[PASS] libapp.so snapshot version also present in libflutter.so
+        libapp=['80a49c7111088100a233b2ae788e1f48'] paired=['80a49c7111088100a233b2ae788e1f48'] offsets={'80a49c7111088100a233b2ae788e1f48': ['0x1eafd4']}
+[PASS] both libapp.so snapshot headers carry the same version
+        2 records: _kDartVmSnapshotData@0x214, _kDartIsolateSnapshotData@0x40d4
+[PASS] no JNI identifier from classes.dex occurs in libengine.so
+        48/58 identifiers searched (class names in both forms, method names, descriptors, mangled Java_* names) -> 0 present; the 10 skipped terms are <= 3 chars (['()V', 'ac', 'awl', 'chl', 'djp', 'eio', 'i', 'ic', 'na', 'nb']) and would match by chance in an 8.5 MB image
+[PASS] the Dart snapshot hard-codes the manifest package
+        `com.snake` occurs 1x in libapp.so at 0x3bd3a
+[PASS] no link is drawn from a substring identity match (helperError retraction)
+        1 Dart strings contain 'helper' ([('helperError', '0x4343a')]) and the dex declares ['Lcom/snake/helper/Native;', 'Lcom/snake/helper/flagger;'], but substring agreement is not evidence: 0 such edge(s) exist
+[PASS] every PlatformConfigurationNativeApi name in libapp.so exists in libflutter.so
+        11 referenced by the snapshot, 11 also in the engine, missing=[]
+[PASS] libflutter.so exports JNI_OnLoad (so it can bind its 41 natives dynamically)
+        exports=46, Java_* exports=0
+[PASS] every RegisterNatives site is attributed to exactly one dex class, with none left over
+        0xb0140(n=1)->com/snake/helper/Native by count-elimination; 0xb40a8(n=2)->com/snake/helper/flagger by count-elimination; 0xf3a08(n=10)->com/snake/helper/Native by findclass-name-length; leftover declarations={'Lcom/snake/helper/Native;': 0, 'Lcom/snake/helper/flagger;': 0}
+[PASS] every byte-decode loop bound at a registration site matches an identifier of its class
+        0xb0140:{8: "method name(s) ['pjowqpxe']"}; 0xb40a8:{2: "method name(s) ['na', 'nb']", 3: "signature(s) ['()V']"}; 0xf3a08:{23: "the 23-char JNI class name 'com/snake/helper/Native'"}
+[PASS] the length inference names at least one registered method
+        ['Lcom/snake/helper/Native;->pjowqpxe', 'Lcom/snake/helper/flagger;->na', 'Lcom/snake/helper/flagger;->nb']
+[PASS] .mytext converts an incoming Method and exactly one declared native takes a Method
+        native=Lcom/snake/helper/Native;->update(Ljava/lang/Object;Ljava/lang/reflect/Method;)V; .mytext FromReflectedMethod call(s)=[('0x81eed4', 'x3')]
+[PASS] Ghidra's image-base delta is measured from anchors that all agree
+        46 anchors (JNI_OnLoad + .init_array address + 44 slots) -> delta 0x100000, consistent=True
+[PASS] Ghidra's .init_array targets equal our .rela.dyn addends
+        44 of Ghidra's 44 targets equal our 44 addends after -0x100000
+[PASS] the artifact's readelf section table equals our pyelftools parse
+        26/26 shared sections agree on addr+size; 0 only-in-one; disagreements=none
+[PASS] the artifact's .dynsym counts equal ours
+        readelf 154 entries = 136 UNDEF + 17 DEFINED + null; ours 136 UNDEF + 17 DEFINED
+[PASS] Ghidra's JNI_OnLoad rebases exactly onto our JNI_OnLoad
+        Ghidra 0x1f3fa0 - 0x100000 = 0xf3fa0; our .dynsym 0xf3fa0
+[PASS] Ghidra's decompiled JNI_OnLoad loads no JNIEnv registration slot
+        hits {'0x6b8': 0, '0x30': 0, '0x38': 0} across 12,280 bytes of decompiled C; callees ['rand', 'FUN_0091ad58', '__stack_chk_fail', 'strlen', 'sysconf']
+[PASS] Ghidra's decompiled JNI_OnLoad maps RWX memory and writes branch opcodes
+        10 mmap calls with prot [7] flags ['0x22']; 10 stores of 0x14000000|imm26
+[PASS] Ghidra finds neither a RegisterNatives symbol nor a Java_* string
+        05 says (symbol not found), 06 has 0 lines; our own count of Java_* exports is 0
+[PASS] every non-TAB string in the artifact's `strings -n 8` is in our scan too
+        artifact-only runs = 0; artifact 886 runs vs ours 885 - the gap is TAB (0x09), which GNU strings counts and we do not
+[PASS] every C2 endpoint we found by bytes is an exact object-pool string
+        2/2: https://rest.snakeseller.com/api/request/ file 0x43fe5 = pp+0x139d8; https://www.snakeengine.com/topup/ file 0x3d50e = pp+0x17790
+[PASS] the package name is confirmed by three independent sources
+        manifest 'com.snake'; pool ['pp+0xe458']; raw bytes ['0x3bd3a']
+[PASS] blutter confirms the retracted string is Flutter framework text
+        helperError -> enum member 0 of 11 in Obj!_WF (siblings: helperError, icon, input, prefixIcon, suffixIcon, prefix, suffix, label, hint, counter, container)
+[PASS] the reclassified framework enum is recorded in the graph
+        1 reclassification edge(s)
+[PASS] the Dart pool holds /proc/self/maps beside a maps-parsing regex
+        pp+0xe448 and pp+0xe460, 3 slots apart (adjacency, not a call graph)
+[PASS] blutter's asm holds real MethodCall handlers in the C2 library
+        3 handler(s) in ['output/blutter/asm/Ieg.dart']: _pfc (class _dX, line 379); _cec (class _hX, line 468); _eec (class _hX, line 471)
+[PASS] blutter's build log names the same snapshot version we read from both binaries
+        log: Dart 3.5.4 snapshot 80a49c7111088100a233b2ae788e1f48 target android arm64; libapp.so: ['80a49c7111088100a233b2ae788e1f48']; libflutter.so: ['80a49c7111088100a233b2ae788e1f48']
+[PASS] blutter's build log records the same snapshot feature string as libapp.so
+        log 'product no-code_comments dwarf_stack_traces_mode dedup_instr'... vs ours 'product no-code_comments dwarf_stack_traces_mode dedup_instr'...
+[PASS] the four alleged C2 headers are not object-pool strings
+        pool hits: clientAuth=0, apiToken=0, clientVersion=0, signature=0; C2_headers.txt lines=0
+[PASS] no edge references an undeclared node
+        0 dangling
+[PASS] C2 endpoint extracted from libapp.so
+        ['https://rest.snakeseller.com/api/request/', 'https://www.snakeengine.com/topup/']
