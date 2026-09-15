@@ -200,7 +200,7 @@ The same five findings in English: (1) the framework stack is stitched to real S
 | 130 | `T4` | `store_slots_unaccessed` | `[xkg] Yoa` → `11 of 13 slots have no accessor in the dump: Vge, Wge, Xge, Yge, Zge, cne, …` | **unresolved** | *(new)* |
 | 131 | `T4` | `byte_fetch_routine` | `[xkg] Yoa::<static anonymous closure> @0x52b4e4` → `Future<Uint8List> (size 0x388): AllocateUint8Array + 6 byte-move steps + Aw…` | proven | *(new)* |
 | 132 | `T4` | `collapsed_range` | `AS::Map<String, dynamic> wVa(AS)` → `[dart:core] StateError::_throwNew` | proven | CH-11 hops 1-12 |
-| 133 | `T5` | `TERMINUS` | `[Kkg] _Bpa::<anonymous closure> @0x2f8928` → `pp+0x139d8  ""https://rest.snakeseller.com/api/request/""` **⬅ TERMINUS** | proven | *(new)* |
+| 133 | `T5` | `TERMINUS` | `[Kkg] _Bpa::<anonymous closure> @0x2f8928` → `pp+0x139d8  "https://rest.snakeseller.com/api/request/"` **⬅ TERMINUS** | proven | *(new)* |
 | 134 | `T5` | `uses_pool_string` | `[Kkg] _Bpa::<anonymous closure> @ 0x2f8928` → `"https://rest.snakeseller.com/api/request/"` | probable | CH-12 hop 1 (E0949) |
 | 135 | `T5` | `uses_pool_string` | `[Kkg] _Bpa::<anonymous closure> @ 0x2f8928` → `"\?action=upload_profile_image"` | probable | CH-12 hop 2 (E0950) |
 | 136 | `T5` | `uses_pool_string` | `[Kkg] _Bpa::<anonymous closure> @ 0x2f8928` → `multipart POST template (12 slots pp+0x13a38..0x13a90)` | probable | CH-12 hop 3 (E0951) |
@@ -422,7 +422,7 @@ The same five findings in English: (1) the framework stack is stitched to real S
 
 | # | kind | src → dst | conf | evidence | note |
 |---:|---|---|---|---|---|
-| 133 | `TERMINUS` | `[Kkg] _Bpa::<anonymous closure> @0x2f8928` → `pp+0x139d8  ""https://rest.snakeseller.com/api/request/""` | proven | pool slot pp+0x139d8 holds the endpoint verbatim; pp+0x139e0 holds the action query \?action=upload_profile_image ; the two slots are 8 bytes apart…<br>`output/blutter/pp.txt` | ปลายทางของแกนนี้: pp+0x139d8 เก็บ endpoint 'https://rest.snakeseller.com/api/request/' ตรงตัว และ pp+0x139e0 เก็บ action '\?action=upload_profile_image' ห่างกัน 8 ไบต์ในช่วง allocation เดียวกัน<br>*the terminus of this spine: pp+0x139d8 … |
+| 133 | `TERMINUS` | `[Kkg] _Bpa::<anonymous closure> @0x2f8928` → `pp+0x139d8  "https://rest.snakeseller.com/api/request/"` | proven | pool slot pp+0x139d8 holds the endpoint verbatim; pp+0x139e0 holds the action query \?action=upload_profile_image ; the two slots are 8 bytes apart…<br>`output/blutter/pp.txt` | ปลายทางของแกนนี้: pp+0x139d8 เก็บ endpoint 'https://rest.snakeseller.com/api/request/' ตรงตัว และ pp+0x139e0 เก็บ action '\?action=upload_profile_image' ห่างกัน 8 ไบต์ในช่วง allocation เดียวกัน<br>*the terminus of this spine: pp+0x139d8 … |
 | 134 | `uses_pool_string` | `[Kkg] _Bpa::<anonymous closure> @ 0x2f8928` → `"https://rest.snakeseller.com/api/request/"` | probable | the same string F5 found as a raw byte run at libapp.so file offset 0x43fe5 and F8 confirmed pool-exact at pp+0x139d8; output/blutter/pp.txt:16623<br>`output/blutter/pp.txt:16623` |  |
 | 135 | `uses_pool_string` | `[Kkg] _Bpa::<anonymous closure> @ 0x2f8928` → `"\?action=upload_profile_image"` | probable | the slot right after the endpoint, in the same run; output/blutter/pp.txt:16624<br>`output/blutter/pp.txt:16624` |  |
 | 136 | `uses_pool_string` | `[Kkg] _Bpa::<anonymous closure> @ 0x2f8928` → `multipart POST template (12 slots pp+0x13a38..0x13a90)` | probable | consecutive slots between the endpoint run and the next unrelated entry; output/blutter/pp.txt:16633<br>`output/blutter/pp.txt:16633` |  |
@@ -634,7 +634,7 @@ Two things worth noting: (1) the field-table range of `ooa` ends just 96 bytes b
 | 30 | second registry parsed and reported as unaccessed | **PASS** | [nkg] ooa: 180 static late final fields (offsets 0xb4c..0xe20), 0 accessors in the dump |
 | 31 | the two stores occupy adjacent, non-overlapping field-table ranges | **PASS** | ooa ends at 0x1c40, Yoa starts at 0x1ca0 (gap 96 bytes) |
 | 32 | named upstream entry is present | **PASS** | _ioa.ugf(dynamic) -> Future<bool> @0x53ec84 |
-| 33 | the spine ends at the requested endpoint | **PASS** | pp+0x139d8  ""https://rest.snakeseller.com/api/request/"" |
+| 33 | the spine ends at the requested endpoint | **PASS** | pp+0x139d8  "https://rest.snakeseller.com/api/request/" |
 | 34 | endpoint slot body matches the requested URL exactly | **PASS** | [pp+0x139d8] String: "https://rest.snakeseller.com/api/request/" |
 | 35 | post-endpoint continuation is carried over from CH-12 | **PASS** | 27 CH-12 hops after the terminus |
 | 36 | shared store parsed | **PASS** | 13 static late fields in [xkg] Yoa (offsets 0xe50..0xe80) |

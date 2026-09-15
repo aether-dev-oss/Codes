@@ -3809,7 +3809,7 @@
    "tier": "T5",
    "kind": "TERMINUS",
    "src": "[Kkg] _Bpa::<anonymous closure> @0x2f8928",
-   "dst": "pp+0x139d8  \"\"https://rest.snakeseller.com/api/request/\"\"",
+   "dst": "pp+0x139d8  \"https://rest.snakeseller.com/api/request/\"",
    "conf": "proven",
    "evidence": "pool slot pp+0x139d8 holds the endpoint verbatim; pp+0x139e0 holds the action query \\?action=upload_profile_image ; the two slots are 8 bytes apart inside the same allocation run",
    "source": "output/blutter/pp.txt",
@@ -4877,7 +4877,7 @@
   {
    "name": "the spine ends at the requested endpoint",
    "result": "PASS",
-   "detail": "pp+0x139d8  \"\"https://rest.snakeseller.com/api/request/\"\""
+   "detail": "pp+0x139d8  \"https://rest.snakeseller.com/api/request/\""
   },
   {
    "name": "endpoint slot body matches the requested URL exactly",

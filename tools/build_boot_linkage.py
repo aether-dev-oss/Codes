@@ -1289,7 +1289,7 @@ def build(bundle):
     if ep_slot:
         sp.new("T5", "TERMINUS",
                "[%s] _Bpa::<anonymous closure> @%s" % ("Kkg", C2_ROUTINE),
-               'pp+%s  "%s"' % (ENDPOINT_SLOT, ep_slot["body"].split("String:")[-1].strip()),
+               "pp+%s  %s" % (ENDPOINT_SLOT, ep_slot["body"].split("String:")[-1].strip()),
                "proven",
                "pool slot pp+%s holds the endpoint verbatim; pp+%s holds the action query "
                "%s ; the two slots are 8 bytes apart inside the same allocation run"
