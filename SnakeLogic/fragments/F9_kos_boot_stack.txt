@@ -1,0 +1,74 @@
+=== F9 — KOS/Kaori module-host boot stack (SHAPE REFERENCE, not SNAKE bytes) ===
+
+provenance    : supplied by the operator in-session, 2026-09-15
+source app    : a KaoriOS ("KOS") based module host running
+                com.riotgames.league.teamfighttactics (Teamfight Tactics)
+what it is    : a Java-side stack captured at the moment the module framework
+                injects its config, i.e. the framework boot spine that every
+                Android app process walks before any application code runs
+why it is here: SNAKE.apk's own boot hops inside this window ARE committed
+                (F2 dex offsets, F3 manifest roles), but the framework half is
+                not in SnakeLogic.zip. This fragment supplies the SHAPE of that
+                half so the spine can be written end-to-end. Every hop taken
+                from this fragment is labelled tier=T0 and conf=shape in
+                BOOT_LINKAGE.md and must never be cited as SNAKE evidence.
+
+--- captured payload: JsonObject create (module config) ---
+
+type: JsonObject create
+name: packages
+value: {"values":[
+  {"nameValuePairs":{
+     "name":"com.riotgames.league.teamfighttactics",
+     "roots":{"values":[{"nameValuePairs":{
+        "basePath":"/data/data/com.riotgames.league.teamfighttactics/no_backup",
+        "walkChildren":false}}]},
+     "ops":{"values":[{"nameValuePairs":{
+        "type":"search-replace-text",
+        "relativePath":"Config/Game.cfg",
+        "search":"WaitForVerticalSync=0",
+        "replace":"WaitForVerticalSync=1",
+        "encoding":"UTF-8",
+        "maxReplacements":1}}]}}},
+  {"nameValuePairs":{"name":"com.riotgames.league.teamfighttacticstw", ... same op ...}},
+  {"nameValuePairs":{"name":"com.riotgames.league.teamfighttacticsvn", ... same op ...}}
+]}
+
+note: the three package entries are the per-region TFT builds; the op rewrites
+      WaitForVerticalSync in Config/Game.cfg under each app's no_backup dir.
+      This is the KOS "virtual FS + text patch" idiom — the same slot that
+      SNAKE fills with its own package.conf / path-redirect work.
+
+--- captured call stack (top = innermost) ---
+
+ 1  e2                                                          -> b(line:58)
+ 2  e2                                                          -> proceed(line:11)
+ 3  c3                                                          -> callback(line:106)
+ 4  Vector_                                                     -> constructor(line:11)
+ 5  com.android.internal.util.kaorios.Krtr48kA09tmO323tj8Rgf62eI -> Ku5O3sihzbUhwSewE8uI(line:146)
+ 6  com.android.internal.util.kaorios.KaoriPropsUtils           -> KaoriProps(line:1175)
+ 7  android.app.Instrumentation                                 -> newApplication(line:15)
+ 8  android.app.LoadedApk                                       -> makeApplicationInner(line:190)
+ 9  android.app.LoadedApk                                       -> makeApplicationInner(line:1)
+10  android.app.ActivityThread                                  -> handleBindApplication(line:1090)
+11  android.app.ActivityThread                                  -> -$$Nest$mhandleBindApplication(line:0)
+12  android.app.ActivityThread$H                                -> handleMessage(line:1340)
+13  android.os.Handler                                          -> dispatchMessage(line:21)
+14  android.os.Looper                                           -> loopOnce(line:251)
+15  android.os.Looper                                           -> loop(line:34)
+16  android.app.ActivityThread                                  -> main(line:165)
+17  java.lang.reflect.Method                                    -> invoke(line:-2)
+18  com.android.internal.os.RuntimeInit$MethodAndArgsCaller     -> run(line:9)
+19  com.android.internal.os.ZygoteInit                          -> main(line:406)
+
+--- the anchor this fragment gives us ---
+
+frame 7 (android.app.Instrumentation.newApplication) is the injection point:
+it is the last framework frame before the app's own Application class is
+constructed. For SNAKE that class is com.snake.App (F3: application), whose
+<clinit> contains the committed loadLibrary('engine') site at
+classes.dex+0x2b6c2e (F2). So the spine can be stitched at exactly this frame:
+
+    T0 frame 7  Instrumentation.newApplication        [shape — this fragment]
+    T1 hop 1    com.snake.App.<clinit>()V             [proven — F3 + F2]
+    T1 hop 2    classes.dex+0x2b6c2e loadLibrary      [proven — F2]

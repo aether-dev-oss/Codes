@@ -179,13 +179,21 @@ def sha256_bytes(b: bytes) -> str:
 class Bundle:
     """The evidence bundle, read from the zip or from its extracted directory.
 
-    The three files this script writes are excluded from the listing, so the
-    fingerprint covers *inputs only*: reading `SnakeLogic/` and reading
-    `SnakeLogic.zip` must produce the same one, and re-running the build cannot
-    change it.
+    The files this script (and its companion `build_boot_linkage.py`) write are
+    excluded from the listing, so the fingerprint covers *inputs only*: reading
+    `SnakeLogic/` and reading `SnakeLogic.zip` must produce the same one, and
+    re-running the build cannot change it.
+
+    `OPERATOR_INPUTS` are fragments that were supplied by the operator during
+    analysis instead of being extracted from the APK, so they exist in the tree
+    but not in the uploaded zip. They are excluded from the fingerprint for the
+    same reason the generated artifacts are, but they are *reported* by the
+    tree-vs-zip check so the divergence stays visible instead of silent.
     """
 
-    OWN_OUTPUTS = ("CALL_LINKAGE.md", "call_linkage.csv", "call_linkage.json")
+    OWN_OUTPUTS = ("CALL_LINKAGE.md", "call_linkage.csv", "call_linkage.json",
+                   "BOOT_LINKAGE.md", "boot_linkage.csv", "boot_linkage.json")
+    OPERATOR_INPUTS = ("fragments/F9_kos_boot_stack.txt",)
 
     def __init__(self, path: str):
         self.path = path
@@ -200,8 +208,12 @@ class Bundle:
         else:
             self.zf = zipfile.ZipFile(path)
             names = sorted(self.zf.namelist())
-        self._names = [n for n in names if n not in self.OWN_OUTPUTS
+        self._names = [n for n in names
+                       if n not in self.OWN_OUTPUTS
+                       and n not in self.OPERATOR_INPUTS
                        and not n.endswith("/")]
+        self.operator_inputs = [n for n in names if n in self.OPERATOR_INPUTS]
+        self.own_outputs = [n for n in names if n in self.OWN_OUTPUTS]
         self._cache: Dict[str, str] = {}
 
     def names(self) -> List[str]:
@@ -2488,6 +2500,11 @@ def render_md(data: dict) -> str:
         A("`invoke` ฝั่ง Dalvik ที่โหลด `libengine.so` ลงไปถึง `blr` ที่หลุดออกจาก image แบบ static")
         A("และข้ามไปยัง call edge ของ Dart AOT snapshot")
         A("")
+        A("> **ดูเพิ่ม:** `BOOT_LINKAGE.md` (แกน `SP-01`) เอา chain ในเอกสารนี้ (CH-01..CH-12) "
+          "ไปประกอบกับ tier เฟรมเวิร์ก (fragment F9) และ tier ใหม่ฝั่ง Dart (T4) "
+          "เป็นแกนเดียวตั้งแต่ process boot จนถึง `https://rest.snakeseller.com/api/request/` "
+          "สร้างด้วย `tools/build_boot_linkage.py`")
+        A("")
         A("ทุก hop ผูกกับ *offset ของ instruction ฝั่งผู้เรียก* (`module+offset`) และอ้างบรรทัดของ fragment")
         A("ที่อ่านมาเสมอ ถ้าหาชื่อ callee จากหลักฐานที่ commit ไว้ไม่ได้ แถวนั้นจะยังอยู่ ทำเครื่องหมาย")
         A("`(unresolved)` และระบุวิธีปิดไว้ด้วย — เป้าหมายที่หายไปคือข้อมูล ไม่ใช่เหตุผลให้ทิ้งแถว")
@@ -2499,6 +2516,11 @@ def render_md(data: dict) -> str:
         A("answers the next question: **which instruction, at which offset, transfers control to what** —")
         A("an ordered call linkage from the Dalvik `invoke` that loads `libengine.so` down to the `blr`")
         A("that leaves the static image entirely, and across to the Dart AOT snapshot's own call edges.")
+        A("")
+        A("> **See also:** `BOOT_LINKAGE.md` (spine `SP-01`) composes the chains below (CH-01..CH-12)")
+        A("> with a framework tier (fragment F9) and a new Dart tier (T4) into one ordered spine from")
+        A("> process boot to `https://rest.snakeseller.com/api/request/`; built by")
+        A("> `tools/build_boot_linkage.py`.")
         A("")
         A("Every hop below is anchored at a *caller instruction offset* (`module+offset`) and cites the")
         A("fragment line it was read from. Hops whose callee cannot be resolved from the committed")
@@ -3129,13 +3151,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if os.path.exists(sibling) and os.path.abspath(sibling) != os.path.abspath(args.src):
         other = Bundle(sibling)
         same = other.fingerprint() == data["meta"]["bundle_fingerprint"]
+        op = sorted(set(getattr(other, "operator_inputs", [])) |
+                    set(b.operator_inputs if hasattr(b, "operator_inputs") else []))
+        excluded = ("%d generated artifacts" % len(Bundle.OWN_OUTPUTS)) + (
+            (" and %d operator-supplied fragment(s): %s" % (len(op), ", ".join(op)))
+            if op else "")
         data["checks"].append({
             "name": "the extracted tree and the zip carry identical inputs",
             "result": "PASS" if same else "FAIL",
             "detail": f"{data['meta']['bundle']} fingerprint "
                       f"{data['meta']['bundle_fingerprint']} vs {other.label if hasattr(other, 'label') else os.path.relpath(sibling, root)} "
                       f"fingerprint {other.fingerprint()} over "
-                      f"{len(other.names())} input files (the 3 generated artifacts are excluded "
+                      f"{len(other.names())} input files ({excluded} are excluded "
                       f"from both)",
         })
 

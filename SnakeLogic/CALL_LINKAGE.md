@@ -5,6 +5,8 @@
 `invoke` ฝั่ง Dalvik ที่โหลด `libengine.so` ลงไปถึง `blr` ที่หลุดออกจาก image แบบ static
 และข้ามไปยัง call edge ของ Dart AOT snapshot
 
+> **ดูเพิ่ม:** `BOOT_LINKAGE.md` (แกน `SP-01`) เอา chain ในเอกสารนี้ (CH-01..CH-12) ไปประกอบกับ tier เฟรมเวิร์ก (fragment F9) และ tier ใหม่ฝั่ง Dart (T4) เป็นแกนเดียวตั้งแต่ process boot จนถึง `https://rest.snakeseller.com/api/request/` สร้างด้วย `tools/build_boot_linkage.py`
+
 ทุก hop ผูกกับ *offset ของ instruction ฝั่งผู้เรียก* (`module+offset`) และอ้างบรรทัดของ fragment
 ที่อ่านมาเสมอ ถ้าหาชื่อ callee จากหลักฐานที่ commit ไว้ไม่ได้ แถวนั้นจะยังอยู่ ทำเครื่องหมาย
 `(unresolved)` และระบุวิธีปิดไว้ด้วย — เป้าหมายที่หายไปคือข้อมูล ไม่ใช่เหตุผลให้ทิ้งแถว
@@ -746,7 +748,7 @@ _Dart 820 hop กระจายไปยัง callee ไม่ซ้ำกั�
 | PASS | no hop is published twice | the instruction scan and the structured fragment records agree; no duplicate hops were produced |
 | PASS | no dangling node reference | 965 edges, 1470 nodes |
 | PASS | chain hops all exist in the edge set | 163 hops across 12 chains |
-| PASS | the extracted tree and the zip carry identical inputs | SnakeLogic/ fingerprint d0eb6c05b6ab740919abc72ff702a6a4 vs SnakeLogic.zip fingerprint d0eb6c05b6ab740919abc72ff702a6a4 over 699 input files (the 3 generated artifacts are excluded from both) |
+| PASS | the extracted tree and the zip carry identical inputs | SnakeLogic/ fingerprint d0eb6c05b6ab740919abc72ff702a6a4 vs SnakeLogic.zip fingerprint d0eb6c05b6ab740919abc72ff702a6a4 over 699 input files (6 generated artifacts and 1 operator-supplied fragment(s): fragments/F9_kos_boot_stack.txt are excluded from both) |
 
 การตรวจสอบระดับไบต์ 45 รายการที่อยู่เบื้องหลัง hop เหล่านี้อยู่ใน `VERIFICATION.txt` ข้าง
 `LINKAGE.md`; ส่วนรายการข้างบนคือ invariant ของ *call graph* — ทุก hop ของ chain ต้องมีอยู่,

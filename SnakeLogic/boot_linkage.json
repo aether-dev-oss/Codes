@@ -1,0 +1,5242 @@
+{
+ "meta": {
+  "title": "SNAKE.apk - boot linkage (process start -> Dart C2 endpoint)",
+  "spine_id": "SP-01",
+  "generated_by": "tools/build_boot_linkage.py",
+  "bundle": "SnakeLogic/",
+  "bundle_fingerprint": "d0eb6c05b6ab740919abc72ff702a6a4",
+  "composes": "SnakeLogic/call_linkage.json (CH-01..CH-12) + fragments F2/F3/F9 + output/blutter/{pp.txt,asm/}",
+  "lang": "both",
+  "endpoint": "https://rest.snakeseller.com/api/request/",
+  "hops": 160,
+  "tiers": [
+   {
+    "id": "T0",
+    "name": "framework",
+    "en": "Android framework boot (shape reference, NOT SNAKE bytes)",
+    "th": "บูตฝั่งเฟรมเวิร์ก Android — เป็น 'โครงรูป' จาก F9 ไม่ใช่ไบต์ของ SNAKE",
+    "hops": 18
+   },
+   {
+    "id": "T1",
+    "name": "dex",
+    "en": "SNAKE application / activity boot in classes.dex",
+    "th": "บูตฝั่ง dex ของ SNAKE: Application และ main activity",
+    "hops": 28
+   },
+   {
+    "id": "T2",
+    "name": "native",
+    "en": "libengine.so staged init (.init_array -> JNI_OnLoad -> RegisterNatives)",
+    "th": "init แบบ staged ของ libengine.so",
+    "hops": 38
+   },
+   {
+    "id": "T3",
+    "name": "jni/flutter",
+    "en": "libflutter.so bootstrap + Dart platform channel",
+    "th": "บูต libflutter.so และ platform channel ฝั่ง Dart",
+    "hops": 18
+   },
+   {
+    "id": "T4",
+    "name": "dart",
+    "en": "Dart task family -> the routine that owns the C2 request",
+    "th": "ตระกูล task ฝั่ง Dart -> รูทีนที่ถือคำขอ C2",
+    "hops": 30
+   },
+   {
+    "id": "T5",
+    "name": "dart",
+    "en": "C2 endpoint /api/request/ + response check + post-response run",
+    "th": "ปลายทาง C2 /api/request/ + ตรวจ response + งานหลัง response",
+    "hops": 28
+   }
+  ]
+ },
+ "hops": [
+  {
+   "seq": 1,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "com.android.internal.os.ZygoteInit.main (line:406)",
+   "dst": "com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run (line:9)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 19 -> frame 18",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 19 -> 18 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "19"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "18"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 19 -> com.android.internal.os.ZygoteInit.main",
+    "PASS F9 frame 18 -> com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run"
+   ]
+  },
+  {
+   "seq": 2,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run (line:9)",
+   "dst": "java.lang.reflect.Method.invoke (line:-2)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 18 -> frame 17",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 18 -> 17 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "18"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "17"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 18 -> com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run",
+    "PASS F9 frame 17 -> java.lang.reflect.Method.invoke"
+   ]
+  },
+  {
+   "seq": 3,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "java.lang.reflect.Method.invoke (line:-2)",
+   "dst": "android.app.ActivityThread.main (line:165)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 17 -> frame 16",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 17 -> 16 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "17"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "16"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 17 -> java.lang.reflect.Method.invoke",
+    "PASS F9 frame 16 -> android.app.ActivityThread.main"
+   ]
+  },
+  {
+   "seq": 4,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.app.ActivityThread.main (line:165)",
+   "dst": "android.os.Looper.loop (line:34)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 16 -> frame 15",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 16 -> 15 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "16"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "15"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 16 -> android.app.ActivityThread.main",
+    "PASS F9 frame 15 -> android.os.Looper.loop"
+   ]
+  },
+  {
+   "seq": 5,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.os.Looper.loop (line:34)",
+   "dst": "android.os.Looper.loopOnce (line:251)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 15 -> frame 14",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 15 -> 14 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "15"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "14"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 15 -> android.os.Looper.loop",
+    "PASS F9 frame 14 -> android.os.Looper.loopOnce"
+   ]
+  },
+  {
+   "seq": 6,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.os.Looper.loopOnce (line:251)",
+   "dst": "android.os.Handler.dispatchMessage (line:21)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 14 -> frame 13",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 14 -> 13 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "14"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "13"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 14 -> android.os.Looper.loopOnce",
+    "PASS F9 frame 13 -> android.os.Handler.dispatchMessage"
+   ]
+  },
+  {
+   "seq": 7,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.os.Handler.dispatchMessage (line:21)",
+   "dst": "android.app.ActivityThread$H.handleMessage (line:1340)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 13 -> frame 12",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 13 -> 12 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "13"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "12"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 13 -> android.os.Handler.dispatchMessage",
+    "PASS F9 frame 12 -> android.app.ActivityThread$H.handleMessage"
+   ]
+  },
+  {
+   "seq": 8,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.app.ActivityThread$H.handleMessage (line:1340)",
+   "dst": "android.app.ActivityThread.-$$Nest$mhandleBindApplication (line:0)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 12 -> frame 11",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 12 -> 11 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "12"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "11"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 12 -> android.app.ActivityThread$H.handleMessage",
+    "PASS F9 frame 11 -> android.app.ActivityThread.-$$Nest$mhandleBindApplication"
+   ]
+  },
+  {
+   "seq": 9,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.app.ActivityThread.-$$Nest$mhandleBindApplication (line:0)",
+   "dst": "android.app.ActivityThread.handleBindApplication (line:1090)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 11 -> frame 10",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 11 -> 10 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "11"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "10"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 11 -> android.app.ActivityThread.-$$Nest$mhandleBindApplication",
+    "PASS F9 frame 10 -> android.app.ActivityThread.handleBindApplication"
+   ]
+  },
+  {
+   "seq": 10,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.app.ActivityThread.handleBindApplication (line:1090)",
+   "dst": "android.app.LoadedApk.makeApplicationInner (line:1)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 10 -> frame 9",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 10 -> 9 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "10"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "9"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 10 -> android.app.ActivityThread.handleBindApplication",
+    "PASS F9 frame 9 -> android.app.LoadedApk.makeApplicationInner"
+   ]
+  },
+  {
+   "seq": 11,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.app.LoadedApk.makeApplicationInner (line:1)",
+   "dst": "android.app.LoadedApk.makeApplicationInner (line:190)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 9 -> frame 8",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 9 -> 8 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "9"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "8"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 9 -> android.app.LoadedApk.makeApplicationInner",
+    "PASS F9 frame 8 -> android.app.LoadedApk.makeApplicationInner"
+   ]
+  },
+  {
+   "seq": 12,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.app.LoadedApk.makeApplicationInner (line:190)",
+   "dst": "android.app.Instrumentation.newApplication (line:15)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 8 -> frame 7",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 8 -> 7 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "8"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "7"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 8 -> android.app.LoadedApk.makeApplicationInner",
+    "PASS F9 frame 7 -> android.app.Instrumentation.newApplication"
+   ]
+  },
+  {
+   "seq": 13,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "android.app.Instrumentation.newApplication (line:15)",
+   "dst": "com.android.internal.util.kaorios.KaoriPropsUtils.KaoriProps (line:1175)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 7 -> frame 6",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 7 -> 6 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "7"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "6"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 7 -> android.app.Instrumentation.newApplication",
+    "PASS F9 frame 6 -> com.android.internal.util.kaorios.KaoriPropsUtils.KaoriProps"
+   ]
+  },
+  {
+   "seq": 14,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "com.android.internal.util.kaorios.KaoriPropsUtils.KaoriProps (line:1175)",
+   "dst": "com.android.internal.util.kaorios.Krtr48kA09tmO323tj8Rgf62eI.Ku5O3sihzbUhwSewE8uI (line:146)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 6 -> frame 5",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 6 -> 5 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "6"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "5"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 6 -> com.android.internal.util.kaorios.KaoriPropsUtils.KaoriProps",
+    "PASS F9 frame 5 -> com.android.internal.util.kaorios.Krtr48kA09tmO323tj8Rgf62eI.Ku5O3sihzbUhwSewE8uI"
+   ]
+  },
+  {
+   "seq": 15,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "com.android.internal.util.kaorios.Krtr48kA09tmO323tj8Rgf62eI.Ku5O3sihzbUhwSewE8uI (line:146)",
+   "dst": "Vector_.constructor (line:11)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 5 -> frame 4",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 5 -> 4 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "5"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "4"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 5 -> com.android.internal.util.kaorios.Krtr48kA09tmO323tj8Rgf62eI.Ku5O3sihzbUhwSewE8uI",
+    "PASS F9 frame 4 -> Vector_.constructor"
+   ]
+  },
+  {
+   "seq": 16,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "Vector_.constructor (line:11)",
+   "dst": "c3.callback (line:106)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 4 -> frame 3",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 4 -> 3 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "4"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "3"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 4 -> Vector_.constructor",
+    "PASS F9 frame 3 -> c3.callback"
+   ]
+  },
+  {
+   "seq": 17,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "c3.callback (line:106)",
+   "dst": "e2.proceed (line:11)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 3 -> frame 2",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 3 -> 2 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "3"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "2"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 3 -> c3.callback",
+    "PASS F9 frame 2 -> e2.proceed"
+   ]
+  },
+  {
+   "seq": 18,
+   "tier": "T0",
+   "kind": "framework_dispatch",
+   "src": "e2.proceed (line:11)",
+   "dst": "e2.b (line:58)",
+   "conf": "shape",
+   "evidence": "captured KOS/Kaori module-host stack, frame 2 -> frame 1",
+   "source": "fragments/F9_kos_boot_stack.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "เฟรม 2 -> 1 ของสแตกที่จับได้ (โครงรูป ไม่ใช่ไบต์ SNAKE)",
+   "en": "frame %d -> %d of the captured stack (shape only, not SNAKE bytes)",
+   "refs": [
+    [
+     "frag-offset",
+     "f9-frame",
+     "2"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "1"
+    ]
+   ],
+   "ref_detail": [
+    "PASS F9 frame 2 -> e2.proceed",
+    "PASS F9 frame 1 -> e2.b"
+   ]
+  },
+  {
+   "seq": 19,
+   "tier": "T1",
+   "kind": "constructs_application",
+   "src": "android.app.Instrumentation.newApplication (line:15)",
+   "dst": "com.snake.App (manifest <application>)",
+   "conf": "proven",
+   "evidence": "F3 manifest declares android:name=com.snake.App; F9 frame 7 is the framework call that constructs it (the stitch point between the shape tier and SNAKE bytes)",
+   "source": "fragments/F3_manifest.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "จุดต่อระหว่างโครงรูปเฟรมเวิร์กกับไบต์จริงของ SNAKE: manifest ประกาศ android:name=com.snake.App และ Instrumentation.newApplication คือผู้ที่สร้างมัน",
+   "en": "stitch point: the manifest names com.snake.App and newApplication is what constructs it",
+   "refs": [
+    [
+     "frag",
+     "fragments/F3_manifest.txt",
+     "^application\\s*:\\s*com\\.snake\\.App"
+    ],
+    [
+     "frag-offset",
+     "f9-frame",
+     "7"
+    ]
+   ],
+   "ref_detail": [
+    "PASS fragments/F3_manifest.txt /^application\\s*:\\s*com\\.snake\\.App/ -> application    : com.snake.App",
+    "PASS F9 frame 7 -> android.app.Instrumentation.newApplication"
+   ]
+  },
+  {
+   "seq": 20,
+   "tier": "T1",
+   "kind": "manifest_role",
+   "src": "com.Entry (main activity)",
+   "dst": "com.snake.App.<clinit>()V / onCreate",
+   "conf": "proven",
+   "evidence": "F3: main activity = com.Entry, application = com.snake.App, 51 components declared",
+   "source": "fragments/F3_manifest.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "บทบาทจาก manifest: activity หลักคือ com.Entry, Application คือ com.snake.App, มีคอมโพเนนต์ 51 ตัว",
+   "en": "manifest roles: main activity com.Entry, application com.snake.App, 51 components",
+   "refs": [
+    [
+     "frag",
+     "fragments/F3_manifest.txt",
+     "^main activity\\s*:\\s*com\\.Entry"
+    ]
+   ],
+   "ref_detail": [
+    "PASS fragments/F3_manifest.txt /^main activity\\s*:\\s*com\\.Entry/ -> main activity  : com.Entry"
+   ]
+  },
+  {
+   "seq": 21,
+   "tier": "T1",
+   "kind": "invokes_loader",
+   "src": "Lcom/snake/App;-><clinit>()V",
+   "dst": "java.lang.System.loadLibrary(\"engine\")",
+   "conf": "proven",
+   "evidence": "fill-array-data instruction at file 0x2b6c22 points to the payload at 0x2b6c38 (ident=0x0300, element_width=1, size=6); the 6 bytes at 0x2b6c40 are 656e67696e65 = 'engine'",
+   "source": "fragments/F2_dex_natives.txt + fragments.json:dex.loader_call_sites",
+   "via": "CH-01 hop 1 (E0001)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-01",
+     0
+    ]
+   ],
+   "resolved_by": "library name from fill-array-data+String([B)",
+   "src_insn": "invoke-static {...}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-01 hop 1"
+   ]
+  },
+  {
+   "seq": 22,
+   "tier": "T1",
+   "kind": "invokes_loader",
+   "src": "Lcom/snake/App;-><clinit>()V",
+   "dst": "string literal \"engine\" built at run time",
+   "conf": "proven",
+   "evidence": "fill-array-data instruction at file 0x2b6c22 points to the payload at 0x2b6c38 (ident=0x0300, element_width=1, size=6); the 6 bytes at 0x2b6c40 are 656e67696e65 = 'engine'",
+   "source": "fragments.json:dex.loader_call_sites",
+   "via": "CH-01 hop 2 (E0003)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-01",
+     1
+    ]
+   ],
+   "resolved_by": "payload bytes decoded as ASCII",
+   "src_insn": "fill-array-data payload = 656e67696e65",
+   "note": "the name never appears in the dex string pool",
+   "ref_detail": [
+    "PASS edge CH-01 hop 2"
+   ]
+  },
+  {
+   "seq": 23,
+   "tier": "T1",
+   "kind": "loads_library",
+   "src": "System.loadLibrary(\"engine\")",
+   "dst": "lib/arm64-v8a/libengine.so",
+   "conf": "proven",
+   "evidence": "APK member lib/arm64-v8a/libengine.so == repo copy binaries/libengine.so (sha256 f5d751e6bde8f059..., 8,544,568 bytes, match=True)",
+   "source": "fragments/F1_apk_inventory.txt",
+   "via": "CH-01 hop 3 (E0002)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-01",
+     2
+    ]
+   ],
+   "resolved_by": "SONAME of the committed library",
+   "src_insn": "dlopen",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-01 hop 3"
+   ]
+  },
+  {
+   "seq": 24,
+   "tier": "T1",
+   "kind": "loader_init_call",
+   "src": ".init_array[0]",
+   "dst": "_INIT_0 (.text, prologue e80f19fcfd7b01a9...)",
+   "conf": "proven",
+   "evidence": "slot 0x825c78 -> 0x11ab10 in .text, value_from=reloc",
+   "source": "fragments.json:libengine.init_array",
+   "via": "CH-01 hop 4 (E0040)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-01",
+     3
+    ]
+   ],
+   "resolved_by": ".rela.dyn addend; Ghidra's 02_init_array_entries.txt agrees on all 44 after rebasing -0x100000",
+   "src_insn": "R_AARCH64_RELATIVE addend (the slot holds no file bytes)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-01 hop 4"
+   ]
+  },
+  {
+   "seq": 25,
+   "tier": "T1",
+   "kind": "calls_entry_point",
+   "src": "linker (dlopen of libengine.so)",
+   "dst": "JNI_OnLoad",
+   "conf": "proven",
+   "evidence": "F4: exports 17 defined dynamic symbols, 0 of them Java_*; JNI_OnLoad @0xf3fa0. Ghidra independently places it at 0x1f3fa0 = 0xf3fa0 + 0x100000",
+   "source": "fragments/F4_libengine_jni.txt",
+   "via": "CH-01 hop 5 (E0084)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-01",
+     4
+    ]
+   ],
+   "resolved_by": ".dynsym STT_FUNC export",
+   "src_insn": "call DT_INIT/JNI_OnLoad after the .init_array runs",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-01 hop 5"
+   ]
+  },
+  {
+   "seq": 26,
+   "tier": "T1",
+   "kind": "collapsed_range",
+   "src": ".init_array[0]",
+   "dst": "_INIT_43 (.text, prologue 3f2303d5ffc301d1...)",
+   "conf": "proven",
+   "evidence": "CH-02: 44 proven hops, dynamic loader -> 44 staged constructors .. L2 -> L3 (imported verbatim in CALL_LINKAGE.md)",
+   "source": "call_linkage.json",
+   "via": "CH-02 hops 1-44",
+   "collapsed": 44,
+   "th": "ตัวโหลด ELF ไล่ .init_array ทั้ง 44 สล็อต — ย่อเป็นฮอปเดียว (รายละเอียดครบใน CALL_LINKAGE.md CH-02)",
+   "en": "the ELF loader walks all 44 .init_array slots — collapsed to one hop (full detail in CALL_LINKAGE.md CH-02)",
+   "refs": [
+    [
+     "chain",
+     "CH-02",
+     44
+    ]
+   ],
+   "ref_detail": [
+    "PASS chain CH-02 has 44 hops (expected 44)"
+   ]
+  },
+  {
+   "seq": 27,
+   "tier": "T2",
+   "kind": "calls_plt",
+   "src": "JNI_OnLoad",
+   "dst": "sysconf",
+   "conf": "strong",
+   "evidence": "`0xf3fd8: bl        #0x81f110`; arguments staged before the call: -",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:16",
+   "via": "CH-03 hop 1 (E0086)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     0
+    ]
+   ],
+   "resolved_by": "PLT stub named by Ghidra's callgraph (F7, rebased -0x100000)",
+   "src_insn": "bl #0x81f110",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-03 hop 1"
+   ]
+  },
+  {
+   "seq": 28,
+   "tier": "T2",
+   "kind": "calls_syscall",
+   "src": "JNI_OnLoad",
+   "dst": "mmap",
+   "conf": "proven",
+   "evidence": "`0xf4018: svc       #0` with w8 = #0xde = 222 = mmap; arguments visible in this window: prot=0x7 (R|W|X), flags=0x22 (MAP_PRIVATE|MAP_ANONYMOUS), fd=0xffffffffffffffff",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:32",
+   "via": "CH-03 hop 2 (E0087)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     1
+    ]
+   ],
+   "resolved_by": "syscall number staged in w8/x8 before svc (asm-generic/unistd.h, arm64)",
+   "src_insn": "svc #0",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-03 hop 2"
+   ]
+  },
+  {
+   "seq": 29,
+   "tier": "T2",
+   "kind": "computes_branch",
+   "src": "JNI_OnLoad",
+   "dst": "dispatch table at 0x125d4 (adrp 0x12000 + 0x5d4), 4 relative offsets",
+   "conf": "strong",
+   "evidence": "0xf4048 `adr x10, #0xf4048`; 0xf404c `ldrsw x11, [x26, x9, lsl #2]`; 0xf4050 `add x10, x10, x11`; 0xf4054 `br x10` - the four table words at 0x125d4..0x125e0 are file bytes this bundle does not contain, so the four targets stay open (recipe: read 4 little-endian int32 at libengine.so+0x125d4)",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:47",
+   "via": "CH-03 hop 3 (E0088)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     2
+    ]
+   ],
+   "resolved_by": "adrp/add at 0xf3fe0+0xf3ff8 build x26 = 0x125d4; `ldrsw x11,[x26,x9,lsl#2]` with x9 = x27 & 3 selects one of 4 signed offsets added to the PC at 0xf4048",
+   "src_insn": "br x10",
+   "note": "switch-shaped dispatcher inside the loop that writes the generated page",
+   "ref_detail": [
+    "PASS edge CH-03 hop 3"
+   ]
+  },
+  {
+   "seq": 30,
+   "tier": "T2",
+   "kind": "calls_plt",
+   "src": "JNI_OnLoad",
+   "dst": "rand",
+   "conf": "strong",
+   "evidence": "`0xf406c: bl        #0x81f120`; arguments staged before the call: -",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:53",
+   "via": "CH-03 hop 4 (E0089)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     3
+    ]
+   ],
+   "resolved_by": "PLT stub named by Ghidra's callgraph (F7, rebased -0x100000)",
+   "src_insn": "bl #0x81f120",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-03 hop 4"
+   ]
+  },
+  {
+   "seq": 31,
+   "tier": "T2",
+   "kind": "writes_generated_code",
+   "src": "JNI_OnLoad",
+   "dst": "RWX page from the mmap at 0xf4018 (x21 = page, x27 = word index)",
+   "conf": "proven",
+   "evidence": "0xf4040 `mov w28, #0x14000000`; 0xf4044 `mov w19, #0x3ffffff`; 0xf4070 `and w8, w0, w19`; 0xf4074 `orr w8, w8, w28`; 0xf4078 `str w8, [x21, x27, lsl #2]` - a `B <imm26>` is written word by word into the page mmap returned",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:56",
+   "via": "CH-03 hop 5 (E0090)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     4
+    ]
+   ],
+   "resolved_by": "`mov w28, #0x14000000` at 0xf4040 is the AArch64 unconditional-branch opcode; 0xf406c-0xf4074 blend it with rand() and mask 0x3ffffff",
+   "src_insn": "str w8, [x21, x27, lsl #2]",
+   "note": "this is why no static tool sees the registration code: it is emitted at load time",
+   "ref_detail": [
+    "PASS edge CH-03 hop 5"
+   ]
+  },
+  {
+   "seq": 32,
+   "tier": "T2",
+   "kind": "writes_generated_code",
+   "src": "JNI_OnLoad",
+   "dst": "previous RWX page (x8 = pages[n-1]); the branch is aimed at x21 = pages[n]",
+   "conf": "proven",
+   "evidence": "0xf4090 `mov w10, #0x14000000`; 0xf4094 `ldr x8, [x25, w8, uxtw #3]` (previous page); 0xf4098 `sub w9, w21, w8`; 0xf409c `bfxil w10, w9, #2, #0x1a`; 0xf40a0 `str w10, [x8]` - page n-1 is patched with `B (page_n - page_{n-1}) >> 2`, chaining the pages",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:66",
+   "via": "CH-03 hop 6 (E0091)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     5
+    ]
+   ],
+   "resolved_by": "0xf4090 stages the opcode, 0xf4098 computes the delta, 0xf409c packs it",
+   "src_insn": "str w10, [x8]",
+   "note": "the pages form a linked trampoline chain, each one branching to the next",
+   "ref_detail": [
+    "PASS edge CH-03 hop 6"
+   ]
+  },
+  {
+   "seq": 33,
+   "tier": "T2",
+   "kind": "calls_plt",
+   "src": "JNI_OnLoad",
+   "dst": "FUN_0091ad58",
+   "conf": "strong",
+   "evidence": "`0xf40ac: bl        #0x81ad58`; arguments staged before the call: -",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:69",
+   "via": "CH-03 hop 7 (E0092)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     6
+    ]
+   ],
+   "resolved_by": "PLT stub named by Ghidra's callgraph (F7, rebased -0x100000)",
+   "src_insn": "bl #0x81ad58",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-03 hop 7"
+   ]
+  },
+  {
+   "seq": 34,
+   "tier": "T2",
+   "kind": "jumps_into_generated",
+   "src": "JNI_OnLoad",
+   "dst": "generated code in the first RWX page (the mmap result stored at sp+0x10)",
+   "conf": "proven",
+   "evidence": "0xf3ff4 `add x25, sp, #0x10`; 0xf4018 `svc #0` (mmap, prot=RWX); 0xf4020 `str x0, [x25, x22, lsl #3]`; 0xf40c4 `ldr x8, [sp, #0x10]`; 0xf40e0 `blr x8` - control leaves the static image",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:82",
+   "via": "CH-03 hop 8 (E0093)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     7
+    ]
+   ],
+   "resolved_by": "x8 = [sp,#0x10] = pages[0], written by `str x0, [x25, x22, lsl #3]` at 0xf4020 with x25 = sp+0x10 (0xf3ff4) and x0 = the mmap return at 0xf4018",
+   "src_insn": "blr x8",
+   "note": "first of the 2 blr in JNI_OnLoad (F4: blr_count = 2)",
+   "ref_detail": [
+    "PASS edge CH-03 hop 8"
+   ]
+  },
+  {
+   "seq": 35,
+   "tier": "T2",
+   "kind": "calls_syscall",
+   "src": "JNI_OnLoad",
+   "dst": "mmap",
+   "conf": "proven",
+   "evidence": "`0xf411c: svc       #0` with w8 = #0xde = 222 = mmap; arguments visible in this window: prot=0x7 (R|W|X), flags=0x22 (MAP_PRIVATE|MAP_ANONYMOUS), fd=0xffffffffffffffff",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:97",
+   "via": "CH-03 hop 9 (E0095)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     8
+    ]
+   ],
+   "resolved_by": "syscall number staged in w8/x8 before svc (asm-generic/unistd.h, arm64)",
+   "src_insn": "svc #0",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-03 hop 9"
+   ]
+  },
+  {
+   "seq": 36,
+   "tier": "T2",
+   "kind": "jumps_into_generated",
+   "src": "JNI_OnLoad",
+   "dst": "generated table in the second RWX page (x8 = mmap result of 0xf411c)",
+   "conf": "proven",
+   "evidence": "0xf411c `svc #0` (mmap, prot=RWX); 0xf4120 `mov x8, x0`; 0xf4190 `ldr x9, [x9, #0x48]` / 0xf41a0 `ldr x10, [x10, #0x50]` (.bss shift counts); 0xf41f8 `str x9, [x8, #0x550]` ... 0xf43c8 `str x9, [x8, #0x5e8]`; 0xf43f0 `mov x6, x8`; 0xf43f4 `blr x8`; 0xf43f8 `cbz x0, #0xf4430`",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:279",
+   "via": "CH-03 hop 10 (E0096)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     9
+    ]
+   ],
+   "resolved_by": "x8 = x0 of the second mmap (0xf4120 `mov x8, x0`); 0xf41f8-0xf43c8 fill [x8+0x550 .. x8+0x5e8] with values built by shifting immediates through counts loaded from .bss 0x828048..0x828088",
+   "src_insn": "blr x8",
+   "note": "the callee returns the value that selects the 0xf4430 / 0xf442c path - a runtime check whose result is consumed but whose code is not in the image",
+   "ref_detail": [
+    "PASS edge CH-03 hop 10"
+   ]
+  },
+  {
+   "seq": 37,
+   "tier": "T2",
+   "kind": "calls_syscall",
+   "src": "JNI_OnLoad",
+   "dst": "fchmodat",
+   "conf": "proven",
+   "evidence": "0xf4418 `str x26, [sp, #0x10]`; 0xf441c `ldr x8, [sp, #0x10]`; 0xf4420 `ldr x0, [x8]`; 0xf4424 `mov x8, #0x35`; 0xf4428 `svc #0` - the syscall number is proven (53 = fchmodat) but only x0 is staged, and it is a word read back out of the generated page, so the arguments are NOT recoverable from the image",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:292",
+   "via": "CH-03 hop 11 (E0097)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     10
+    ]
+   ],
+   "resolved_by": "syscall number staged in w8/x8 before svc (asm-generic/unistd.h, arm64)",
+   "src_insn": "svc #0",
+   "note": "reached when the second generated call returned non-zero (0xf43f8 `cbz x0, #0xf4430`)",
+   "ref_detail": [
+    "PASS edge CH-03 hop 11"
+   ]
+  },
+  {
+   "seq": 38,
+   "tier": "T2",
+   "kind": "calls_plt",
+   "src": "JNI_OnLoad",
+   "dst": "strlen",
+   "conf": "strong",
+   "evidence": "`0xf446c: bl        #0x81f0e0`; arguments staged before the call: -",
+   "source": "fragments/F4c_libengine_JNI_OnLoad.asm:309",
+   "via": "CH-03 hop 12 (E0099)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-03",
+     11
+    ]
+   ],
+   "resolved_by": "PLT stub named by Ghidra's callgraph (F7, rebased -0x100000)",
+   "src_insn": "bl #0x81f0e0",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-03 hop 12"
+   ]
+  },
+  {
+   "seq": 39,
+   "tier": "T2",
+   "kind": "calls_plt",
+   "src": "registration site 0xf3a08 (nMethods=10)",
+   "dst": "FUN_0091ad58",
+   "conf": "strong",
+   "evidence": "`0xf3944: bl        #0x81ad58`; arguments staged before the call: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:8",
+   "via": "CH-04 hop 1 (E0122)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-04",
+     0
+    ]
+   ],
+   "resolved_by": "PLT stub named by Ghidra's callgraph (F7, rebased -0x100000)",
+   "src_insn": "bl #0x81ad58",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-04 hop 1"
+   ]
+  },
+  {
+   "seq": 40,
+   "tier": "T2",
+   "kind": "calls_syscall_stub",
+   "src": "registration site 0xf3a08 (nMethods=10)",
+   "dst": "syscall 222 (mmap) via function pointer in x19",
+   "conf": "strong",
+   "evidence": "`0xf3968: blr       x19` with `mov w6, #0xde` = 222 = mmap staged before it; arguments visible in this window: length=0x18, prot=0x7 (R|W|X), flags=0x22 (MAP_PRIVATE|MAP_ANONYMOUS), fd=0xffffffffffffffff",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:17",
+   "via": "CH-04 hop 2 (E0123)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-04",
+     1
+    ]
+   ],
+   "resolved_by": "syscall number staged in w6 = #0xde; x0-x5 hold the mmap arguments",
+   "src_insn": "blr x19",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-04 hop 2"
+   ]
+  },
+  {
+   "seq": 41,
+   "tier": "T2",
+   "kind": "calls_direct",
+   "src": "registration site 0xf3a08 (nMethods=10)",
+   "dst": "sub_7778a8",
+   "conf": "probable",
+   "evidence": "`0xf3988: bl        #0x7778a8`; arguments staged before the call: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:25",
+   "via": "CH-04 hop 3 (E0124)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-04",
+     2
+    ]
+   ],
+   "resolved_by": "(unresolved) no symbol covers this offset in the fragments",
+   "src_insn": "bl #0x7778a8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-04 hop 3"
+   ]
+  },
+  {
+   "seq": 42,
+   "tier": "T2",
+   "kind": "calls_direct",
+   "src": "registration site 0xf3a08 (nMethods=10)",
+   "dst": "sub_81f140",
+   "conf": "probable",
+   "evidence": "`0xf3994: bl        #0x81f140`; arguments staged before the call: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:28",
+   "via": "CH-04 hop 4 (E0125)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-04",
+     3
+    ]
+   ],
+   "resolved_by": "(unresolved) no symbol covers this offset in the fragments",
+   "src_insn": "bl #0x81f140",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-04 hop 4"
+   ]
+  },
+  {
+   "seq": 43,
+   "tier": "T2",
+   "kind": "calls_vtable0",
+   "src": "registration site 0xf3a08 (nMethods=10)",
+   "dst": "*x21 (first word of the object returned earlier)",
+   "conf": "probable",
+   "evidence": "`0xf39c4: blr       x8` after `ldr x8, [x21]`; arguments staged: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:40",
+   "via": "CH-04 hop 5 (E0126)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-04",
+     4
+    ]
+   ],
+   "resolved_by": "(unresolved) virtual dispatch - the vtable is filled at run time",
+   "src_insn": "blr x8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-04 hop 5"
+   ]
+  },
+  {
+   "seq": 44,
+   "tier": "T2",
+   "kind": "finds_class",
+   "src": "registration site 0xf3a08 (nMethods=10)",
+   "dst": "JNIEnv->FindClass (slot 6)",
+   "conf": "proven",
+   "evidence": "0xf39d8 `ldr x8, [x24]`; 0xf39dc `mov x0, x24`; 0xf39e0 `mov x1, x20`; 0xf39e4 `ldr x8, [x8, #0x30]`; 0xf39e8 `blr x8` - FindClass(env, x20) where x20 is the buffer the 23-iteration decode loop at 0xf39b8-0xf39d4 just filled, so the class name is 23 characters: 'com/snake/helper/Native'",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:49",
+   "via": "CH-04 hop 6 (E0127)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-04",
+     5
+    ]
+   ],
+   "resolved_by": "JNIEnv function-table offset (jni.h order)",
+   "src_insn": "blr x8",
+   "note": "the only FindClass among the 3 registration windows; the other two reuse a class handle they did not materialise here",
+   "ref_detail": [
+    "PASS edge CH-04 hop 6"
+   ]
+  },
+  {
+   "seq": 45,
+   "tier": "T2",
+   "kind": "registers_natives",
+   "src": "registration site 0xf3a08 (nMethods=10)",
+   "dst": "JNIEnv->RegisterNatives (slot 215)",
+   "conf": "proven",
+   "evidence": "`0xf3a0c: blr       x8` reached through `blr` of the value loaded by `ldr x8, [x8, #0x6b8]`; the table pointer itself came from `ldr x8, [x21]`",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:58",
+   "via": "CH-04 hop 7 (E0128)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-04",
+     6
+    ]
+   ],
+   "resolved_by": "JNIEnv function-table offset (jni.h order)",
+   "src_insn": "blr x8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-04 hop 7"
+   ]
+  },
+  {
+   "seq": 46,
+   "tier": "T2",
+   "kind": "calls_syscall",
+   "src": "registration site 0xb40a8 (nMethods=2)",
+   "dst": "fchmodat",
+   "conf": "proven",
+   "evidence": "0xb3fd4 `stur x8, [x29, #-0x40]`; 0xb3fd8 `ldur x8, [x29, #-0x40]`; 0xb3fdc `ldr x0, [x8]`; 0xb3fe0 `mov x8, #0x35`; 0xb3fe4 `svc #0` - syscall 53 (fchmodat) with only x0 staged, the value having been round-tripped through the stack from an obfuscated immediate (0xb3fc8-0xb3fd0 build 0x33804ef2)",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:8",
+   "via": "CH-05 hop 1 (E0112)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-05",
+     0
+    ]
+   ],
+   "resolved_by": "syscall number staged in w8/x8 before svc (asm-generic/unistd.h, arm64)",
+   "src_insn": "svc #0",
+   "note": "first instruction of the window: the site opens with a syscall, not with a call",
+   "ref_detail": [
+    "PASS edge CH-05 hop 1"
+   ]
+  },
+  {
+   "seq": 47,
+   "tier": "T2",
+   "kind": "calls_plt",
+   "src": "registration site 0xb40a8 (nMethods=2)",
+   "dst": "FUN_0091ad58",
+   "conf": "strong",
+   "evidence": "`0xb4018: bl        #0x81ad58`; arguments staged before the call: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:21",
+   "via": "CH-05 hop 2 (E0113)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-05",
+     1
+    ]
+   ],
+   "resolved_by": "PLT stub named by Ghidra's callgraph (F7, rebased -0x100000)",
+   "src_insn": "bl #0x81ad58",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-05 hop 2"
+   ]
+  },
+  {
+   "seq": 48,
+   "tier": "T2",
+   "kind": "calls_syscall_stub",
+   "src": "registration site 0xb40a8 (nMethods=2)",
+   "dst": "syscall 222 (mmap) via function pointer in x19",
+   "conf": "strong",
+   "evidence": "`0xb403c: blr       x19` with `mov w6, #0xde` = 222 = mmap staged before it; arguments visible in this window: length=0x4, prot=0x7 (R|W|X), flags=0x22 (MAP_PRIVATE|MAP_ANONYMOUS), fd=0xffffffffffffffff",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:30",
+   "via": "CH-05 hop 3 (E0114)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-05",
+     2
+    ]
+   ],
+   "resolved_by": "syscall number staged in w6 = #0xde; x0-x5 hold the mmap arguments",
+   "src_insn": "blr x19",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-05 hop 3"
+   ]
+  },
+  {
+   "seq": 49,
+   "tier": "T2",
+   "kind": "calls_direct",
+   "src": "registration site 0xb40a8 (nMethods=2)",
+   "dst": "sub_777fb0",
+   "conf": "probable",
+   "evidence": "`0xb4050: bl        #0x777fb0`; arguments staged before the call: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:35",
+   "via": "CH-05 hop 4 (E0115)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-05",
+     3
+    ]
+   ],
+   "resolved_by": "(unresolved) no symbol covers this offset in the fragments",
+   "src_insn": "bl #0x777fb0",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-05 hop 4"
+   ]
+  },
+  {
+   "seq": 50,
+   "tier": "T2",
+   "kind": "calls_direct",
+   "src": "registration site 0xb40a8 (nMethods=2)",
+   "dst": "sub_81f140",
+   "conf": "probable",
+   "evidence": "`0xb405c: bl        #0x81f140`; arguments staged before the call: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:38",
+   "via": "CH-05 hop 5 (E0116)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-05",
+     4
+    ]
+   ],
+   "resolved_by": "(unresolved) no symbol covers this offset in the fragments",
+   "src_insn": "bl #0x81f140",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-05 hop 5"
+   ]
+  },
+  {
+   "seq": 51,
+   "tier": "T2",
+   "kind": "calls_vtable0",
+   "src": "registration site 0xb40a8 (nMethods=2)",
+   "dst": "*x22 (first word of the object returned earlier)",
+   "conf": "probable",
+   "evidence": "`0xb407c: blr       x8` after `ldr x8, [x22]`; arguments staged: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:46",
+   "via": "CH-05 hop 6 (E0117)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-05",
+     5
+    ]
+   ],
+   "resolved_by": "(unresolved) virtual dispatch - the vtable is filled at run time",
+   "src_insn": "blr x8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-05 hop 6"
+   ]
+  },
+  {
+   "seq": 52,
+   "tier": "T2",
+   "kind": "stages_fnptr",
+   "src": "registration site 0xb40a8",
+   "dst": ".mytext 0x81eeb0 (exec=True) - the only fnPtr of the 13 that survives static analysis",
+   "conf": "proven",
+   "evidence": "0xb409c: x2, sp, #0x20 — the JNINativeMethod[] is assembled on the stack, so name/sig/fnPtr are runtime values; the stores into that frame below are what can still be recovered statically; the value written is 0x81eeb0, which lies inside .mytext (0x81eeac + 244 bytes, exec=True, write=False)",
+   "source": "fragments.json:libengine.register_natives_sites",
+   "via": "CH-05 hop 7 (E0120)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-05",
+     6
+    ]
+   ],
+   "resolved_by": "absolute value staged by adrp+add inside the same window",
+   "src_insn": "stp/str x9 -> sp+0x48 (JNINativeMethod[1].fnPtr)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-05 hop 7"
+   ]
+  },
+  {
+   "seq": 53,
+   "tier": "T2",
+   "kind": "registers_natives",
+   "src": "registration site 0xb40a8 (nMethods=2)",
+   "dst": "JNIEnv->RegisterNatives (slot 215)",
+   "conf": "proven",
+   "evidence": "`0xb40b4: blr       x8` reached through `blr` of the value loaded by `ldr x8, [x8, #0x6b8]`; the table pointer itself came from `ldr x8, [x22]`",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:60",
+   "via": "CH-05 hop 8 (E0118)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-05",
+     7
+    ]
+   ],
+   "resolved_by": "JNIEnv function-table offset (jni.h order)",
+   "src_insn": "blr x8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-05 hop 8"
+   ]
+  },
+  {
+   "seq": 54,
+   "tier": "T2",
+   "kind": "calls_syscall_stub",
+   "src": "registration site 0xb0140 (nMethods=1)",
+   "dst": "syscall 222 (mmap) via function pointer in x20",
+   "conf": "strong",
+   "evidence": "`0xb0068: blr       x20` with `mov w6, #0xde` = 222 = mmap staged before it; arguments visible in this window: none staged inside this window",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:3",
+   "via": "CH-07 hop 1 (E0104)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-07",
+     0
+    ]
+   ],
+   "resolved_by": "syscall number staged in w6 = #0xde; x0-x5 hold the mmap arguments",
+   "src_insn": "blr x20",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-07 hop 1"
+   ]
+  },
+  {
+   "seq": 55,
+   "tier": "T2",
+   "kind": "calls_direct",
+   "src": "registration site 0xb0140 (nMethods=1)",
+   "dst": "sub_7775d8",
+   "conf": "probable",
+   "evidence": "`0xb0088: bl        #0x7775d8`; arguments staged before the call: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:11",
+   "via": "CH-07 hop 2 (E0105)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-07",
+     1
+    ]
+   ],
+   "resolved_by": "(unresolved) no symbol covers this offset in the fragments",
+   "src_insn": "bl #0x7775d8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-07 hop 2"
+   ]
+  },
+  {
+   "seq": 56,
+   "tier": "T2",
+   "kind": "calls_direct",
+   "src": "registration site 0xb0140 (nMethods=1)",
+   "dst": "sub_81f140",
+   "conf": "probable",
+   "evidence": "`0xb0094: bl        #0x81f140`; arguments staged before the call: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:14",
+   "via": "CH-07 hop 3 (E0106)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-07",
+     2
+    ]
+   ],
+   "resolved_by": "(unresolved) no symbol covers this offset in the fragments",
+   "src_insn": "bl #0x81f140",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-07 hop 3"
+   ]
+  },
+  {
+   "seq": 57,
+   "tier": "T2",
+   "kind": "calls_vtable0",
+   "src": "registration site 0xb0140 (nMethods=1)",
+   "dst": "*x25 (first word of the object returned earlier)",
+   "conf": "probable",
+   "evidence": "`0xb00c4: blr       x8` after `ldr x8, [x25]`; arguments staged: -",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:26",
+   "via": "CH-07 hop 4 (E0107)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-07",
+     3
+    ]
+   ],
+   "resolved_by": "(unresolved) virtual dispatch - the vtable is filled at run time",
+   "src_insn": "blr x8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-07 hop 4"
+   ]
+  },
+  {
+   "seq": 58,
+   "tier": "T2",
+   "kind": "calls_direct",
+   "src": "registration site 0xb0140 (nMethods=1)",
+   "dst": "sub_81f250",
+   "conf": "probable",
+   "evidence": "0xb00d8 `ldr x0, [sp, #0x30]`; 0xb00dc `mov x1, x24`; 0xb00e0 `mov w2, #8`; 0xb00e4 `bl #0x81f250`; 0xb00e8 `cbnz w0, #0xb0120` - a (ptr, ptr, 8) -> int call whose result is tested, i.e. memcmp-shaped: the 8 decoded bytes are compared before the registration proceeds",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:34",
+   "via": "CH-07 hop 5 (E0108)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-07",
+     4
+    ]
+   ],
+   "resolved_by": "(unresolved) PLT stub - not among the 5 stubs Ghidra's callgraph names",
+   "src_insn": "bl #0x81f250",
+   "note": "shape-identified only; the import name needs .rela.plt, which the bundle does not carry",
+   "ref_detail": [
+    "PASS edge CH-07 hop 5"
+   ]
+  },
+  {
+   "seq": 59,
+   "tier": "T2",
+   "kind": "registers_natives",
+   "src": "registration site 0xb0140 (nMethods=1)",
+   "dst": "JNIEnv->RegisterNatives (slot 215)",
+   "conf": "proven",
+   "evidence": "`0xb0144: blr       x8` reached through `blr` of the value loaded by `ldr x8, [x8, #0x6b8]`; the table pointer itself came from `ldr x8, [x25]`",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:58",
+   "via": "CH-07 hop 6 (E0109)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-07",
+     5
+    ]
+   ],
+   "resolved_by": "JNIEnv function-table offset (jni.h order)",
+   "src_insn": "blr x8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-07 hop 6"
+   ]
+  },
+  {
+   "seq": 60,
+   "tier": "T2",
+   "kind": "calls_jni_slot",
+   "src": "registration site 0xb0140 (nMethods=1)",
+   "dst": "JNIEnv->ExceptionClear (slot 17)",
+   "conf": "proven",
+   "evidence": "0xb0180 `ldr x8, [x19]`; 0xb0184 `ldr x8, [x8, #0x88]`; 0xb0188 `mov x0, x19`; 0xb018c `blr x8` - slot 17 = ExceptionClear(env), reached on the failure path `tbnz w0, #0x1f, #0xb0190` after RegisterNatives returned < 0",
+   "source": "fragments/F4d_libengine_regnatives_windows.asm:76",
+   "via": "CH-07 hop 7 (E0110)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-07",
+     6
+    ]
+   ],
+   "resolved_by": "JNIEnv function-table offset (jni.h order)",
+   "src_insn": "blr x8",
+   "note": "error path of the registration: clear the pending JNI exception",
+   "ref_detail": [
+    "PASS edge CH-07 hop 7"
+   ]
+  },
+  {
+   "seq": 61,
+   "tier": "T2",
+   "kind": "stages_fnptr",
+   "src": "registration site 0xb40a8",
+   "dst": ".mytext 0x81eeb0 (exec=True) - the only fnPtr of the 13 that survives static analysis",
+   "conf": "proven",
+   "evidence": "0xb409c: x2, sp, #0x20 — the JNINativeMethod[] is assembled on the stack, so name/sig/fnPtr are runtime values; the stores into that frame below are what can still be recovered statically; the value written is 0x81eeb0, which lies inside .mytext (0x81eeac + 244 bytes, exec=True, write=False)",
+   "source": "fragments.json:libengine.register_natives_sites",
+   "via": "CH-06 hop 1 (E0120)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-06",
+     0
+    ]
+   ],
+   "resolved_by": "absolute value staged by adrp+add inside the same window",
+   "src_insn": "stp/str x9 -> sp+0x48 (JNINativeMethod[1].fnPtr)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-06 hop 1"
+   ]
+  },
+  {
+   "seq": 62,
+   "tier": "T2",
+   "kind": "calls_entry_point",
+   "src": "ART (a Java caller of Lcom/snake/helper/Native;->update)",
+   "dst": ".mytext fnPtr 0x81eeb0 (decodes as 'ret'; the body starts at 0x81eeb4)",
+   "conf": "strong",
+   "evidence": "F4: site @0xb40a8 entry[1].fnPtr = 0x81eeb0 in .mytext; the instruction at 0x81eeb0 decodes as `ret` and 0x81eeb4 opens a real prologue (`stp x29, x30, [sp, #-0x20]!`), so the pointer as published returns immediately - see the gap list",
+   "source": "fragments/F4b_libengine_mytext.asm",
+   "via": "CH-06 hop 2 (E0131)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-06",
+     1
+    ]
+   ],
+   "resolved_by": "the only statically recovered fnPtr of the 13 registrations",
+   "src_insn": "call through the fnPtr registered by RegisterNatives",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-06 hop 2"
+   ]
+  },
+  {
+   "seq": 63,
+   "tier": "T2",
+   "kind": "calls_jni_slot",
+   "src": ".mytext registered handler (0x81eeb4)",
+   "dst": "JNIEnv->FromReflectedMethod (slot 7)",
+   "conf": "proven",
+   "evidence": "`0x81eed4: blr       x8` reached through `blr` of the value loaded by `ldr x8, [x8, #0x38]`; the table pointer itself came from `ldr x8, [x0]`",
+   "source": "fragments/F4b_libengine_mytext.asm:18",
+   "via": "CH-06 hop 3 (E0101)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-06",
+     2
+    ]
+   ],
+   "resolved_by": "JNIEnv function-table offset (jni.h order)",
+   "src_insn": "blr x8",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-06 hop 3"
+   ]
+  },
+  {
+   "seq": 64,
+   "tier": "T2",
+   "kind": "calls_direct",
+   "src": ".mytext registered handler (0x81eeb4)",
+   "dst": "sub_b01c4",
+   "conf": "probable",
+   "evidence": "0x81eed8 `mov x2, x0` (x0 = FromReflectedMethod result); 0x81eedc `mov x0, x20` (x20 = the JNIEnv* saved at 0x81eecc); 0x81eee0 `mov x1, x19` (x19 = incoming x2, saved at 0x81eec8); 0x81eee4 `bl #0xb01c4` - env, the original second argument and the reflected java.lang.reflect.Method are forwarded into .text",
+   "source": "fragments/F4b_libengine_mytext.asm:22",
+   "via": "CH-06 hop 4 (E0102)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-06",
+     3
+    ]
+   ],
+   "resolved_by": "(unresolved) .text offset - 0x84 bytes past the RegisterNatives site at 0xb0140",
+   "src_insn": "bl #0xb01c4",
+   "note": "the only hop out of .mytext into the protected body; its target has no symbol",
+   "ref_detail": [
+    "PASS edge CH-06 hop 4"
+   ]
+  },
+  {
+   "seq": 65,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/b8;->callActivityOnResume(Landroid/app/Activity;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 1 (E0020)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     0
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 1"
+   ]
+  },
+  {
+   "seq": 66,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/vx;->b(Ljava/lang/String;JZ)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 2 (E0024)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     1
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 2"
+   ]
+  },
+  {
+   "seq": 67,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/vx;->c(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 3 (E0025)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     2
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 3"
+   ]
+  },
+  {
+   "seq": 68,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/vx;->c(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 4 (E0026)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     3
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 4"
+   ]
+  },
+  {
+   "seq": 69,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/vx;->c(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 5 (E0027)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     4
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 5"
+   ]
+  },
+  {
+   "seq": 70,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/vx;->c(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 6 (E0028)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     5
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 6"
+   ]
+  },
+  {
+   "seq": 71,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/vx;->f(Landroid/app/Activity;Ljava/lang/String;IJZ)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 7 (E0029)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     6
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 7"
+   ]
+  },
+  {
+   "seq": 72,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/vx;->f(Landroid/app/Activity;Ljava/lang/String;IJZ)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 8 (E0030)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     7
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 8"
+   ]
+  },
+  {
+   "seq": 73,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/z10;->a(Ljava/lang/String;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 9 (E0033)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     8
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 9"
+   ]
+  },
+  {
+   "seq": 74,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/z10;->b(Ljava/lang/String;Ljava/lang/String;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 10 (E0034)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     9
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 10"
+   ]
+  },
+  {
+   "seq": 75,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/z10;->c(Landroid/content/Context;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 11 (E0035)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     10
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 11"
+   ]
+  },
+  {
+   "seq": 76,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/p60;->uncaughtException(Ljava/lang/Thread;Ljava/lang/Throwable;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 12 (E0023)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     11
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 12"
+   ]
+  },
+  {
+   "seq": 77,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/ne0;->run()V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 13 (E0022)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     12
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 13"
+   ]
+  },
+  {
+   "seq": 78,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/jv0;->O2(Ljava/lang/String;Ljava/lang/String;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 14 (E0021)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     13
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 14"
+   ]
+  },
+  {
+   "seq": 79,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/yu0;->f(Landroid/content/Context;Landroidx/appcompat/view/menu/wb;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 15 (E0031)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     14
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 15"
+   ]
+  },
+  {
+   "seq": 80,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Landroidx/appcompat/view/menu/yu0;->f(Landroid/content/Context;Landroidx/appcompat/view/menu/wb;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 16 (E0032)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     15
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 16"
+   ]
+  },
+  {
+   "seq": 81,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Lcom/Entry;->C(Landroidx/appcompat/view/menu/id0;Landroidx/appcompat/view/menu/kd0$d;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 17 (E0036)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     16
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 17"
+   ]
+  },
+  {
+   "seq": 82,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Lcom/snake/helper/Native;->a(Landroid/app/Activity;Ljava/lang/String;IJZ)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 18 (E0037)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     17
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 18"
+   ]
+  },
+  {
+   "seq": 83,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Lcom/snake/helper/Native;->logIn(Ljava/lang/String;J)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 19 (E0038)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     18
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 19"
+   ]
+  },
+  {
+   "seq": 84,
+   "tier": "T1",
+   "kind": "invokes_native_class",
+   "src": "Lio/flutter/view/TextureRegistry$SurfaceTextureEntry;->setOnTrimMemoryListener(Lio/flutter/view/TextureRegistry$b;)V",
+   "dst": "Lcom/snake/helper/Native;",
+   "conf": "proven",
+   "evidence": "F2 lists this invoke offset under 'Lcom/snake/helper/Native;: N distinct caller method(s)'; the class names are obfuscated into androidx.appcompat.view.menu.*, so the offset is the reliable half of the evidence",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "CH-08 hop 20 (E0039)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-08",
+     19
+    ]
+   ],
+   "resolved_by": "dex code-item scan (F2)",
+   "src_insn": "invoke-* (the invoked member is not recorded per site in F2)",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-08 hop 20"
+   ]
+  },
+  {
+   "seq": 85,
+   "tier": "T3",
+   "kind": "invokes_loader",
+   "src": "Lio/flutter/embedding/engine/FlutterJNI;->loadLibrary()V",
+   "dst": "java.lang.System.loadLibrary(\"flutter\")",
+   "conf": "proven",
+   "evidence": "const-string \"flutter\" at file 0x2bafd6 in Lio/flutter/embedding/engine/FlutterJNI;->loadLibrary()V",
+   "source": "fragments/F2_dex_natives.txt + fragments.json:dex.loader_call_sites",
+   "via": "CH-09 hop 1 (E0004)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-09",
+     0
+    ]
+   ],
+   "resolved_by": "library name from const-string",
+   "src_insn": "invoke-static {...}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-09 hop 1"
+   ]
+  },
+  {
+   "seq": 86,
+   "tier": "T3",
+   "kind": "loads_library",
+   "src": "System.loadLibrary(\"flutter\")",
+   "dst": "lib/arm64-v8a/libflutter.so",
+   "conf": "proven",
+   "evidence": "APK member lib/arm64-v8a/libflutter.so == repo copy flutter_libs/libflutter.so (sha256 0baa710d6b7f7de2..., 10,714,752 bytes, match=True)",
+   "source": "fragments/F1_apk_inventory.txt",
+   "via": "CH-09 hop 2 (E0005)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-09",
+     1
+    ]
+   ],
+   "resolved_by": "SONAME of the committed library",
+   "src_insn": "dlopen",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-09 hop 2"
+   ]
+  },
+  {
+   "seq": 87,
+   "tier": "T3",
+   "kind": "calls_entry_point",
+   "src": "linker (dlopen of libflutter.so)",
+   "dst": "JNI_OnLoad",
+   "conf": "proven",
+   "evidence": "F6: exports 46 defined dynamic symbols, 0 Java_*, JNI_OnLoad present - so the engine binds FlutterJNI's 41 natives with RegisterNatives at load time, the same mechanism libengine.so uses for the 13 custom natives",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-09 hop 3 (E0085)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-09",
+     2
+    ]
+   ],
+   "resolved_by": ".dynsym export present (offset not recorded in F6)",
+   "src_insn": "call JNI_OnLoad",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-09 hop 3"
+   ]
+  },
+  {
+   "seq": 88,
+   "tier": "T3",
+   "kind": "dart_instantiates_closure",
+   "src": "object pool slot pp+0x3910",
+   "dst": "MethodCall handler _pfc (_dX) @ 0x504300",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Ieg.dart:379 `[closure] Future<dynamic> _pfc(dynamic, MethodCall) {`; IDA name `Ieg__dX::_pfc_504300`; pool slot 0x3910",
+   "source": "output/blutter/asm/Ieg.dart",
+   "via": "CH-10 hop 1 (E0946)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     0
+    ]
+   ],
+   "resolved_by": "blutter asm '** addr:' + addNames.py + pp.txt agree on the address",
+   "src_insn": "AnonymousClosure entry",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 1"
+   ]
+  },
+  {
+   "seq": 89,
+   "tier": "T3",
+   "kind": "dart_instantiates_closure",
+   "src": "object pool slot pp+0x2cd8",
+   "dst": "MethodCall handler _cec (_hX) @ 0x50e170",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Ieg.dart:468 `[closure] Future<bool> _cec(dynamic, MethodCall) {`; IDA name `Ieg__hX::_cec_50e170`; pool slot 0x2cd8",
+   "source": "output/blutter/asm/Ieg.dart",
+   "via": "CH-10 hop 2 (E0947)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     1
+    ]
+   ],
+   "resolved_by": "blutter asm '** addr:' + addNames.py + pp.txt agree on the address",
+   "src_insn": "AnonymousClosure entry",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 2"
+   ]
+  },
+  {
+   "seq": 90,
+   "tier": "T3",
+   "kind": "dart_instantiates_closure",
+   "src": "object pool slot pp+0x2ce8",
+   "dst": "MethodCall handler _eec (_hX) @ 0x50dad8",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Ieg.dart:471 `[closure] Future<dynamic> _eec(dynamic, MethodCall) {`; IDA name `Ieg__hX::_eec_50dad8`; pool slot 0x2ce8",
+   "source": "output/blutter/asm/Ieg.dart",
+   "via": "CH-10 hop 3 (E0948)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     2
+    ]
+   ],
+   "resolved_by": "blutter asm '** addr:' + addNames.py + pp.txt agree on the address",
+   "src_insn": "AnonymousClosure entry",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 3"
+   ]
+  },
+  {
+   "seq": 91,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::EndWarmUpFrame",
+   "dst": "PlatformConfigurationNativeApi::EndWarmUpFrame",
+   "conf": "proven",
+   "evidence": "libapp.so+0x1bbb9 <-> libflutter.so+0x1cdd4c; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 4 (E0956)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     3
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 4"
+   ]
+  },
+  {
+   "seq": 92,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::SetNeedsReportTimings",
+   "dst": "PlatformConfigurationNativeApi::SetNeedsReportTimings",
+   "conf": "proven",
+   "evidence": "libapp.so+0x1c083 <-> libflutter.so+0x1baec8; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 5 (E0964)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     4
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 5"
+   ]
+  },
+  {
+   "seq": 93,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::ScheduleFrame",
+   "dst": "PlatformConfigurationNativeApi::ScheduleFrame",
+   "conf": "proven",
+   "evidence": "libapp.so+0x1d0d7 <-> libflutter.so+0x1cde34; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 6 (E0961)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     5
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 6"
+   ]
+  },
+  {
+   "seq": 94,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::SendChannelUpdate",
+   "dst": "PlatformConfigurationNativeApi::SendChannelUpdate",
+   "conf": "proven",
+   "evidence": "libapp.so+0x23e4d <-> libflutter.so+0x1cbeff; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 7 (E0962)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     6
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 7"
+   ]
+  },
+  {
+   "seq": 95,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::RequestDartPerformanceMode",
+   "dst": "PlatformConfigurationNativeApi::RequestDartPerformanceMode",
+   "conf": "proven",
+   "evidence": "libapp.so+0x2cc51 <-> libflutter.so+0x1d0278; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 8 (E0959)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     7
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 8"
+   ]
+  },
+  {
+   "seq": 96,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::RespondToPlatformMessage",
+   "dst": "PlatformConfigurationNativeApi::RespondToPlatformMessage",
+   "conf": "proven",
+   "evidence": "libapp.so+0x3291a <-> libflutter.so+0x1cf6ea; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 9 (E0960)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     8
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 9"
+   ]
+  },
+  {
+   "seq": 97,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::UpdateSemantics",
+   "dst": "PlatformConfigurationNativeApi::UpdateSemantics",
+   "conf": "proven",
+   "evidence": "libapp.so+0x32be6 <-> libflutter.so+0x1bc97c; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 10 (E0965)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     9
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 10"
+   ]
+  },
+  {
+   "seq": 98,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::DefaultRouteName",
+   "dst": "PlatformConfigurationNativeApi::DefaultRouteName",
+   "conf": "proven",
+   "evidence": "libapp.so+0x35285 <-> libflutter.so+0x1ce1f9; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 11 (E0955)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     10
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 11"
+   ]
+  },
+  {
+   "seq": 99,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::GetRootIsolateToken",
+   "dst": "PlatformConfigurationNativeApi::GetRootIsolateToken",
+   "conf": "proven",
+   "evidence": "libapp.so+0x3bc6d <-> libflutter.so+0x1c5150; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 12 (E0957)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     11
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 12"
+   ]
+  },
+  {
+   "seq": 100,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::SendPlatformMessage",
+   "dst": "PlatformConfigurationNativeApi::SendPlatformMessage",
+   "conf": "proven",
+   "evidence": "libapp.so+0x404fc <-> libflutter.so+0x1cf79b; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 13 (E0963)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     12
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 13"
+   ]
+  },
+  {
+   "seq": 101,
+   "tier": "T3",
+   "kind": "binds_engine_symbol",
+   "src": "PlatformConfigurationNativeApi::Render",
+   "dst": "PlatformConfigurationNativeApi::Render",
+   "conf": "proven",
+   "evidence": "libapp.so+0x489da <-> libflutter.so+0x1c06f1; 11 of the 11 names the snapshot uses exist in the shipped engine",
+   "source": "fragments/F6_libflutter_version.txt",
+   "via": "CH-10 hop 14 (E0958)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-10",
+     13
+    ]
+   ],
+   "resolved_by": "exact byte match of the API name in both images",
+   "src_insn": "snapshot string referencing an engine C++ API",
+   "note": "",
+   "ref_detail": [
+    "PASS edge CH-10 hop 14"
+   ]
+  },
+  {
+   "seq": 102,
+   "tier": "T3",
+   "kind": "spawns_dart_isolate",
+   "src": "FlutterJNI.nativeRunBundleAndSnapshotFromLibrary (declared native, unresolved by exports)",
+   "dst": "Dart isolate entry: main() in libapp.so",
+   "conf": "unresolved",
+   "evidence": "F2 lists nativeRunBundleAndSnapshotFromLibrary among the 41 FlutterJNI natives with 0 resolved by libflutter.so exports; the committed dump contains no Dart `main` symbol and no asm listing that instantiates the C2 family (no instruction loads pp+0x3103b0). This is the one hole between the engine and the Dart spine.",
+   "source": "fragments/F2_dex_natives.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "ช่องว่างเดียวระหว่าง engine กับแกน Dart: dex ประกาศ nativeRunBundleAndSnapshotFromLibrary แต่ dump ที่ commit ไว้ไม่มี symbol `main` ของ Dart และไม่มี listing ไหนโหลด pp+0x3103b0 (สล็อตของรูทีนคำขอ C2) — ดูสูตรปิดช่องว่าง G1",
+   "en": "the single hole between engine and Dart spine: no `main`, no listing loads the C2 routine's pool slot pp+0x13988 — see recipe G1",
+   "refs": [
+    [
+     "frag",
+     "fragments/F2_dex_natives.txt",
+     "nativeRunBundleAndSnapshotFromLibrary"
+    ],
+    [
+     "pp",
+     "0x13988",
+     "0x3103b0"
+    ]
+   ],
+   "ref_detail": [
+    "PASS fragments/F2_dex_natives.txt /nativeRunBundleAndSnapshotFromLibrary/ -> nativeRunBundleAndSnapshotFromLibrary",
+    "PASS pp+0x13988 line 16610: AnonymousClosure: (0x3103b0), of [Kkg] _Bpa"
+   ]
+  },
+  {
+   "seq": 103,
+   "tier": "T4",
+   "kind": "type_hierarchy",
+   "src": "_au  [EYf.dart]",
+   "dst": "Xu<X0 bound Vu>  [Meg.dart]",
+   "conf": "proven",
+   "evidence": "abstract class Xu<X0 bound Vu> extends _au — the common task base of every family that touches the C2 store",
+   "source": "output/blutter/asm/Meg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "ฐาน type ร่วม: `Xu<X0 bound Vu> extends _au` — ทุกตระกูลที่แตะสโตร์ C2 สืบจากนี่",
+   "en": "the shared task base: `Xu<X0 bound Vu> extends _au`",
+   "refs": [
+    [
+     "asm-class",
+     "Xu",
+     "extends _au"
+    ],
+    [
+     "asm-class",
+     "_au",
+     "abstract class _au"
+    ],
+    [
+     "asm-class",
+     "Vu",
+     "abstract class Vu"
+    ],
+    [
+     "asm-class",
+     "Yu",
+     "extends Xu"
+    ]
+   ],
+   "ref_detail": [
+    "PASS class Xu @Meg.dart:60 abstract class Xu<X0 bound Vu> extends _au {",
+    "PASS class _au @EYf.dart:35 abstract class _au extends Object",
+    "PASS class Vu @Meg.dart:234 abstract class Vu extends jI {",
+    "PASS class Yu @BYf.dart:29 abstract class Yu<X0 bound Vu> extends Xu<X0 bound Vu>"
+   ]
+  },
+  {
+   "seq": 104,
+   "tier": "T4",
+   "kind": "family_member",
+   "src": "Xu<dynamic>",
+   "dst": "_ioa  [kkg]  (field late final PU<LI> fxc @0x14)",
+   "conf": "proven",
+   "evidence": "class _ioa extends Xu<dynamic> {",
+   "source": "output/blutter/asm/kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "สมาชิกตระกูล task #1: `_ioa` ในไลบรารี kkg (field late final PU<LI> fxc @0x14)",
+   "en": "task-family member: `_ioa` in library kkg (field late final PU<LI> fxc @0x14)",
+   "refs": [
+    [
+     "asm-class",
+     "_ioa",
+     "extends Xu"
+    ]
+   ],
+   "ref_detail": [
+    "PASS class _ioa @kkg.dart:8 class _ioa extends Xu<dynamic> {"
+   ]
+  },
+  {
+   "seq": 105,
+   "tier": "T4",
+   "kind": "family_member",
+   "src": "Xu<dynamic>",
+   "dst": "_Bpa  [Kkg]  (field late double tpe @0x18)",
+   "conf": "proven",
+   "evidence": "class _Bpa extends Xu<dynamic> {",
+   "source": "output/blutter/asm/Kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "สมาชิกตระกูล task #2: `_Bpa` ในไลบรารี Kkg (field late double tpe @0x18)",
+   "en": "task-family member: `_Bpa` in library Kkg (field late double tpe @0x18)",
+   "refs": [
+    [
+     "asm-class",
+     "_Bpa",
+     "extends Xu"
+    ]
+   ],
+   "ref_detail": [
+    "PASS class _Bpa @Kkg.dart:8 class _Bpa extends Xu<dynamic> {"
+   ]
+  },
+  {
+   "seq": 106,
+   "tier": "T4",
+   "kind": "family_member",
+   "src": "Xu<dynamic>",
+   "dst": "_aqa  [Xkg]  (transformed mixin with Yu<X0 bound Vu>, subclass _bqa)",
+   "conf": "proven",
+   "evidence": "abstract class _aqa extends Xu<dynamic>",
+   "source": "output/blutter/asm/Xkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "สมาชิกตระกูล task #3: `_aqa` ในไลบรารี Xkg (transformed mixin with Yu<X0 bound Vu>, subclass _bqa)",
+   "en": "task-family member: `_aqa` in library Xkg (transformed mixin with Yu<X0 bound Vu>, subclass _bqa)",
+   "refs": [
+    [
+     "asm-class",
+     "_aqa",
+     "extends Xu"
+    ]
+   ],
+   "ref_detail": [
+    "PASS class _aqa @Xkg.dart:9 abstract class _aqa extends Xu<dynamic>"
+   ]
+  },
+  {
+   "seq": 107,
+   "tier": "T4",
+   "kind": "pool_family",
+   "src": "[kkg] _ioa",
+   "dst": "18 pool slots in 3 cluster(s), pp+0xd968..pp+0x118a0 overall",
+   "conf": "proven",
+   "evidence": "18 pool slots naming _ioa, in 3 cluster(s): pp+0xd968..pp+0xd9d0 (11); pp+0xe438..pp+0xe438 (1); pp+0x11868..pp+0x118a0 (6)",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "ตระกูล closure ของ `_ioa` ใน object pool — คลัสเตอร์แรก (pp+0xd968..pp+0xd9d0) มีสล็อต Field ของสโตร์ `[xkg] Yoa` แทรกอยู่ด้วย (pp+0xd9b0 = tKb, pp+0xd9e0 = hne) แปลว่างาน async ฝั่งนี้กับสโตร์ C2 ถูกจัดก้อนไว้ด้วยกันตอน compile",
+   "en": "the closure family of [kkg] _ioa as laid out in the object pool",
+   "refs": [
+    [
+     "pp",
+     "0xd968"
+    ],
+    [
+     "pp",
+     "0x118a0"
+    ],
+    [
+     "pp-range",
+     "0xd968",
+     "0xd9d0",
+     11
+    ],
+    [
+     "pp-range",
+     "0xe438",
+     "0xe438",
+     1
+    ],
+    [
+     "pp-range",
+     "0x11868",
+     "0x118a0",
+     6
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0xd968 line 12149: AnonymousClosure: (0x37fe90), of [kkg] _ioa",
+    "PASS pp+0x118a0 line 15186: AnonymousClosure: (0x4b04a0), of [kkg] _ioa",
+    "PASS pp+0xd968..0xd9d0 holds 14 slots (need >= 11)",
+    "PASS pp+0xe438..0xe438 holds 1 slots (need >= 1)",
+    "PASS pp+0x11868..0x118a0 holds 8 slots (need >= 6)"
+   ]
+  },
+  {
+   "seq": 108,
+   "tier": "T4",
+   "kind": "pool_family",
+   "src": "[Kkg] _Bpa",
+   "dst": "21 pool slots in 2 cluster(s), pp+0x137f8..pp+0x175e8 overall",
+   "conf": "proven",
+   "evidence": "21 pool slots naming _Bpa, in 2 cluster(s): pp+0x137f8..pp+0x13af0 (20); pp+0x175e8..pp+0x175e8 (1)",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "ตระกูล closure ของ `_Bpa` ใน object pool — รวม sibling 0x3103b0 (pp+0x13988) และ รูทีนคำขอ C2 0x2f8928 (pp+0x139a8)",
+   "en": "the closure family of [Kkg] _Bpa as laid out in the object pool",
+   "refs": [
+    [
+     "pp",
+     "0x137f8"
+    ],
+    [
+     "pp",
+     "0x175e8"
+    ],
+    [
+     "pp-range",
+     "0x137f8",
+     "0x13af0",
+     20
+    ],
+    [
+     "pp-range",
+     "0x175e8",
+     "0x175e8",
+     1
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x137f8 line 16508: AnonymousClosure: (0x310fb4), of [Kkg] _Bpa",
+    "PASS pp+0x175e8 line 19751: AnonymousClosure: (0x310910), in [Kkg] _Bpa::<anonymous closure> (0x31",
+    "PASS pp+0x137f8..0x13af0 holds 93 slots (need >= 20)",
+    "PASS pp+0x175e8..0x175e8 holds 1 slots (need >= 1)"
+   ]
+  },
+  {
+   "seq": 109,
+   "tier": "T4",
+   "kind": "pool_family",
+   "src": "[Xkg] _aqa/_bqa",
+   "dst": "25 pool slots in 1 cluster(s), pp+0x17ea0..pp+0x22a48 overall",
+   "conf": "proven",
+   "evidence": "25 pool slots naming _aqa/_bqa, in 1 cluster(s): pp+0x17ea0..pp+0x17ea0 (1)",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "ตระกูล closure ของ `_aqa`/`_bqa` (Xkg) ใน object pool — สมาชิกตระกูลที่สามที่เรียก helper ต่อเนื่องตัวเดียวกัน",
+   "en": "the closure family of [Xkg] _aqa/_bqa as laid out in the object pool",
+   "refs": [
+    [
+     "pp",
+     "0x17ea0"
+    ],
+    [
+     "pp",
+     "0x22a48"
+    ],
+    [
+     "pp-range",
+     "0x17ea0",
+     "0x17ea0",
+     1
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x17ea0 line 20190: AnonymousClosure: (0x234768), of [Xkg] _aqa",
+    "PASS pp+0x22a48 line 30991: AnonymousClosure: (0x378df8), in [Xkg] _bqa::<anonymous closure> (0x38",
+    "PASS pp+0x17ea0..0x17ea0 holds 1 slots (need >= 1)"
+   ]
+  },
+  {
+   "seq": 110,
+   "tier": "T4",
+   "kind": "named_upstream_entry",
+   "src": "[kkg] _ioa",
+   "dst": "ugf(dynamic) -> Future<bool>  @0x53ec84 (size 0x318)",
+   "conf": "proven",
+   "evidence": "the only *named* method in the committed dump belonging to the Xu task family that reads the C2 store: `Future<bool> ugf(dynamic) async`",
+   "source": "output/blutter/asm/kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "เมธอดเดียวใน dump ที่มี 'ชื่อจริง' และอ่านสโตร์ C2: `_ioa.ugf(dynamic) -> Future<bool>` ที่ 0x53ec84 (ขนาด 0x318) — นี่คือจุดเข้าฝั่ง upstream ที่พิสูจน์ได้",
+   "en": "the only *named* method of the Xu family that reads the C2 store; this is the provable upstream entry point",
+   "refs": [
+    [
+     "asm-hdr",
+     "0x53ec84",
+     "0x318"
+    ]
+   ],
+   "ref_detail": [
+    "PASS asm header 0x53ec84 @kkg.dart:233 size 0x318 ([closure] Future<bool> ugf(dynamic) asyn)"
+   ]
+  },
+  {
+   "seq": 111,
+   "tier": "T4",
+   "kind": "reads_static_store",
+   "src": "_ioa.ugf @0x53ec84",
+   "dst": "[xkg] Yoa.tKb  (field offset 0xe7c -> field-table 0x1cf8, type Poa)",
+   "conf": "proven",
+   "evidence": "InitLateStaticField(0xe7c) // [xkg] Yoa::tKb then ldr from the field table; 8 accessors of this slot exist in asm/",
+   "source": "output/blutter/asm/kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "`ugf` เปิดสล็อต static `Yoa.tKb` (offset 0xe7c = field-table 0x1cf8) ด้วย InitLateStaticFieldStub แล้วอ่านค่า — มี accessor ของสล็อตนี้ 8 จุดใน dump",
+   "en": "`ugf` initialises and reads the static slot Yoa.tKb; 8 accessors in the dump",
+   "refs": [
+    [
+     "field-access",
+     "tKb",
+     8
+    ],
+    [
+     "field-count",
+     13
+    ]
+   ],
+   "ref_detail": [
+    "PASS Yoa.tKb has 8 accessors in asm/ (expected 8)",
+    "PASS store Yoa has 13 static fields (expected 13)"
+   ]
+  },
+  {
+   "seq": 112,
+   "tier": "T4",
+   "kind": "traverses_stored_object",
+   "src": "_ioa.ugf @0x53ec84",
+   "dst": "field chain: r2 = r0->field_1b -> r0 = r2->field_b -> r0 = r2->field_f",
+   "conf": "proven",
+   "evidence": "17 LoadField steps inside ugf's own body (0x53ec84..0x53ef9c) walk the object that the store slot points at",
+   "source": "output/blutter/asm/kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "ภายในตัว `ugf` มีการไล่ field 17 ขั้น (r2 = r0->field_1b -> r0 = r2->field_b -> r0 = r2->field_f) เพื่อเดินอ็อบเจกต์ที่สโตร์ชี้ไป — แปลว่าค่าที่ C2 ฝากไว้ถูกอ่านจริง ไม่ใช่แค่ init",
+   "en": "17 LoadField steps inside ugf walk the stored object: the C2 result is actually consumed, not just initialised",
+   "refs": [
+    [
+     "asm-hdr",
+     "0x53ec84",
+     "0x318"
+    ]
+   ],
+   "ref_detail": [
+    "PASS asm header 0x53ec84 @kkg.dart:233 size 0x318 ([closure] Future<bool> ugf(dynamic) asyn)"
+   ]
+  },
+  {
+   "seq": 113,
+   "tier": "T4",
+   "kind": "reads_static_store",
+   "src": "[kkg] _ioa::<anonymous closure>(dynamic, int) async @0x53e7ac (size 0x1c0)",
+   "dst": "[xkg] Yoa.tKb (field-table 0x1cf8)",
+   "conf": "proven",
+   "evidence": "second accessor of the same store slot; it allocates a sibling closure from pp+0xd9c0 (0x38a5d8, inside _ioa's own family) before handing off",
+   "source": "output/blutter/asm/kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "accessor ตัวที่สองของสล็อตเดียวกัน — closure นี้สร้าง closure พี่น้องจาก pp+0xd9c0 (0x38a5d8 ในตระกูล _ioa เอง) ก่อนส่งต่องาน",
+   "en": "second accessor of the same slot; allocates a sibling closure from pp+0xd9c0 before handing off",
+   "refs": [
+    [
+     "asm-hdr",
+     "0x53e7ac",
+     "0x1c0"
+    ],
+    [
+     "pp",
+     "0xd9c0"
+    ]
+   ],
+   "ref_detail": [
+    "PASS asm header 0x53e7ac @kkg.dart:69 size 0x1c0 ([closure] Future<Null> <anonymous closur)",
+    "PASS pp+0xd9c0 line 12160: AnonymousClosure: (0x38a5d8), in [kkg] _ioa::<anonymous closure> (0x37"
+   ]
+  },
+  {
+   "seq": 114,
+   "tier": "T4",
+   "kind": "calls_direct",
+   "src": "Kkg.dart+0x533278  (?)",
+   "dst": "continuation helper 0x1a5b64",
+   "conf": "proven",
+   "evidence": "bl              #0x1a5b64 at Kkg.dart:138",
+   "source": "output/blutter/asm/Kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "จุดเรียก helper ต่อเนื่อง 0x1a5b64 จาก Kkg.dart (offset 0x533278)",
+   "en": "call into the shared continuation helper 0x1a5b64 from Kkg.dart+0x533278",
+   "refs": [
+    [
+     "asm-insn",
+     "Kkg.dart",
+     "0x533278",
+     "0x1a5b64"
+    ]
+   ],
+   "ref_detail": [
+    "PASS Kkg.dart:137 0x533278: r0 = call 0x1a5b64"
+   ]
+  },
+  {
+   "seq": 115,
+   "tier": "T4",
+   "kind": "calls_direct",
+   "src": "Xkg.dart+0x535830  (?)",
+   "dst": "continuation helper 0x1a5b64",
+   "conf": "proven",
+   "evidence": "bl              #0x1a5b64 at Xkg.dart:98",
+   "source": "output/blutter/asm/Xkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "จุดเรียก helper ต่อเนื่อง 0x1a5b64 จาก Xkg.dart (offset 0x535830)",
+   "en": "call into the shared continuation helper 0x1a5b64 from Xkg.dart+0x535830",
+   "refs": [
+    [
+     "asm-insn",
+     "Xkg.dart",
+     "0x535830",
+     "0x1a5b64"
+    ]
+   ],
+   "ref_detail": [
+    "PASS Xkg.dart:97 0x535830: r0 = call 0x1a5b64"
+   ]
+  },
+  {
+   "seq": 116,
+   "tier": "T4",
+   "kind": "calls_direct",
+   "src": "kkg.dart+0x53e950  (?)",
+   "dst": "continuation helper 0x1a5b64",
+   "conf": "proven",
+   "evidence": "bl              #0x1a5b64 at kkg.dart:219",
+   "source": "output/blutter/asm/kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "จุดเรียก helper ต่อเนื่อง 0x1a5b64 จาก kkg.dart (offset 0x53e950)",
+   "en": "call into the shared continuation helper 0x1a5b64 from kkg.dart+0x53e950",
+   "refs": [
+    [
+     "asm-insn",
+     "kkg.dart",
+     "0x53e950",
+     "0x1a5b64"
+    ]
+   ],
+   "ref_detail": [
+    "PASS kkg.dart:218 0x53e950: r0 = call 0x1a5b64"
+   ]
+  },
+  {
+   "seq": 117,
+   "tier": "T4",
+   "kind": "fan_in_convergence",
+   "src": "3 call sites in 3 different Xu-family libraries (Kkg / Xkg / kkg)",
+   "dst": "continuation helper 0x1a5b64 (no listing)",
+   "conf": "proven",
+   "evidence": "insn /#0x1a5b64/ matches exactly 3 sites across the whole dump — one per family library, i.e. this helper is where the three task families converge",
+   "source": "output/blutter/asm/",
+   "via": "",
+   "collapsed": 0,
+   "th": "ทั้งสามตระกูล task (Kkg/Xkg/kkg) มาบรรจบที่ helper เดียวกัน 0x1a5b64 — พบจุดเรียก ทั้งหมด 3 จุดใน dump ทั้งชุด",
+   "en": "all three task families converge on one helper: 3 call sites in the whole dump",
+   "refs": [
+    [
+     "insn-count",
+     "#0x1a5b64\\b",
+     3,
+     null
+    ],
+    [
+     "asm-nohdr",
+     "0x1a5b64"
+    ]
+   ],
+   "ref_detail": [
+    "PASS insn /#0x1a5b64\\b/ matched 3 (expected 3): Kkg.dart+0x533278, Xkg.dart+0x535830, kkg.dart+0x53e950",
+    "PASS no listing body for 0x1a5b64 (header=None)"
+   ]
+  },
+  {
+   "seq": 118,
+   "tier": "T4",
+   "kind": "helper_body_missing",
+   "src": "continuation helper 0x1a5b64",
+   "dst": "(body not in the committed dump)",
+   "conf": "unresolved",
+   "evidence": "no `** addr: 0x1a5b64` header anywhere under asm/ — the helper is called but never disassembled, so what it dispatches to is not provable from this bundle",
+   "source": "output/blutter/asm/",
+   "via": "",
+   "collapsed": 0,
+   "th": "ไม่มี listing ของ 0x1a5b64 ใน dump (ถูกเรียกแต่ไม่เคยถูก disassemble) — ดูสูตรปิดช่องว่าง G3",
+   "en": "0x1a5b64 is called but never disassembled — see recipe G3",
+   "refs": [
+    [
+     "asm-nohdr",
+     "0x1a5b64"
+    ]
+   ],
+   "ref_detail": [
+    "PASS no listing body for 0x1a5b64 (header=None)"
+   ]
+  },
+  {
+   "seq": 119,
+   "tier": "T4",
+   "kind": "owns_endpoint_pool_run",
+   "src": "[Kkg] _Bpa::<anonymous closure> @0x2f8928 (size -0x1)",
+   "dst": "pool run pp+13988..pp+13ac0 (38 contiguous slots)",
+   "conf": "candidate",
+   "evidence": "the routine is declared with size -0x1 (no body), so its identity rests on pool adjacency: its own allocation run holds the endpoint string, the multipart template, the verb and the response-side objects",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "รูทีนคำขอ C2 @0x2f8928 ถูกประกาศไว้แต่ไม่มี body (size -0x1) — การระบุตัวตนจึงพึ่ง 'ความติดกันของ pool': ช่วง pp+0x13988..pp+0x13ac0 (38 สล็อต) เก็บทั้ง endpoint, แม่แบบ multipart, คำสั่ง post และอ็อบเจกต์ฝั่ง response",
+   "en": "the C2 request routine has no body (size -0x1); its identity rests on pool adjacency over 38 contiguous slots",
+   "refs": [
+    [
+     "asm-hdr",
+     "0x2f8928",
+     "-0x1"
+    ],
+    [
+     "pp-range",
+     "0x13988",
+     "0x13ac0",
+     38
+    ],
+    [
+     "chain",
+     "CH-12",
+     27
+    ],
+    [
+     "pp",
+     "0x139d8",
+     "rest.snakeseller.com/api/request"
+    ]
+   ],
+   "ref_detail": [
+    "PASS asm header 0x2f8928 @Kkg.dart:310 size -0x1 ([closure] void <anonymous closure>(dynam)",
+    "PASS pp+0x13988..0x13ac0 holds 38 slots (need >= 38)",
+    "PASS chain CH-12 has 27 hops (expected 27)",
+    "PASS pp+0x139d8 line 16623: String: \"https://rest.snakeseller.com/api/request/\""
+   ]
+  },
+  {
+   "seq": 120,
+   "tier": "T4",
+   "kind": "byte_sink_signature",
+   "src": "[Kkg] _Bpa::<anonymous closure> @0x2f8998",
+   "dst": "Null <anonymous closure>(dynamic, Uint8List?)",
+   "conf": "proven",
+   "evidence": "the sibling closure in the same family takes a nullable Uint8List — the upload payload type; it too has size -0x1 (no body)",
+   "source": "output/blutter/asm/Kkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "closure พี่น้องในตระกูลเดียวกันรับ `Uint8List?` = ประเภทของ payload ที่อัปโหลด (แต่ก็ไม่มี body เช่นกัน)",
+   "en": "the sibling closure takes a nullable Uint8List — the upload payload type",
+   "refs": [
+    [
+     "asm-hdr",
+     "0x2f8998",
+     "-0x1"
+    ]
+   ],
+   "ref_detail": [
+    "PASS asm header 0x2f8998 @Kkg.dart:313 size -0x1 ([closure] Null <anonymous closure>(dynam)"
+   ]
+  },
+  {
+   "seq": 121,
+   "tier": "T4",
+   "kind": "closure_inventory",
+   "src": "[Kkg] _Bpa",
+   "dst": "21 pool slots (pp+0x137f8..pp+0x175e8): 12 top-level closures + 9 nested children",
+   "conf": "proven",
+   "evidence": "every pool slot naming _Bpa: 0x137f8=0x310fb4, 0x13818=0x310e64, 0x13838=0x310a78, 0x13868=0x310720, 0x13888=0x310688, 0x138b0=0x3105ac, 0x138d0=0x3104c4, 0x138e0=0x5332c4, 0x138e8=0x310910, 0x138f8=0x310e58, 0x13960=0x2f7aac, 0x13988=0x3103b0, 0x139a8=0x2f8928, 0x139c8=0x2f8998, 0x139d0=0x310360, 0x139f0=0x533110, 0x13a30=0x310338, 0x13ae0=0x38c2cc, 0x13ae8=0x38c260, 0x13af0=0x38c32c, 0x175e8=0x310910",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "บัญชี closure ทั้งหมดของ `_Bpa` ใน object pool: 21 สล็อต (pp+0x137f8..pp+0x175e8) — 12 ตัวเป็น closure ระดับบน และ 9 ตัวเป็นลูกซ้อนอยู่ข้างใน; มีแค่ 0x533110 กับ 0x5332c4 เท่านั้นที่มี body จริงใน dump",
+   "en": "the complete closure inventory of _Bpa in the object pool; only two of them have a real body in the dump",
+   "refs": [
+    [
+     "pp",
+     "0x137f8"
+    ],
+    [
+     "pp",
+     "0x175e8"
+    ],
+    [
+     "pp-range",
+     "0x137f8",
+     "0x175e8",
+     21
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x137f8 line 16508: AnonymousClosure: (0x310fb4), of [Kkg] _Bpa",
+    "PASS pp+0x175e8 line 19751: AnonymousClosure: (0x310910), in [Kkg] _Bpa::<anonymous closure> (0x31",
+    "PASS pp+0x137f8..0x175e8 holds 1973 slots (need >= 21)"
+   ]
+  },
+  {
+   "seq": 122,
+   "tier": "T4",
+   "kind": "code_not_in_dump",
+   "src": "33/38 slots of pp+0x13988..pp+0x13ac0 (request side: endpoint, action, multipart template, verb, hex literals, name tables, dart:io objects)",
+   "dst": "loaded by **zero** disassembled routines; the only 5 referenced slots (pp+0x139f8, pp+0x13a00, pp+0x13a10, pp+0x13a20, pp+0x13a30) are all loaded from Kkg.dart — i.e. by the response-check closure @0x533110",
+   "conf": "proven",
+   "evidence": "grep for `pp+0xNNN` over all 672 asm files: 33 of the 38 slots in the endpoint's own allocation run are never loaded by any instruction, and every slot that *is* loaded is loaded from Kkg.dart (pp+0x139f8 = String: \"success\"; pp+0x13a00 = UnlinkedCall: 0x173c2c - Switc; pp+0x13a10 = UnlinkedCall: 0x173c2c - Switc; pp+0x13a20 = Null; pp+0x13a30 = AnonymousClosure: (0x310338), ). The request-building half of the C2 code is present as pool data only.",
+   "source": "output/blutter/asm/",
+   "via": "",
+   "collapsed": 0,
+   "th": "ข้อเท็จจริงเชิงลบที่คมที่สุดของ tier นี้: ใน allocation run ของ endpoint (pp+0x13988..pp+0x13ac0) มี 38 สล็อต แต่ 33 สล็อต **ไม่มีโค้ดตัวไหนโหลดเลย** — ที่ถูกโหลดมีแค่ 5 สล็อต (pp+0x139f8, pp+0x13a00, pp+0x13a10, pp+0x13a20, pp+0x13a30) และทั้งหมดถูกโหลดจาก Kkg.dart ซึ่งเป็น closure ฝั่ง 'ตรวจ response' (0x533110) สรุปสั้น ๆ คือ **ฝั่ง response ถูก disassemble ไว้ ฝั่ง request ไม่ได้** — ข้อมูลคำขอ (endpoint, action, multipart, verb, ค่า hex, ตารางชื่อ) นอนอยู่ใน pool อย่างเดียว (ดู G1/G3/G6)",
+   "en": "the sharpest negative result of this tier: of 38 slots in the endpoint's own allocation run, 33 are never loaded by any code and the 5 that are loaded all belong to the response-check closure — the response half is disassembled, the request half is not",
+   "refs": [
+    [
+     "pp",
+     "0x13988"
+    ],
+    [
+     "pp",
+     "0x139a8"
+    ],
+    [
+     "pp",
+     "0x139d8"
+    ],
+    [
+     "pp",
+     "0x139e0"
+    ],
+    [
+     "pp",
+     "0x139d8",
+     "rest.snakeseller.com"
+    ],
+    [
+     "pp",
+     "0x139f8"
+    ],
+    [
+     "pp",
+     "0x13a00"
+    ],
+    [
+     "pp",
+     "0x13a10"
+    ],
+    [
+     "pp",
+     "0x13a20"
+    ],
+    [
+     "pp",
+     "0x13a30"
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x13988 line 16610: AnonymousClosure: (0x3103b0), of [Kkg] _Bpa",
+    "PASS pp+0x139a8 line 16614: AnonymousClosure: (0x2f8928), of [Kkg] _Bpa",
+    "PASS pp+0x139d8 line 16623: String: \"https://rest.snakeseller.com/api/request/\"",
+    "PASS pp+0x139e0 line 16624: String: \"\\?action=upload_profile_image\"",
+    "PASS pp+0x139d8 line 16623: String: \"https://rest.snakeseller.com/api/request/\"",
+    "PASS pp+0x139f8 line 16627: String: \"success\"",
+    "PASS pp+0x13a00 line 16628: UnlinkedCall: 0x173c2c - SwitchableCallMissStub",
+    "PASS pp+0x13a10 line 16629: UnlinkedCall: 0x173c2c - SwitchableCallMissStub",
+    "PASS pp+0x13a20 line 16630: Null",
+    "PASS pp+0x13a30 line 16632: AnonymousClosure: (0x310338), in [Kkg] _Bpa::<anonymous closure> (0x2f"
+   ]
+  },
+  {
+   "seq": 123,
+   "tier": "T4",
+   "kind": "candidate_secret",
+   "src": "pp+0x13918 / pp+0x13920 (inside the _Bpa region, 192 bytes from the endpoint slot)",
+   "dst": "\"d0166552cf5886ffc1fcadeffd892870dd077f45d50cccfed5e4b7\" (54 hex chars) · \"b8621122bc62a9d0b68bdac18ee7491b\" (32 hex chars)",
+   "conf": "candidate",
+   "evidence": "two lowercase-hex literals sitting between _Bpa closure slots pp+0x138f8 and pp+0x13960; no listed routine loads either slot, so neither their owner nor their role (key / IV / token / hash) is provable from this bundle",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "ค่า hex สองก้อนนอนอยู่ระหว่างสล็อต closure ของ `_Bpa` (pp+0x138f8 กับ pp+0x13960) — ก้อนหนึ่ง 54 ตัวอักษร อีกก้อน 32 ตัวอักษร (รูปทรงแบบ MD5) แต่ไม่มีโค้ดตัวไหนโหลด จึงระบุไม่ได้ว่าเป็น key/IV/token หรือ hash — คงไว้เป็น candidate + สูตรใน G6",
+   "en": "two hex literals between _Bpa closure slots; owner and role unprovable — kept as candidate with recipe G6",
+   "refs": [
+    [
+     "pp",
+     "0x13918"
+    ],
+    [
+     "pp",
+     "0x13920"
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x13918 line 16589: String: \"d0166552cf5886ffc1fcadeffd892870dd077f45d50cccfed5e4b7\"",
+    "PASS pp+0x13920 line 16590: String: \"b8621122bc62a9d0b68bdac18ee7491b\""
+   ]
+  },
+  {
+   "seq": 124,
+   "tier": "T4",
+   "kind": "candidate_name_table",
+   "src": "const List literals pp+0x13850 / pp+0x13950 / pp+0x13998",
+   "dst": "List(7) [0, 0x7, 0x1, 0x6, \"llb\", 0x6, Null] · List(15) [0, 0x6, 0x5, 0x1, \"DCb\", 0x5, \"Uva\", 0x3, \"eib\", 0x1, \"ggc\", 0x2 · List(9) [0, 0x3, 0x2, 0x1, \"DCb\", 0x1, \"eib\", 0x2, Null]",
+   "conf": "candidate",
+   "evidence": "const lists mixing small ints with 3-char minified identifiers; the same tokens recur all over the pool (the most frequent one appears in 172 of 18786 pool entries), which is the shape of a serialisation / field-name table rather than an obfuscation alphabet",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "List ค่าคงที่ที่ผสม int เล็ก ๆ กับชื่อ identifier 3 ตัวอักษร (ผลจากการ minify) — ชื่อเหล่านี้โผล่ซ้ำทั่วทั้ง pool จึงน่าจะเป็นตารางชื่อฟิลด์สำหรับ serialize มากกว่า ตัวอักษรแทน code; ยังพิสูจน์ไม่ได้เพราะไม่มีโค้ดโหลด (candidate)",
+   "en": "const lists mixing ints with 3-char minified identifiers; the tokens recur throughout the pool, so they look like a serialisation field-name table — unproven",
+   "refs": [
+    [
+     "pp",
+     "0x13850"
+    ],
+    [
+     "pp",
+     "0x13950"
+    ],
+    [
+     "pp",
+     "0x13998"
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x13850 line 16539: List(7) [0, 0x7, 0x1, 0x6, \"llb\", 0x6, Null]",
+    "PASS pp+0x13950 line 16595: List(15) [0, 0x6, 0x5, 0x1, \"DCb\", 0x5, \"Uva\", 0x3, \"eib\", 0x1, \"ggc\",",
+    "PASS pp+0x13998 line 16612: List(9) [0, 0x3, 0x2, 0x1, \"DCb\", 0x1, \"eib\", 0x2, Null]"
+   ]
+  },
+  {
+   "seq": 125,
+   "tier": "T4",
+   "kind": "unlinked_call",
+   "src": "pp+0x13928",
+   "dst": "UnlinkedCall: 0x173c2c - SwitchableCallMissStub",
+   "conf": "proven",
+   "evidence": "a third UnlinkedCall slot inside the _Bpa region, with the same target as pp+0x13a00 and pp+0x13a10 (which the response-check closure loads twice — a megamorphic `[]` on the decoded response map); this one is not loaded by any listed routine",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "สล็อต UnlinkedCall ตัวที่สามในย่าน `_Bpa` (CH-12 บันทึกสองตัวที่ 0x533110 โหลดจริง) — ตัวนี้ไม่มีโค้ดโหลด เป็นการเรียกแบบ megamorphic ที่ยังไม่ได้ link",
+   "en": "a third UnlinkedCall slot in the region; megamorphic dispatch, not yet linked, and not loaded by any listed routine",
+   "refs": [
+    [
+     "pp",
+     "0x13928",
+     "UnlinkedCall"
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x13928 line 16591: UnlinkedCall: 0x173c2c - SwitchableCallMissStub"
+   ]
+  },
+  {
+   "seq": 126,
+   "tier": "T4",
+   "kind": "config_registry",
+   "src": "[nkg] ooa (abstract, class id 368)",
+   "dst": "180 static late final fields (List<poa> x1, noa x179), offsets 0xb4c..0xe20 -> field-table 0x1698..0x1c40",
+   "conf": "proven",
+   "evidence": "a second global registry whose field slots are interleaved with the _Bpa closures in the pool; its field-table range ends at 0x1c40, immediately below the Yoa store range that starts at 0x1ca0",
+   "source": "output/blutter/asm/nkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "registry สากลตัวที่สอง: `[nkg] ooa` มี static late final 180 ฟิลด์ (ส่วนใหญ่ประเภท `noa`) ครอบคลุม field-table 0x1698..0x1c40 ซึ่งต่อกับช่วงของสโตร์ `Yoa` (0x1ca0..) พอดี — เป็นโครง config ระดับแอปที่วางชิดกับฝั่ง C2",
+   "en": "a second global registry of 180 late-final fields whose field-table range abuts the Yoa store range",
+   "refs": [
+    [
+     "asm-class",
+     "ooa",
+     "abstract class ooa"
+    ],
+    [
+     "pp",
+     "0x137f0",
+     "ooa"
+    ],
+    [
+     "pp",
+     "0x13810",
+     "ooa"
+    ]
+   ],
+   "ref_detail": [
+    "PASS class ooa @nkg.dart:15 abstract class ooa extends Object {",
+    "PASS pp+0x137f0 line 16507: Field <ooa.sie>: static late final (offset: 0xc88)",
+    "PASS pp+0x13810 line 16519: Field <ooa.kke>: static late final (offset: 0xe0c)"
+   ]
+  },
+  {
+   "seq": 127,
+   "tier": "T4",
+   "kind": "registry_unaccessed",
+   "src": "[nkg] ooa (180 fields)",
+   "dst": "**0** accessors in the whole dump (0/180 fields touched)",
+   "conf": "unresolved",
+   "evidence": "the same field-table grep that found the Yoa readers finds nothing at all for ooa: not one of its 180 slots is initialised or read by disassembled code",
+   "source": "output/blutter/asm/",
+   "via": "",
+   "collapsed": 0,
+   "th": "registry ทั้งก้อนนี้ไม่มี accessor เลยใน dump (180 ฟิลด์, 0 การเข้าถึง) — ผู้ที่ init/อ่านมันอยู่ในโค้ดที่ไม่ถูก disassemble เหมือนฝั่งคำขอ C2 (ดูสูตร G7)",
+   "en": "the entire registry has zero accessors in the dump — its initialisers live in undisassembled code, exactly like the C2 request side (recipe G7)",
+   "refs": [
+    [
+     "asm-class",
+     "ooa",
+     "abstract class ooa"
+    ]
+   ],
+   "ref_detail": [
+    "PASS class ooa @nkg.dart:15 abstract class ooa extends Object {"
+   ]
+  },
+  {
+   "seq": 128,
+   "tier": "T4",
+   "kind": "shared_state_store",
+   "src": "[xkg] Yoa (abstract, class id 334)",
+   "dst": "13 static late fields, offsets 0xe50..0xe80",
+   "conf": "proven",
+   "evidence": "String:Vge@0xe50; String:Wge@0xe54; String:Xge@0xe58; String:Yge@0xe5c; String:Zge@0xe60; int:cne@0xe64; int:dne@0xe68; int:ene@0xe6c; wx<int>:fne@0xe70; Uint8List:gne@0xe74; Loa:hne@0xe78; Poa:tKb@0xe7c; Xoa:ine@0xe80",
+   "source": "output/blutter/asm/xkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "สโตร์สถานะร่วม `[xkg] Yoa` มี static late field 13 ตัว (offset 0xe50..0xe80) — ทั้งตระกูล `_Bpa` (ฝั่งคำขอ/ตอบ C2) และ `_ioa` (ฝั่งงาน async) อ่าน/เขียนที่นี่",
+   "en": "the shared static store: 13 late fields spanning 0xe50..0xe80",
+   "refs": [
+    [
+     "asm-class",
+     "Yoa",
+     "abstract class Yoa"
+    ],
+    [
+     "field-count",
+     13
+    ]
+   ],
+   "ref_detail": [
+    "PASS class Yoa @xkg.dart:8 abstract class Yoa extends Object {",
+    "PASS store Yoa has 13 static fields (expected 13)"
+   ]
+  },
+  {
+   "seq": 129,
+   "tier": "T4",
+   "kind": "addressing_rule",
+   "src": "field offset (class metadata)",
+   "dst": "field-table address = 2 x offset  (THR+0x68 -> field_table_values)",
+   "conf": "proven",
+   "evidence": "verified twice on this store: hne@0xe78 is loaded as [x,#0x1cf0] and tKb@0xe7c as [x,#0x1cf8]",
+   "source": "output/blutter/asm/",
+   "via": "",
+   "collapsed": 0,
+   "th": "กฎการเข้าถึง: ที่อยู่ field-table = 2 เท่าของ offset — ตรวจแล้วสองครั้งบนสโตร์นี้ (hne@0xe78 -> 0x1cf0 และ tKb@0xe7c -> 0x1cf8) ทำให้ไล่หา reader/writer ของทุกสล็อตได้ด้วย grep",
+   "en": "field-table address = 2 x offset, verified on both accessed slots — this is what makes every other slot greppable",
+   "refs": [
+    [
+     "field-access",
+     "hne",
+     2
+    ],
+    [
+     "field-access",
+     "tKb",
+     8
+    ]
+   ],
+   "ref_detail": [
+    "PASS Yoa.hne has 2 accessors in asm/ (expected 2)",
+    "PASS Yoa.tKb has 8 accessors in asm/ (expected 8)"
+   ]
+  },
+  {
+   "seq": 130,
+   "tier": "T4",
+   "kind": "store_slots_unaccessed",
+   "src": "[xkg] Yoa",
+   "dst": "11 of 13 slots have no accessor in the dump: Vge, Wge, Xge, Yge, Zge, cne, dne, ene, fne, gne, ine",
+   "conf": "unresolved",
+   "evidence": "field-table grep over all 672 asm files for 0x1ca0, 0x1ca8, 0x1cb0, 0x1cb8, 0x1cc0, 0x1cc8, 0x1cd0, 0x1cd8, 0x1ce0, 0x1ce8, 0x1d00 finds nothing for these slots — their readers/writers live in routines blutter did not list",
+   "source": "output/blutter/asm/",
+   "via": "",
+   "collapsed": 0,
+   "th": "11 จาก 13 สล็อตไม่มี accessor ใน dump (รวม String 5 ตัวที่อาจเป็น token/host) — ดูสูตรปิดช่องว่าง G5",
+   "en": "11 of 13 slots have no accessor in the dump — see recipe G5",
+   "refs": [
+    [
+     "field-access",
+     "Vge",
+     0
+    ],
+    [
+     "field-count",
+     13
+    ]
+   ],
+   "ref_detail": [
+    "PASS Yoa.Vge has 0 accessors in asm/ (expected 0)",
+    "PASS store Yoa has 13 static fields (expected 13)"
+   ]
+  },
+  {
+   "seq": 131,
+   "tier": "T4",
+   "kind": "byte_fetch_routine",
+   "src": "[xkg] Yoa::<static anonymous closure> @0x52b4e4",
+   "dst": "Future<Uint8List> (size 0x388): AllocateUint8Array + 6 byte-move steps + AwaitStub",
+   "conf": "proven",
+   "evidence": "static closure of the store class, pool slot pp+0xe1d8; allocates TypeArguments <Uint8List> (pp+0x1300) and reads Field <::.Yza> static late final (pp+0xe1d0)",
+   "source": "output/blutter/asm/xkg.dart",
+   "via": "",
+   "collapsed": 0,
+   "th": "closure static ของคลาสสโตร์เอง (pp+0xe1d8) คืนค่า `Future<Uint8List>`: จอง Uint8Array, คัดลอกไบต์ 6 ขั้น, Await — นี่คือฝั่ง 'ดึงไบต์' ที่เลี้ยง payload ฝั่งอัปโหลด",
+   "en": "the store class's own static closure returns Future<Uint8List>: 6 byte-move steps — this is the byte-fetch side feeding the upload payload",
+   "refs": [
+    [
+     "asm-hdr",
+     "0x52b4e4",
+     "0x388"
+    ],
+    [
+     "pp",
+     "0xe1d8"
+    ],
+    [
+     "pp",
+     "0x1300"
+    ],
+    [
+     "pp",
+     "0xe1d0"
+    ]
+   ],
+   "ref_detail": [
+    "PASS asm header 0x52b4e4 @xkg.dart:25 size 0x388 (static late Xoa ine; // offset: 0xe80)",
+    "PASS pp+0xe1d8 line 12565: AnonymousClosure: static (0x52b4e4), of [xkg] Yoa",
+    "PASS pp+0x1300 line 757: TypeArguments: <Uint8List>",
+    "PASS pp+0xe1d0 line 12564: Field <::.Yza>: static late final (offset: 0x36c)"
+   ]
+  },
+  {
+   "seq": 132,
+   "tier": "T4",
+   "kind": "collapsed_range",
+   "src": "AS::Map<String, dynamic> wVa(AS)",
+   "dst": "[dart:core] StateError::_throwNew",
+   "conf": "proven",
+   "evidence": "CH-11: 12 proven hops, Dart instruction-level call edges (fan-in ranking) .. L5 (imported verbatim in CALL_LINKAGE.md)",
+   "source": "call_linkage.json",
+   "via": "CH-11 hops 1-12",
+   "collapsed": 12,
+   "th": "ขอบ call ระดับคำสั่งของ Dart (จัดอันดับ fan-in) — ย่อเป็นฮอปเดียว (รายละเอียดครบใน CALL_LINKAGE.md CH-11)",
+   "en": "Dart instruction-level call edges, fan-in ranking — collapsed to one hop (full detail in CALL_LINKAGE.md CH-11)",
+   "refs": [
+    [
+     "chain",
+     "CH-11",
+     12
+    ]
+   ],
+   "ref_detail": [
+    "PASS chain CH-11 has 12 hops (expected 12)"
+   ]
+  },
+  {
+   "seq": 133,
+   "tier": "T5",
+   "kind": "TERMINUS",
+   "src": "[Kkg] _Bpa::<anonymous closure> @0x2f8928",
+   "dst": "pp+0x139d8  \"\"https://rest.snakeseller.com/api/request/\"\"",
+   "conf": "proven",
+   "evidence": "pool slot pp+0x139d8 holds the endpoint verbatim; pp+0x139e0 holds the action query \\?action=upload_profile_image ; the two slots are 8 bytes apart inside the same allocation run",
+   "source": "output/blutter/pp.txt",
+   "via": "",
+   "collapsed": 0,
+   "th": "ปลายทางของแกนนี้: pp+0x139d8 เก็บ endpoint `https://rest.snakeseller.com/api/request/` ตรงตัว และ pp+0x139e0 เก็บ action `\\?action=upload_profile_image` ห่างกัน 8 ไบต์ในช่วง allocation เดียวกัน",
+   "en": "the terminus of this spine: pp+0x139d8 holds the endpoint, pp+0x139e0 the action query",
+   "refs": [
+    [
+     "pp",
+     "0x139d8",
+     "rest.snakeseller.com/api/request"
+    ],
+    [
+     "pp",
+     "0x139e0",
+     "upload_profile_image"
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x139d8 line 16623: String: \"https://rest.snakeseller.com/api/request/\"",
+    "PASS pp+0x139e0 line 16624: String: \"\\?action=upload_profile_image\""
+   ]
+  },
+  {
+   "seq": 134,
+   "tier": "T5",
+   "kind": "uses_pool_string",
+   "src": "[Kkg] _Bpa::<anonymous closure> @ 0x2f8928",
+   "dst": "\"https://rest.snakeseller.com/api/request/\"",
+   "conf": "probable",
+   "evidence": "the same string F5 found as a raw byte run at libapp.so file offset 0x43fe5 and F8 confirmed pool-exact at pp+0x139d8; output/blutter/pp.txt:16623",
+   "source": "output/blutter/pp.txt:16623",
+   "via": "CH-12 hop 1 (E0949)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     0
+    ]
+   ],
+   "resolved_by": "object-pool slot adjacency: pp+0x139d8 sit in the same allocation run as the _Bpa closure slots that name 0x2f8928 as their owner (F8 §4 records this method and its limit: adjacency is not a call graph)",
+   "src_insn": "(no committed listing: blutter gives size -0x1)",
+   "note": "endpoint of the request; second coordinate: libapp.so file 0x43fe5",
+   "ref_detail": [
+    "PASS edge CH-12 hop 1"
+   ]
+  },
+  {
+   "seq": 135,
+   "tier": "T5",
+   "kind": "uses_pool_string",
+   "src": "[Kkg] _Bpa::<anonymous closure> @ 0x2f8928",
+   "dst": "\"\\?action=upload_profile_image\"",
+   "conf": "probable",
+   "evidence": "the slot right after the endpoint, in the same run; output/blutter/pp.txt:16624",
+   "source": "output/blutter/pp.txt:16624",
+   "via": "CH-12 hop 2 (E0950)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     1
+    ]
+   ],
+   "resolved_by": "object-pool slot adjacency: pp+0x139e0 sit in the same allocation run as the _Bpa closure slots that name 0x2f8928 as their owner (F8 §4 records this method and its limit: adjacency is not a call graph)",
+   "src_insn": "(no committed listing: blutter gives size -0x1)",
+   "note": "the `?` is regex-escaped, i.e. Dart holds this as a pattern, exactly like the 2 store links in F8 §2",
+   "ref_detail": [
+    "PASS edge CH-12 hop 2"
+   ]
+  },
+  {
+   "seq": 136,
+   "tier": "T5",
+   "kind": "uses_pool_string",
+   "src": "[Kkg] _Bpa::<anonymous closure> @ 0x2f8928",
+   "dst": "multipart POST template (12 slots pp+0x13a38..0x13a90)",
+   "conf": "probable",
+   "evidence": "consecutive slots between the endpoint run and the next unrelated entry; output/blutter/pp.txt:16633",
+   "source": "output/blutter/pp.txt:16633",
+   "via": "CH-12 hop 3 (E0951)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     2
+    ]
+   ],
+   "resolved_by": "object-pool slot adjacency: pp+0x13a38 sit in the same allocation run as the _Bpa closure slots that name 0x2f8928 as their owner (F8 §4 records this method and its limit: adjacency is not a call graph)",
+   "src_insn": "(no committed listing: blutter gives size -0x1)",
+   "note": "pp+0x13a38 String: \"----WebKitFormBoundary\"; pp+0x13a40 String: \"multipart/form-data; boundary=\"; pp+0x13a48 String: \"Content-Type\"; pp+0x13a50 String: \"--\"; pp+0x13a58 String: \"\\r\\nContent-Disposition: form-data; name=\\\"image\\\"; filename=\\\"\"; pp+0x13a60 String: \"image\"; pp+0x13a68 String: \"\\\"\\r\\nContent-Type: image/jpeg\\r\\n\\r\\n\"; pp+0x13a70 String: \"\\r\\n--\"; pp+0x13a78 String: \"--\\r\\n\"; pp+0x13a80 String: \"Upload failed with status: \"; pp+0x13a88 String: \"Upload error: \"; pp+0x13a90 String: \"post\"",
+   "ref_detail": [
+    "PASS edge CH-12 hop 3"
+   ]
+  },
+  {
+   "seq": 137,
+   "tier": "T5",
+   "kind": "dart_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "0x3102f4",
+   "conf": "candidate",
+   "evidence": "output/blutter/asm/Kkg.dart:30 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x53313c: bl              #0x3102f4`",
+   "source": "output/blutter/asm/Kkg.dart:30",
+   "via": "CH-12 hop 4 (E0244)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     3
+    ]
+   ],
+   "resolved_by": "(unresolved) no symbol in the committed dump covers this code address",
+   "src_insn": "bl #0x3102f4",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 4"
+   ]
+  },
+  {
+   "seq": 138,
+   "tier": "T5",
+   "kind": "loads_pool_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "\"success\"",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:33 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x533144: add             x16, PP, #0x13, lsl #12  ; [pp+0x139f8] \"success\"`",
+   "source": "output/blutter/asm/Kkg.dart:33",
+   "via": "CH-12 hop 5 (E0245)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     4
+    ]
+   ],
+   "resolved_by": "the slot is named in the same disassembly line; its content comes from the pool dump (pp.txt:16627)",
+   "src_insn": "add x16, PP, #0x13, lsl #12",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 5"
+   ]
+  },
+  {
+   "seq": 139,
+   "tier": "T5",
+   "kind": "loads_pool_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "UnlinkedCall: 0x173c2c - SwitchableCallMissStub",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:40 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x533158: add             x16, PP, #0x13, lsl #12  ; [pp+0x13a00] UnlinkedCall: 0x173c2c - SwitchableCallMissStub`",
+   "source": "output/blutter/asm/Kkg.dart:40",
+   "via": "CH-12 hop 6 (E0246)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     5
+    ]
+   ],
+   "resolved_by": "the slot is named in the same disassembly line; its content comes from the pool dump (pp.txt:16628)",
+   "src_insn": "add x16, PP, #0x13, lsl #12",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 6"
+   ]
+  },
+  {
+   "seq": 140,
+   "tier": "T5",
+   "kind": "calls_unlinked_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "SwitchableCallMissStub",
+   "conf": "strong",
+   "evidence": "output/blutter/asm/Kkg.dart:43 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `// 0x533164: blr             lr`; preceding: 0x533158: add x16, PP, #0x13, lsl #12 ; [pp+0x13a00] UnlinkedCall: 0x173c2c - SwitchableCallMissStub / 0x53315c: add x16, x16, #0xa00 / 0x533160: ldp x5, lr, [x16]",
+   "source": "output/blutter/asm/Kkg.dart:43",
+   "via": "CH-12 hop 7 (E0247)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     6
+    ]
+   ],
+   "resolved_by": "the UnlinkedCall entry at pool slot pp+0x13a00 holds the miss handler's entry point, and the `ldp x5, lr, [x16]` before this blr is what loads it",
+   "src_insn": "blr lr",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 7"
+   ]
+  },
+  {
+   "seq": 141,
+   "tier": "T5",
+   "kind": "dart_gdt_dispatch",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "GDT[cid + 0] - the Dart dispatch table, indexed by the receiver's class id",
+   "conf": "probable",
+   "evidence": "output/blutter/asm/Kkg.dart:57 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `// 0x53318c: blr             lr`; preceding: 0x533180: mov x0, x1 / 0x533184: mov lr, x0 / 0x533188: ldr lr, [x21, lr, lsl #3]",
+   "source": "output/blutter/asm/Kkg.dart:57",
+   "via": "CH-12 hop 8 (E0248)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     7
+    ]
+   ],
+   "resolved_by": "`ldr lr, [x21, lr, lsl #3]` before the blr is the dispatch-table read; the index is the class id itself, no delta added",
+   "src_insn": "blr lr",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 8"
+   ]
+  },
+  {
+   "seq": 142,
+   "tier": "T5",
+   "kind": "branch_on_check",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "the merge point at 0x53323c of the same function - where the handler continues when the check does NOT hold",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:58 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `// 0x533190: tbnz            w0, #4, #0x53323c`",
+   "source": "output/blutter/asm/Kkg.dart:58",
+   "via": "CH-12 hop 9 (E0953)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     8
+    ]
+   ],
+   "resolved_by": "the decoded conditional branch inside the response handler; the bit it tests is the result of the dispatch two instructions earlier",
+   "src_insn": "tbnz w0, #4, #0x53323c",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 9"
+   ]
+  },
+  {
+   "seq": 143,
+   "tier": "T5",
+   "kind": "loads_pool_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "Sentinel",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:62 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x53319c: ldr             x16, [PP, #0x40]  ; [pp+0x40] Sentinel`",
+   "source": "output/blutter/asm/Kkg.dart:62",
+   "via": "CH-12 hop 10 (E0249)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     9
+    ]
+   ],
+   "resolved_by": "the slot is named in the same disassembly line; its content comes from the pool dump (pp.txt:8)",
+   "src_insn": "ldr x16, [PP, #0x40]",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 10"
+   ]
+  },
+  {
+   "seq": 144,
+   "tier": "T5",
+   "kind": "loads_pool_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "Field <Yoa.hne>: static late (offset: 0xe78)",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:65 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x5331a8: add             x2, PP, #0xd, lsl #12  ; [pp+0xd9e0] Field <Yoa.hne>: static late (offset: 0xe78)`",
+   "source": "output/blutter/asm/Kkg.dart:65",
+   "via": "CH-12 hop 11 (E0250)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     10
+    ]
+   ],
+   "resolved_by": "the slot is named in the same disassembly line; its content comes from the pool dump (pp.txt:12164)",
+   "src_insn": "add x2, PP, #0xd, lsl #12",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 11"
+   ]
+  },
+  {
+   "seq": 145,
+   "tier": "T5",
+   "kind": "dart_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "InitLateStaticFieldStub",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:67 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x5331b0: bl              #0x5526e0  ; InitLateStaticFieldStub`",
+   "source": "output/blutter/asm/Kkg.dart:67",
+   "via": "CH-12 hop 12 (E0251)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     11
+    ]
+   ],
+   "resolved_by": "blutter's inline stub comment in the same listing",
+   "src_insn": "bl #0x5526e0  ; InitLateStaticFieldStub",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 12"
+   ]
+  },
+  {
+   "seq": 146,
+   "tier": "T5",
+   "kind": "loads_pool_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "\"data\"",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:77 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x5331cc: ldr             lr, [PP, #0x1340]  ; [pp+0x1340] \"data\"`",
+   "source": "output/blutter/asm/Kkg.dart:77",
+   "via": "CH-12 hop 13 (E0252)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     12
+    ]
+   ],
+   "resolved_by": "the slot is named in the same disassembly line; its content comes from the pool dump (pp.txt:765)",
+   "src_insn": "ldr lr, [PP, #0x1340]",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 13"
+   ]
+  },
+  {
+   "seq": 147,
+   "tier": "T5",
+   "kind": "loads_pool_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "UnlinkedCall: 0x173c2c - SwitchableCallMissStub",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:83 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x5331dc: add             x16, PP, #0x13, lsl #12  ; [pp+0x13a10] UnlinkedCall: 0x173c2c - SwitchableCallMissStub`",
+   "source": "output/blutter/asm/Kkg.dart:83",
+   "via": "CH-12 hop 14 (E0253)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     13
+    ]
+   ],
+   "resolved_by": "the slot is named in the same disassembly line; its content comes from the pool dump (pp.txt:16629)",
+   "src_insn": "add x16, PP, #0x13, lsl #12",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 14"
+   ]
+  },
+  {
+   "seq": 148,
+   "tier": "T5",
+   "kind": "calls_unlinked_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "SwitchableCallMissStub",
+   "conf": "strong",
+   "evidence": "output/blutter/asm/Kkg.dart:86 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `// 0x5331e8: blr             lr`; preceding: 0x5331dc: add x16, PP, #0x13, lsl #12 ; [pp+0x13a10] UnlinkedCall: 0x173c2c - SwitchableCallMissStub / 0x5331e0: add x16, x16, #0xa10 / 0x5331e4: ldp x5, lr, [x16]",
+   "source": "output/blutter/asm/Kkg.dart:86",
+   "via": "CH-12 hop 15 (E0254)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     14
+    ]
+   ],
+   "resolved_by": "the UnlinkedCall entry at pool slot pp+0x13a10 holds the miss handler's entry point, and the `ldp x5, lr, [x16]` before this blr is what loads it",
+   "src_insn": "blr lr",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 15"
+   ]
+  },
+  {
+   "seq": 149,
+   "tier": "T5",
+   "kind": "loads_pool_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "Type: int",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:102 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x533214: ldr             x8, [PP, #0xf80]  ; [pp+0xf80] Type: int`",
+   "source": "output/blutter/asm/Kkg.dart:102",
+   "via": "CH-12 hop 16 (E0255)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     15
+    ]
+   ],
+   "resolved_by": "the slot is named in the same disassembly line; its content comes from the pool dump (pp.txt:645)",
+   "src_insn": "ldr x8, [PP, #0xf80]",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 16"
+   ]
+  },
+  {
+   "seq": 150,
+   "tier": "T5",
+   "kind": "loads_pool_slot",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "Null",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:104 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x533218: add             x3, PP, #0x13, lsl #12  ; [pp+0x13a20] Null`",
+   "source": "output/blutter/asm/Kkg.dart:104",
+   "via": "CH-12 hop 17 (E0256)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     16
+    ]
+   ],
+   "resolved_by": "the slot is named in the same disassembly line; its content comes from the pool dump (pp.txt:16630)",
+   "src_insn": "add x3, PP, #0x13, lsl #12",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 17"
+   ]
+  },
+  {
+   "seq": 151,
+   "tier": "T5",
+   "kind": "dart_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "IsType_int_Stub",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:107 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x533220: bl              #0x55b758  ; IsType_int_Stub`",
+   "source": "output/blutter/asm/Kkg.dart:107",
+   "via": "CH-12 hop 18 (E0257)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     17
+    ]
+   ],
+   "resolved_by": "blutter's inline stub comment in the same listing",
+   "src_insn": "bl #0x55b758  ; IsType_int_Stub",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 18"
+   ]
+  },
+  {
+   "seq": 152,
+   "tier": "T5",
+   "kind": "stores_response_field",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "Field <Yoa.hne>: static late (offset: 0xe78); the value lands in (r0->field_1f)->r0->field_1b",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:114 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), IR line `// 0x533238: StoreField: r0->field_1b = r1` / instruction `stur x1, [x0, #0x1b]`",
+   "source": "output/blutter/asm/Kkg.dart:114",
+   "via": "CH-12 hop 19 (E0954)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     18
+    ]
+   ],
+   "resolved_by": "blutter's own StoreField IR line for this instruction, plus the pool slot that names the field being initialised",
+   "src_insn": "stur x1, [x0, #0x1b]",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 19"
+   ]
+  },
+  {
+   "seq": 153,
+   "tier": "T5",
+   "kind": "dart_tail_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "Kkg__Bpa::_anon_closure_533110",
+   "conf": "strong",
+   "evidence": "output/blutter/asm/Kkg.dart:117 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `// 0x533240: b               #0x533250`",
+   "source": "output/blutter/asm/Kkg.dart:117",
+   "via": "CH-12 hop 20 (E0258)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     19
+    ]
+   ],
+   "resolved_by": "inside the function blutter names at 0x533110 (add_func range)",
+   "src_insn": "b #0x533250",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 20"
+   ]
+  },
+  {
+   "seq": 154,
+   "tier": "T5",
+   "kind": "dart_instantiates_closure",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "[Kkg] _Bpa::<anonymous closure> closure @ 0x310338 (pool slot pp+0x13a30)",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:131 `//     0x533264: add             x1, PP, #0x13, lsl #12  ; [pp+0x13a30] AnonymousClosure: (0x310338), in [Kkg] _Bpa::<anonymous closure> (0x2f8928)`",
+   "source": "output/blutter/asm/Kkg.dart:131",
+   "via": "CH-12 hop 21 (E0259)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     20
+    ]
+   ],
+   "resolved_by": "pool slot named in the same disassembly line",
+   "src_insn": "ldr xN, [PP, #0x13a30]",
+   "note": "closure allocated here runs at 0x310338",
+   "ref_detail": [
+    "PASS edge CH-12 hop 21"
+   ]
+  },
+  {
+   "seq": 155,
+   "tier": "T5",
+   "kind": "dart_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "AllocateClosureStub",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:134 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x53326c: bl              #0x553954  ; AllocateClosureStub`",
+   "source": "output/blutter/asm/Kkg.dart:134",
+   "via": "CH-12 hop 22 (E0260)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     21
+    ]
+   ],
+   "resolved_by": "blutter's inline stub comment in the same listing",
+   "src_insn": "bl #0x553954  ; AllocateClosureStub",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 22"
+   ]
+  },
+  {
+   "seq": 156,
+   "tier": "T5",
+   "kind": "dart_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "0x1a5b64",
+   "conf": "candidate",
+   "evidence": "output/blutter/asm/Kkg.dart:138 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x533278: bl              #0x1a5b64`",
+   "source": "output/blutter/asm/Kkg.dart:138",
+   "via": "CH-12 hop 23 (E0261)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     22
+    ]
+   ],
+   "resolved_by": "(unresolved) no symbol in the committed dump covers this code address",
+   "src_insn": "bl #0x1a5b64",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 23"
+   ]
+  },
+  {
+   "seq": 157,
+   "tier": "T5",
+   "kind": "dart_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "StackOverflowSharedWithoutFPURegsStub",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:147 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x53328c: bl              #0x554734  ; StackOverflowSharedWithoutFPURegsStub`",
+   "source": "output/blutter/asm/Kkg.dart:147",
+   "via": "CH-12 hop 24 (E0262)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     23
+    ]
+   ],
+   "resolved_by": "blutter's inline stub comment in the same listing",
+   "src_insn": "bl #0x554734  ; StackOverflowSharedWithoutFPURegsStub",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 24"
+   ]
+  },
+  {
+   "seq": 158,
+   "tier": "T5",
+   "kind": "dart_tail_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "Kkg__Bpa::_anon_closure_533110",
+   "conf": "strong",
+   "evidence": "output/blutter/asm/Kkg.dart:148 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `// 0x533290: b               #0x533138`",
+   "source": "output/blutter/asm/Kkg.dart:148",
+   "via": "CH-12 hop 25 (E0263)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     24
+    ]
+   ],
+   "resolved_by": "inside the function blutter names at 0x533110 (add_func range)",
+   "src_insn": "b #0x533138",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 25"
+   ]
+  },
+  {
+   "seq": 159,
+   "tier": "T5",
+   "kind": "dart_call",
+   "src": "_Bpa::[closure] Null <anonymous closure>(dynamic, bool, String)",
+   "dst": "NullCastErrorSharedWithoutFPURegsStub",
+   "conf": "proven",
+   "evidence": "output/blutter/asm/Kkg.dart:150 inside `[closure] Null <anonymous closure>(dynamic, bool, String)` (function entry 0x533110), instruction `//     0x533294: bl              #0x554cdc  ; NullCastErrorSharedWithoutFPURegsStub`",
+   "source": "output/blutter/asm/Kkg.dart:150",
+   "via": "CH-12 hop 26 (E0264)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     25
+    ]
+   ],
+   "resolved_by": "blutter's inline stub comment in the same listing",
+   "src_insn": "bl #0x554cdc  ; NullCastErrorSharedWithoutFPURegsStub",
+   "note": "file output/blutter/asm/Kkg.dart, class _Bpa, function at 0x533110",
+   "ref_detail": [
+    "PASS edge CH-12 hop 26"
+   ]
+  },
+  {
+   "seq": 160,
+   "tier": "T5",
+   "kind": "uses_pool_string",
+   "src": "[Kkg] _Bpa::<anonymous closure> @ 0x2f8928",
+   "dst": "post-response run (5 slots pp+0x13aa0..0x13ac0)",
+   "conf": "probable",
+   "evidence": "consecutive slots after the POST template, same run; output/blutter/pp.txt:16646",
+   "source": "output/blutter/pp.txt:16646",
+   "via": "CH-12 hop 27 (E0952)",
+   "collapsed": 0,
+   "th": "",
+   "en": "",
+   "refs": [
+    [
+     "edge",
+     "CH-12",
+     26
+    ]
+   ],
+   "resolved_by": "object-pool slot adjacency: pp+0x13aa0 sit in the same allocation run as the _Bpa closure slots that name 0x2f8928 as their owner (F8 §4 records this method and its limit: adjacency is not a call graph)",
+   "src_insn": "(no committed listing: blutter gives size -0x1)",
+   "note": "pp+0x13aa0 AnonymousClosure: (0x30ff78), of [dart:io] _ip; pp+0x13aa8 String: \"Cannot delete file\"; pp+0x13ab0 TypeArguments: <String, Uint8List>; pp+0x13ab8 String: \"C\"; pp+0x13ac0 String: \".jpg\\?r=\"",
+   "ref_detail": [
+    "PASS edge CH-12 hop 27"
+   ]
+  }
+ ],
+ "gaps": [
+  {
+   "id": "G1",
+   "tier": "T3",
+   "what": "Dart isolate bootstrap: FlutterJNI.nativeRunBundleAndSnapshotFromLibrary -> main() -> the first instantiation of the Xu task family",
+   "why": "no `main` symbol in pp.txt, no asm file named main/app/entry, and no instruction in the whole dump loads pp+0x13988 (the pool slot holding the C2 request routine 0x3103b0)",
+   "recipe_th": "รัน blutter ใหม่บน libapp.so โดยบังคับ dump ทุกฟังก์ชัน (ไม่ใช่เฉพาะที่ reachable จาก object pool) หรือ hook `Dart_Invoke`/`RunDartCode` ด้วย frida ตอน start isolate แล้ว บันทึก stack แรกที่แตะ `_Bpa`/`_ioa`",
+   "recipe_en": "re-run blutter on libapp.so forcing a full function dump (not only pool-reachable code), or frida-hook Dart_Invoke / RunDartCode at isolate start and record the first stack that touches _Bpa / _ioa",
+   "refs": [
+    [
+     "pp",
+     "0x13988",
+     "0x3103b0"
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x13988 line 16610: AnonymousClosure: (0x3103b0), of [Kkg] _Bpa"
+   ]
+  },
+  {
+   "id": "G2",
+   "tier": "T3",
+   "what": "bodies of the three platform-channel MethodCall handlers (_pfc @0x504300, _cec @0x50e170, _eec @0x50dad8)",
+   "why": "all three are declared with size -1 in the committed dump: the channel names and the engine symbols they run on are proven (CH-10), the handler code is not there",
+   "recipe_th": "dump สามฟังก์ชันนี้ตรง ๆ ด้วย blutter/objection ที่ address ดังกล่าว หรือ trace `SendPlatformMessage` ฝั่ง engine แล้วจับคู่ payload กับ channel name",
+   "recipe_en": "disassemble those three addresses directly, or trace SendPlatformMessage on the engine side and correlate payloads with channel names",
+   "refs": [
+    [
+     "asm-hdr",
+     "0x504300",
+     null
+    ]
+   ],
+   "ref_detail": [
+    "PASS asm header 0x504300 @Ieg.dart:380 size -0x1 ([closure] Future<dynamic> _pfc(dynamic, )"
+   ]
+  },
+  {
+   "id": "G3",
+   "tier": "T4",
+   "what": "body of the shared continuation helper 0x1a5b64",
+   "why": "exactly 3 call sites (one per Xu-family library) but no `** addr: 0x1a5b64` header — the single most valuable missing function on this spine, because it is where all three families converge",
+   "recipe_th": "disassemble 0x1a5b64 ใน libapp.so (ขอบเขตอ่านได้จากรายชื่อ stub ที่มันเรียก) แล้วเช็คว่ามัน tail-call ไปยัง closure ไหน — น่าจะเชื่อม `ugf` เข้ากับรูทีนคำขอ C2 @0x2f8928 โดยตรง",
+   "recipe_en": "disassemble 0x1a5b64 in libapp.so and follow its tail calls; it is the most likely direct link between _ioa.ugf and the C2 request routine @0x2f8928",
+   "refs": [
+    [
+     "asm-nohdr",
+     "0x1a5b64"
+    ],
+    [
+     "insn-count",
+     "#0x1a5b64\\b",
+     3,
+     null
+    ]
+   ],
+   "ref_detail": [
+    "PASS no listing body for 0x1a5b64 (header=None)",
+    "PASS insn /#0x1a5b64\\b/ matched 3 (expected 3): Kkg.dart+0x533278, Xkg.dart+0x535830, kkg.dart+0x53e950"
+   ]
+  },
+  {
+   "id": "G4",
+   "tier": "T5",
+   "what": "body of the response decoder 0x3102f4 called from the C2 response check @0x53313c",
+   "why": "CH-12 proves the call and proves what the caller does with the result (reads `success` / `data`, stores an int through Yoa.hne), but the decoder itself has no listing — so the wire format (JSON? encrypted? base64?) is not provable here",
+   "recipe_th": "disassemble 0x3102f4; if it is a JSON parse the string table around it will show `success`/`data` literals; if it decrypts, look for the same opcode-synthesis idiom as libengine.so JNI_OnLoad (CH-03)",
+   "recipe_en": "disassemble 0x3102f4 and check for JSON literals vs. a decryption idiom",
+   "refs": [
+    [
+     "asm-nohdr",
+     "0x3102f4"
+    ]
+   ],
+   "ref_detail": [
+    "PASS no listing body for 0x3102f4 (header=None)"
+   ]
+  },
+  {
+   "id": "G5",
+   "tier": "T4",
+   "what": "readers/writers of the 11 unaccessed Yoa store slots (5 late Strings, 3 late ints, wx<int>, Uint8List, Xoa) plus fqa._Bre @0xe84",
+   "why": "the field-table rule (ft = 2 x offset) was grepped over all 672 asm files and found nothing, so these slots are touched only from unlisted routines — the five late Strings are the most interesting candidates for host/token/key material",
+   "recipe_th": "grep field-table addresses 0x1ca0, 0x1ca8, 0x1cb0, 0x1cb8, 0x1cc0, 0x1cc8 ใน dump ชุดใหม่ที่ได้จาก G1/G3 หรือ hook InitLateStaticFieldStub ที่ field-table offset เหล่านั้นตอนรันไทม์ แล้วบันทึก caller",
+   "recipe_en": "grep the field-table addresses 0x1ca0, 0x1ca8, 0x1cb0, 0x1cb8, 0x1cc0, 0x1cc8 in a fuller dump (after G1/G3), or hook InitLateStaticFieldStub at those offsets at runtime and log the caller",
+   "refs": [
+    [
+     "field-count",
+     13
+    ]
+   ],
+   "ref_detail": [
+    "PASS store Yoa has 13 static fields (expected 13)"
+   ]
+  },
+  {
+   "id": "G6",
+   "tier": "T4",
+   "what": "the consumer of the _Bpa pool region: the endpoint, the multipart template, the two hex literals (pp+0x13918 / pp+0x13920) and the const name tables",
+   "why": "all 38 slots of pp+0x13988..pp+0x13ac0 are unreferenced by every one of the 672 disassembled files — the routine that builds the request (0x2f8928) is declared with size -0x1, so the bundle holds its data but not its code",
+   "recipe_th": "disassemble 0x2f8928 และ closure พี่น้อง (0, x, 3, 1, 0, 3, b, 0) ใน libapp.so ตรง ๆ แล้วดูว่าแต่ละสล็อตถูกโหลด ที่คำสั่งไหน — ลำดับการโหลดจะบอกเองว่าค่า hex สองก้อนเป็น key/IV หรือ token และ ตารางชื่อถูกใช้ตอน serialize ส่วนไหนของ body",
+   "recipe_en": "disassemble 0x2f8928 and its sibling closures directly in libapp.so and record which instruction loads each slot; the load order alone will say whether the two hex literals are key/IV or a token, and which part of the body the name tables serialise",
+   "refs": [
+    [
+     "pp",
+     "0x13918"
+    ],
+    [
+     "pp",
+     "0x13920"
+    ],
+    [
+     "asm-hdr",
+     "0x2f8928",
+     "-0x1"
+    ],
+    [
+     "pp-range",
+     "0x13988",
+     "0x13ac0",
+     1
+    ]
+   ],
+   "ref_detail": [
+    "PASS pp+0x13918 line 16589: String: \"d0166552cf5886ffc1fcadeffd892870dd077f45d50cccfed5e4b7\"",
+    "PASS pp+0x13920 line 16590: String: \"b8621122bc62a9d0b68bdac18ee7491b\"",
+    "PASS asm header 0x2f8928 @Kkg.dart:310 size -0x1 ([closure] void <anonymous closure>(dynam)",
+    "PASS pp+0x13988..0x13ac0 holds 38 slots (need >= 1)"
+   ]
+  },
+  {
+   "id": "G7",
+   "tier": "T4",
+   "what": "initialisers and readers of the [nkg] ooa registry (180 static late final fields, mostly type `noa`)",
+   "why": "field-table grep over all 672 asm files finds zero accesses for any of its slots; the class body carries no closures at all, so nothing in the dump shows how an entry is built",
+   "recipe_th": "grep field-table addresses 0x1698..0x1c40 ใน dump ชุดใหม่ (หลังปิด G1/G3) หรือ hook InitLateFinalStaticFieldStub ที่ offset เหล่านั้นตอนรันไทม์ เพื่อบันทึกว่าใคร init ฟิลด์ไหนก่อน — ลำดับการ init จะเผยโครง config ของแอป (host, key, flag)",
+   "recipe_en": "grep field-table addresses 0x1698..0x1c40 in a fuller dump (after G1/G3), or hook InitLateFinalStaticFieldStub at those offsets at runtime and log which field is initialised by whom — the init order reveals the app-level config layout",
+   "refs": [
+    [
+     "asm-class",
+     "ooa",
+     "abstract class ooa"
+    ]
+   ],
+   "ref_detail": [
+    "PASS class ooa @nkg.dart:15 abstract class ooa extends Object {"
+   ]
+  }
+ ],
+ "checks": [
+  {
+   "name": "spine built",
+   "result": "PASS",
+   "detail": "160 hops across 6 tiers (candidate=5, probable=16, proven=102, shape=18, strong=15, unresolved=4)"
+  },
+  {
+   "name": "every hop/gap resolves against the bundle",
+   "result": "PASS",
+   "detail": "232 evidence references checked, 0 failed"
+  },
+  {
+   "name": "no hop without evidence or source",
+   "result": "PASS",
+   "detail": "160/160 hops carry both"
+  },
+  {
+   "name": "T0 covers the whole captured framework stack",
+   "result": "PASS",
+   "detail": "18 T0 hops from 19 F9 frames, all conf=shape"
+  },
+  {
+   "name": "T0 is labelled as shape reference, never as SNAKE evidence",
+   "result": "PASS",
+   "detail": "source for every T0 hop is fragments/F9_kos_boot_stack.txt"
+  },
+  {
+   "name": "the shape tier is stitched to SNAKE bytes at newApplication",
+   "result": "PASS",
+   "detail": "android.app.Instrumentation.newApplication (line -> com.snake.App (manifest <application>)"
+  },
+  {
+   "name": "all 20 F2 dex invoke sites are on the spine",
+   "result": "PASS",
+   "detail": "CH-08 contributed 20 hops; F2 lists 20 caller offsets"
+  },
+  {
+   "name": "loadLibrary('engine') site is on the spine",
+   "result": "PASS",
+   "detail": "F2 @classes.dex+0x2b6c2e in ['Lcom/snake/App;-><clinit>()V']"
+  },
+  {
+   "name": "manifest roles quoted verbatim",
+   "result": "PASS",
+   "detail": "application=com.snake.App main_activity=com.Entry components=51"
+  },
+  {
+   "name": "chain CH-01 imported in full",
+   "result": "PASS",
+   "detail": "5/5 hops"
+  },
+  {
+   "name": "chain CH-03 imported in full",
+   "result": "PASS",
+   "detail": "12/12 hops"
+  },
+  {
+   "name": "chain CH-04 imported in full",
+   "result": "PASS",
+   "detail": "7/7 hops"
+  },
+  {
+   "name": "chain CH-05 imported in full",
+   "result": "PASS",
+   "detail": "8/8 hops"
+  },
+  {
+   "name": "chain CH-06 imported in full",
+   "result": "PASS",
+   "detail": "4/4 hops"
+  },
+  {
+   "name": "chain CH-07 imported in full",
+   "result": "PASS",
+   "detail": "7/7 hops"
+  },
+  {
+   "name": "chain CH-08 imported in full",
+   "result": "PASS",
+   "detail": "20/20 hops"
+  },
+  {
+   "name": "chain CH-09 imported in full",
+   "result": "PASS",
+   "detail": "3/3 hops"
+  },
+  {
+   "name": "chain CH-10 imported in full",
+   "result": "PASS",
+   "detail": "14/14 hops"
+  },
+  {
+   "name": "chain CH-12 imported in full",
+   "result": "PASS",
+   "detail": "27/27 hops"
+  },
+  {
+   "name": "chain CH-02 collapsed with an explicit pointer",
+   "result": "PASS",
+   "detail": "collapsed=44, via=CH-02 hops 1-44"
+  },
+  {
+   "name": "chain CH-11 collapsed with an explicit pointer",
+   "result": "PASS",
+   "detail": "collapsed=12, via=CH-11 hops 1-12"
+  },
+  {
+   "name": "T4 (new Dart tier) has substantive content",
+   "result": "PASS",
+   "detail": "30 hops: addressing_rule, byte_fetch_routine, byte_sink_signature, calls_direct, candidate_name_table, candidate_secret, closure_inventory, code_not_in_dump, collapsed_range, config_registry, family_member, fan_in_convergence, helper_body_missing, named_upstream_entry, owns_endpoint_pool_run, pool_family, reads_static_store, registry_unaccessed, shared_state_store, store_slots_unaccessed, traverses_stored_object, type_hierarchy, unlinked_call"
+  },
+  {
+   "name": "the three task families provably converge on one helper",
+   "result": "PASS",
+   "detail": "insn /#0x1a5b64/ matches exactly 3 sites across the whole dump — one per family library, i"
+  },
+  {
+   "name": "the C2 request routine's identity is marked candidate, not proven",
+   "result": "PASS",
+   "detail": "pool-adjacency attribution only (routine body is size -0x1)"
+  },
+  {
+   "name": "the C2 run holds the request routine and its nested children",
+   "result": "PASS",
+   "detail": "pp+0x13988..pp+0x13ac0 = 38 slots; contains the family head pp+0x13988, the request routine pp+0x139a8, the endpoint pp+0x139d8 and 5 nested children of 0x2f8928 (0x139a8, 0x139c8, 0x139d0, 0x139f0, 0x13a30)"
+  },
+  {
+   "name": "the family footprint is wider than the C2 run, and that is reported",
+   "result": "PASS",
+   "detail": "15 of 21 _Bpa slots lie outside the run (0x137f8..0x175e8) and are inventoried separately"
+  },
+  {
+   "name": "the request side of the endpoint region has no code in the dump",
+   "result": "PASS",
+   "detail": "33/38 slots unreferenced by any of the 672 asm files (endpoint pp+0x139d8 and action pp+0x139e0 among them); the 5 referenced slots are loaded only from Kkg.dart"
+  },
+  {
+   "name": "the response side of the same region *is* disassembled",
+   "result": "PASS",
+   "detail": "all 5 referenced slots are loaded from Kkg.dart (the response-check closure 0x533110): pp+0x139f8 String: \"success\", pp+0x13a00 UnlinkedCall: 0x173c2c -, pp+0x13a10 UnlinkedCall: 0x173c2c -, pp+0x13a20 Null, pp+0x13a30 AnonymousClosure: (0x310"
+  },
+  {
+   "name": "the two hex literals are hex and shaped like key material",
+   "result": "PASS",
+   "detail": "pp+0x13918 = 54 hex chars, pp+0x13920 = 32 hex chars"
+  },
+  {
+   "name": "second registry parsed and reported as unaccessed",
+   "result": "PASS",
+   "detail": "[nkg] ooa: 180 static late final fields (offsets 0xb4c..0xe20), 0 accessors in the dump"
+  },
+  {
+   "name": "the two stores occupy adjacent, non-overlapping field-table ranges",
+   "result": "PASS",
+   "detail": "ooa ends at 0x1c40, Yoa starts at 0x1ca0 (gap 96 bytes)"
+  },
+  {
+   "name": "named upstream entry is present",
+   "result": "PASS",
+   "detail": "_ioa.ugf(dynamic) -> Future<bool> @0x53ec84"
+  },
+  {
+   "name": "the spine ends at the requested endpoint",
+   "result": "PASS",
+   "detail": "pp+0x139d8  \"\"https://rest.snakeseller.com/api/request/\"\""
+  },
+  {
+   "name": "endpoint slot body matches the requested URL exactly",
+   "result": "PASS",
+   "detail": "[pp+0x139d8] String: \"https://rest.snakeseller.com/api/request/\""
+  },
+  {
+   "name": "post-endpoint continuation is carried over from CH-12",
+   "result": "PASS",
+   "detail": "27 CH-12 hops after the terminus"
+  },
+  {
+   "name": "shared store parsed",
+   "result": "PASS",
+   "detail": "13 static late fields in [xkg] Yoa (offsets 0xe50..0xe80)"
+  },
+  {
+   "name": "field-table rule ft = 2 x offset holds for every slot",
+   "result": "PASS",
+   "detail": "13/13 slots satisfy the rule; 2 of them are actually accessed in asm/ (hne 0xe78->0x1cf0 x2, tKb 0xe7c->0x1cf8 x8)"
+  },
+  {
+   "name": "the C2 response side and the task side touch adjacent slots of one class",
+   "result": "PASS",
+   "detail": "accessed = hne(0xe78, 2 refs in ['Kkg.dart']), tKb(0xe7c, 8 refs in ['kkg.dart'])"
+  },
+  {
+   "name": "unresolved slots are kept, not dropped",
+   "result": "PASS",
+   "detail": "11 of 13 slots have no accessor and are reported with a recipe"
+  },
+  {
+   "name": "every gap carries a recipe in both languages",
+   "result": "PASS",
+   "detail": "7 gaps: G1, G2, G3, G4, G5, G6, G7"
+  },
+  {
+   "name": "unresolved hops are kept on the spine",
+   "result": "PASS",
+   "detail": "4 unresolved hops inline + 7 gaps"
+  },
+  {
+   "name": "no bundle parse problems",
+   "result": "PASS",
+   "detail": "clean"
+  }
+ ],
+ "store": {
+  "class": "xkg.Yoa",
+  "addressing_rule": "field_table_address = 2 * field_offset (base = THR+0x68)",
+  "fields": [
+   {
+    "name": "Vge",
+    "type": "String",
+    "offset": "0xe50",
+    "field_table": "0x1ca0",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "Wge",
+    "type": "String",
+    "offset": "0xe54",
+    "field_table": "0x1ca8",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "Xge",
+    "type": "String",
+    "offset": "0xe58",
+    "field_table": "0x1cb0",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "Yge",
+    "type": "String",
+    "offset": "0xe5c",
+    "field_table": "0x1cb8",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "Zge",
+    "type": "String",
+    "offset": "0xe60",
+    "field_table": "0x1cc0",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "cne",
+    "type": "int",
+    "offset": "0xe64",
+    "field_table": "0x1cc8",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "dne",
+    "type": "int",
+    "offset": "0xe68",
+    "field_table": "0x1cd0",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "ene",
+    "type": "int",
+    "offset": "0xe6c",
+    "field_table": "0x1cd8",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "fne",
+    "type": "wx<int>",
+    "offset": "0xe70",
+    "field_table": "0x1ce0",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "gne",
+    "type": "Uint8List",
+    "offset": "0xe74",
+    "field_table": "0x1ce8",
+    "accessors": 0,
+    "where": []
+   },
+   {
+    "name": "hne",
+    "type": "Loa",
+    "offset": "0xe78",
+    "field_table": "0x1cf0",
+    "accessors": 2,
+    "where": [
+     "Kkg.dart:59",
+     "Kkg.dart:61"
+    ]
+   },
+   {
+    "name": "tKb",
+    "type": "Poa",
+    "offset": "0xe7c",
+    "field_table": "0x1cf8",
+    "accessors": 8,
+    "where": [
+     "kkg.dart:156",
+     "kkg.dart:158",
+     "kkg.dart:261",
+     "kkg.dart:263",
+     "kkg.dart:334",
+     "kkg.dart:393",
+     "kkg.dart:440",
+     "kkg.dart:481"
+    ]
+   },
+   {
+    "name": "ine",
+    "type": "Xoa",
+    "offset": "0xe80",
+    "field_table": "0x1d00",
+    "accessors": 0,
+    "where": []
+   }
+  ]
+ },
+ "endpoint_neighbourhood": [
+  {
+   "slot": "0x13988",
+   "body": "AnonymousClosure: (0x3103b0), of [Kkg] _Bpa",
+   "pp_line": 16610
+  },
+  {
+   "slot": "0x13990",
+   "body": "Double: 160",
+   "pp_line": 16611
+  },
+  {
+   "slot": "0x13998",
+   "body": "List(9) [0, 0x3, 0x2, 0x1, \"DCb\", 0x1, \"eib\", 0x2, Null]",
+   "pp_line": 16612
+  },
+  {
+   "slot": "0x139a0",
+   "body": "Double: 102",
+   "pp_line": 16613
+  },
+  {
+   "slot": "0x139a8",
+   "body": "AnonymousClosure: (0x2f8928), of [Kkg] _Bpa",
+   "pp_line": 16614
+  },
+  {
+   "slot": "0x139b0",
+   "body": "String: \"profile_image\"",
+   "pp_line": 16615
+  },
+  {
+   "slot": "0x139b8",
+   "body": "Obj!VK@35cf91 : {",
+   "pp_line": 16616
+  },
+  {
+   "slot": "0x139c0",
+   "body": "Field <_Bpa@696152105.tpe>: late (offset: 0x18)",
+   "pp_line": 16620
+  },
+  {
+   "slot": "0x139c8",
+   "body": "AnonymousClosure: (0x2f8998), in [Kkg] _Bpa::<anonymous closure> (0x2f8928)",
+   "pp_line": 16621
+  },
+  {
+   "slot": "0x139d0",
+   "body": "AnonymousClosure: (0x310360), in [Kkg] _Bpa::<anonymous closure> (0x2f8928)",
+   "pp_line": 16622
+  },
+  {
+   "slot": "0x139d8",
+   "body": "String: \"https://rest.snakeseller.com/api/request/\"",
+   "pp_line": 16623
+  },
+  {
+   "slot": "0x139e0",
+   "body": "String: \"\\?action=upload_profile_image\"",
+   "pp_line": 16624
+  },
+  {
+   "slot": "0x139e8",
+   "body": "Function: [dart:ui] Shader::Shader._ (0x4e92cc)",
+   "pp_line": 16625
+  },
+  {
+   "slot": "0x139f0",
+   "body": "AnonymousClosure: (0x533110), in [Kkg] _Bpa::<anonymous closure> (0x2f8928)",
+   "pp_line": 16626
+  },
+  {
+   "slot": "0x139f8",
+   "body": "String: \"success\"",
+   "pp_line": 16627
+  },
+  {
+   "slot": "0x13a00",
+   "body": "UnlinkedCall: 0x173c2c - SwitchableCallMissStub",
+   "pp_line": 16628
+  },
+  {
+   "slot": "0x13a10",
+   "body": "UnlinkedCall: 0x173c2c - SwitchableCallMissStub",
+   "pp_line": 16629
+  },
+  {
+   "slot": "0x13a20",
+   "body": "Null",
+   "pp_line": 16630
+  },
+  {
+   "slot": "0x13a28",
+   "body": "String: \"\"",
+   "pp_line": 16631
+  },
+  {
+   "slot": "0x13a30",
+   "body": "AnonymousClosure: (0x310338), in [Kkg] _Bpa::<anonymous closure> (0x2f8928)",
+   "pp_line": 16632
+  },
+  {
+   "slot": "0x13a38",
+   "body": "String: \"----WebKitFormBoundary\"",
+   "pp_line": 16633
+  },
+  {
+   "slot": "0x13a40",
+   "body": "String: \"multipart/form-data; boundary=\"",
+   "pp_line": 16634
+  },
+  {
+   "slot": "0x13a48",
+   "body": "String: \"Content-Type\"",
+   "pp_line": 16635
+  },
+  {
+   "slot": "0x13a50",
+   "body": "String: \"--\"",
+   "pp_line": 16636
+  },
+  {
+   "slot": "0x13a58",
+   "body": "String: \"\\r\\nContent-Disposition: form-data; name=\\\"image\\\"; filename=\\\"\"",
+   "pp_line": 16637
+  },
+  {
+   "slot": "0x13a60",
+   "body": "String: \"image\"",
+   "pp_line": 16638
+  },
+  {
+   "slot": "0x13a68",
+   "body": "String: \"\\\"\\r\\nContent-Type: image/jpeg\\r\\n\\r\\n\"",
+   "pp_line": 16639
+  },
+  {
+   "slot": "0x13a70",
+   "body": "String: \"\\r\\n--\"",
+   "pp_line": 16640
+  },
+  {
+   "slot": "0x13a78",
+   "body": "String: \"--\\r\\n\"",
+   "pp_line": 16641
+  },
+  {
+   "slot": "0x13a80",
+   "body": "String: \"Upload failed with status: \"",
+   "pp_line": 16642
+  },
+  {
+   "slot": "0x13a88",
+   "body": "String: \"Upload error: \"",
+   "pp_line": 16643
+  },
+  {
+   "slot": "0x13a90",
+   "body": "String: \"post\"",
+   "pp_line": 16644
+  },
+  {
+   "slot": "0x13a98",
+   "body": "Field <fqa._Bre@721161550>: static late (offset: 0xe84)",
+   "pp_line": 16645
+  },
+  {
+   "slot": "0x13aa0",
+   "body": "AnonymousClosure: (0x30ff78), of [dart:io] _ip",
+   "pp_line": 16646
+  },
+  {
+   "slot": "0x13aa8",
+   "body": "String: \"Cannot delete file\"",
+   "pp_line": 16647
+  },
+  {
+   "slot": "0x13ab0",
+   "body": "TypeArguments: <String, Uint8List>",
+   "pp_line": 16648
+  },
+  {
+   "slot": "0x13ab8",
+   "body": "String: \"C\"",
+   "pp_line": 16649
+  },
+  {
+   "slot": "0x13ac0",
+   "body": "String: \".jpg\\?r=\"",
+   "pp_line": 16650
+  }
+ ]
+}

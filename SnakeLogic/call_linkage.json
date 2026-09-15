@@ -34462,7 +34462,7 @@
     {
       "name": "the extracted tree and the zip carry identical inputs",
       "result": "PASS",
-      "detail": "SnakeLogic/ fingerprint d0eb6c05b6ab740919abc72ff702a6a4 vs SnakeLogic.zip fingerprint d0eb6c05b6ab740919abc72ff702a6a4 over 699 input files (the 3 generated artifacts are excluded from both)"
+      "detail": "SnakeLogic/ fingerprint d0eb6c05b6ab740919abc72ff702a6a4 vs SnakeLogic.zip fingerprint d0eb6c05b6ab740919abc72ff702a6a4 over 699 input files (6 generated artifacts and 1 operator-supplied fragment(s): fragments/F9_kos_boot_stack.txt are excluded from both)"
     }
   ],
   "dart_hot_targets": [
